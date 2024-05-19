@@ -1,0 +1,334 @@
+/********reset style*************************/
+html,
+body,
+div,
+span,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+abbr,
+address,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+samp,
+small,
+strong,
+sub,
+sup,
+var,
+b,
+i,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-size: 100%;
+	vertical-align: baseline;
+	background: transparent;
+}
+
+body {
+	line-height: 1;
+}
+
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+	display: block;
+}
+
+blockquote,
+q {
+	quotes: none;
+}
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+	content: '';
+	content: none;
+}
+
+a {
+	margin: 0;
+	padding: 0;
+	font-size: 100%;
+	vertical-align: baseline;
+	background: transparent;
+}
+
+ins {
+	background-color: #ff9;
+	color: #000;
+	text-decoration: none;
+}
+
+mark {
+	background-color: #ff9;
+	color: #000;
+	font-style: italic;
+	font-weight: bold;
+}
+
+del {
+	text-decoration: line-through;
+}
+
+abbr[title],
+dfn[title] {
+	border-bottom: 1px dotted;
+	cursor: help;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+hr {
+	display: block;
+	height: 1px;
+	border: 0;
+	border-top: 1px solid #cccccc;
+	margin: 1em 0;
+	padding: 0;
+}
+
+input,
+select {
+	vertical-align: middle;
+}
+
+h1,
+.h1 {
+	font-size: 36px;
+}
+
+h1 {
+	font-size: 36px;
+}
+
+h2 {
+	font-size: 30px;
+}
+
+h3 {
+	font-size: 24px;
+}
+
+h4 {
+	font-size: 18px;
+}
+
+h5 {
+	font-size: 14px;
+}
+
+.clear {
+	clear: both;
+}
+
+img {
+	max-width: 100%;
+	height: auto;
+}
+
+a:hover,
+a:focus {
+	outline: none;
+	text-decoration: none;
+	color: inherit;
+}
+
+a,
+button {
+	-webkit-transition: all 400ms ease;
+	-moz-transition: all 400ms ease;
+	-ms-transition: all 400ms ease;
+	-o-transition: all 400ms ease;
+	transition: all 400ms ease;
+	color: inherit;
+	text-decoration: none;
+}
+
+body {
+	font-family: @font-primary !important;
+	color: @font-color !important;
+	font-size: 15px !important;
+	font-weight: 400;
+	line-height: 1.6;
+	background-color: @theme-bg-light;
+	;
+}
+
+h1,
+h2,
+h3,
+h4 {
+	font-weight: normal;
+	font-family: @font-secondary !important;
+}
+
+p {
+	margin-bottom: 1rem;
+}
+
+div>p:last-child {
+	margin-bottom: 0px;
+}
+
+section {
+	margin-top: @default-margin;
+	position: relative;
+}
+
+@media only screen and (min-width: 1366px) {
+	.container {
+		max-width: 1280px !important;
+	}
+}
+
+@media only screen and (min-width: 1367px) {
+	.container {
+		max-width: 1360px !important;
+	}
+}
+
+@media only screen and (min-width: 1025px) and (max-width: 1366px) {
+	.container {
+		max-width: ~'calc(100% - 30px)' !important;
+	}
+}
+
+.fancybox__container {
+	z-index: 20500 !important;
+}
+
+.modal-backdrop {
+	@media @mobileTab {
+		z-index: 0 !important;
+	}
+}
+
+.swal2-actions {
+	width: 100% !important;
+	padding: 0 35px !important;
+
+	@media @mobile {
+		flex-direction: column;
+	}
+
+	.btn {
+		width: 100%;
+		flex: 1;
+
+		&.btn-primary,
+		&.btn-danger {
+			margin-right: 15px;
+
+			@media @mobile {
+				margin-right: unset;
+				margin-bottom: 15px;
+			}
+		}
+	}
+}
+
+.badge.badge-primary {
+	background-color: var(--bs-primary);
+	color: var(--bs-light);
+}
+
+.badge.badge-secondary {
+	background-color: var(--bs-secondary);
+	color: var(--bs-light);
+}
+
+.badge.badge-success {
+	background-color: var(--bs-success);
+	color: var(--bs-light);
+}
+
+.badge.badge-danger {
+	background-color: var(--bs-danger);
+	color: var(--bs-light);
+}
+
+.badge.badge-warning {
+	background-color: var(--bs-warning);
+	color: var(--bs-dark);
+}
+
+.badge.badge-info {
+	background-color: var(--bs-info);
+	color: var(--bs-light);
+}
+
+.badge.badge-dark {
+	background-color: var(--bs-dark);
+	color: var(--bs-light);
+}
+
+.badge.badge-light {
+	background-color: var(--bs-light);
+	color: var(--bs-dark);
+}

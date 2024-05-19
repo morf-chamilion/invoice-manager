@@ -1,0 +1,37 @@
+@import "~filepond/dist/filepond.css";
+@import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
+@import "filepond-plugin-file-poster/dist/filepond-plugin-file-poster.css";
+
+// Custom Styles
+.pond-multiple .filepond--item {
+    width: calc(50% - 0.5em);
+}
+
+@media (min-width: 50em) {
+    .pond-multiple .filepond--item {
+        width: calc(50% - 0.5em);
+    }
+}
+
+.filepond--drop-label {
+    height: auto !important;
+    padding: 15px 0;
+}
+
+.filepond--panel-root,
+.filepond--drop-label {
+    background-color: #f5f8fa;
+    border-radius: 0.475rem;
+}
+
+[data-bs-theme="dark"] {
+    .filepond--panel-root,
+    .filepond--drop-label {
+        background-color: #39364f;
+        color: var(--bs-gray-800);
+
+        i {
+            color: var(--bs-gray-800);
+        }
+    }
+}

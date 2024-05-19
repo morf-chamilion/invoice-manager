@@ -1,0 +1,42 @@
+@primary-color: #638dfd;
+@primary-color-dark: #212b46;
+@secondary-color: #000;
+
+@theme-medium-gray: #7e818f;
+@theme-light-gray: #e7e7e7;
+
+@theme-light-green: #a4d38f;
+
+@checked-color: #08aa03;
+
+@theme-bg-light: #f6f6f6;
+@bg-color: @primary-color;
+
+@font-color: @secondary-color;
+@font-primary:  'Poppins', sans-serif;
+@font-secondary: @font-primary;
+
+@btn-color: @primary-color;
+
+@default-margin: 50px;
+
+@theme-radius: 10px;
+
+@sub-page-banner-height: 280px;
+
+@mobile-device-width: 767px;
+@mobile-tab-device-width: 1024px;
+@tablet-device-width: 1024px;
+
+@mobile: ~'screen and (max-width: @{mobile-device-width})';
+@mobileTab: ~'screen and (max-width: @{mobile-tab-device-width})';
+@tablet: ~'screen and (min-width: 768px) and (max-width: @{tablet-device-width})';
+@ipadLandscape: ~ 'screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape) and (-webkit-min-device-pixel-ratio: 1)';
+@destop1280: ~'screen and (min-width: 1280px) and (max-width: 1366px)';
+@smallDesktop: ~'screen and (min-width: 1025px) and (max-width: 1600px)';
+
+.fontawesome(@content: '') {
+    content: @content;
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+}
