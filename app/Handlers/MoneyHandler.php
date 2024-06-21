@@ -3,7 +3,6 @@
 namespace App\Handlers;
 
 use Illuminate\Support\Env;
-use Illuminate\Support\Number;
 
 abstract class MoneyHandler
 {
@@ -20,6 +19,6 @@ abstract class MoneyHandler
 	 */
 	public static function print(float $amount): string
 	{
-		return Number::currency($amount, self::currencyCode());
+		return self::currencyCode() . " " . number_format($amount, 2);
 	}
 }
