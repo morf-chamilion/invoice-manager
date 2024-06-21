@@ -43,6 +43,7 @@ class RouteServiceProvider extends ServiceProvider
         'pages',
         'invoices',
         'customers',
+        'vendors',
     ];
 
     /**

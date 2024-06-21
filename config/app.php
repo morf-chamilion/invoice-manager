@@ -203,6 +203,7 @@ return [
         'UserRoleRoutePath' => App\RoutePaths\Admin\User\UserRoleRoutePath::class,
         'InvoiceRoutePath' => App\RoutePaths\Admin\Invoice\InvoiceRoutePath::class,
         'CustomerRoutePath' => App\RoutePaths\Admin\Customer\CustomerRoutePath::class,
+        'VendorRoutePath' => App\RoutePaths\Admin\Vendor\VendorRoutePath::class,
 
         /** Common Route Paths */
         'CommonMediaRoutePath' => App\RoutePaths\Common\Media\MediaRoutePath::class,
@@ -227,6 +228,7 @@ return [
         'InvoicePaymentStatus' => App\Enums\InvoicePaymentStatus::class,
         'InvoiceItemType' => App\Enums\InvoiceItemType::class,
         'CustomerStatus' => App\Enums\CustomerStatus::class,
+        'VendorStatus' => App\Enums\VendorStatus::class,
 
         /** Helpers */
         'MoneyHelper' => App\Helpers\MoneyHelper::class,

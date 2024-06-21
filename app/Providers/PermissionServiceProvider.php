@@ -23,6 +23,7 @@ class PermissionServiceProvider extends ServiceProvider
 
         \App\RoutePaths\Admin\Invoice\InvoiceRoutePath::class,
         \App\RoutePaths\Admin\Customer\CustomerRoutePath::class,
+        \App\RoutePaths\Admin\Vendor\VendorRoutePath::class,
     ];
 
     /**

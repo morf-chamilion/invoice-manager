@@ -55,9 +55,34 @@
                 </div>
             @endcanany
 
-            @canany([CustomerRoutePath::INDEX, CustomerRoutePath::CREATE])
-                @include('admin.layout.sidebar.menu-heading', ['content' => 'Clients'])
+            @canany([VendorRoutePath::INDEX, VendorRoutePath::CREATE])
+                @include('admin.layout.sidebar.menu-heading', ['content' => 'Organizations'])
 
+                <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+                    @include('admin.layout.sidebar.menu-item-group', [
+                        'content' => 'Vendors',
+                        'icon' => 'shop',
+                    ])
+
+                    <div class="menu-sub menu-sub-accordion">
+                        @can(VendorRoutePath::INDEX)
+                            @include('admin.layout.sidebar.menu-item', [
+                                'content' => 'View All Vendors',
+                                'route' => route(VendorRoutePath::INDEX),
+                            ])
+                        @endcan
+
+                        @can(VendorRoutePath::CREATE)
+                            @include('admin.layout.sidebar.menu-item', [
+                                'content' => 'Create New Vendors',
+                                'route' => route(VendorRoutePath::CREATE),
+                            ])
+                        @endcan
+                    </div>
+                </div>
+            @endcanany
+
+            @canany([CustomerRoutePath::INDEX, CustomerRoutePath::CREATE])
                 <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
                     @include('admin.layout.sidebar.menu-item-group', [
                         'content' => 'Customers',
