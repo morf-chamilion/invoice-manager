@@ -5,7 +5,6 @@ namespace App\Http\Requests\Admin\Vendor;
 use App\Enums\VendorStatus;
 use App\Http\Requests\BaseRequest;
 use Illuminate\Validation\Rules\Enum;
-use Illuminate\Validation\Rules\Password;
 
 class VendorStoreRequest extends BaseRequest
 {
@@ -23,8 +22,8 @@ class VendorStoreRequest extends BaseRequest
 			'status' => [
 				'integer', new Enum(VendorStatus::class),
 			],
-			'password' => [
-				Password::defaults(), 'max:255',
+			'currency' => [
+				'string', 'min:0', 'max:255',
 			],
 		];
 	}

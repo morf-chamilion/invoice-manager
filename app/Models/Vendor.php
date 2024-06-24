@@ -24,6 +24,7 @@ class Vendor extends Model implements HasMedia, HasRelationsInterface
 	protected $fillable = [
 		'status',
 		'name',
+		'currency',
 		'updated_by',
 		'created_by',
 	];

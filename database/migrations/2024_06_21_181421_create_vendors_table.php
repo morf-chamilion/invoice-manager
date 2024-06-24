@@ -17,6 +17,7 @@ return new class extends Migration
 			$table->tinyInteger('status')->default(VendorStatus::INACTIVE);
 
 			$table->string('name')->unique();
+			$table->string('currency');
 
 			$table->foreignId('created_by')->constrained('users')->onDelete('restrict')->onUpdate('cascade');
 			$table->foreignId('updated_by')->nullable()->constrained('users')->onDelete('restrict')->onUpdate('cascade');

@@ -16,9 +16,14 @@
                     <div class="card-body">
                         <div class="mb-8">
                             <x-input-label for="name" :value="__('Name')" required />
-                            <x-input-text id="name" name="name" type="text" class="mt-1 block w-full"
-                                :value="old('name')" required />
-                            <x-input-error class="mt-2" :messages="$errors->get('name')" />
+                            <x-input-text id="name" name="name" type="text" :value="old('name')" required />
+                            <x-input-error :messages="$errors->get('name')" />
+                        </div>
+
+                        <div>
+                            <x-input-label for="currency" :value="__('Currency')" required />
+                            <x-input-text id="currency" name="currency" type="text" :value="old('name')" required />
+                            <x-input-error :messages="$errors->get('name')" />
                         </div>
                     </div>
                 </div>

@@ -21,6 +21,12 @@
                                 :value="old('name', $vendor->name)" autocomplete="none" required />
                             <x-input-error class="mt-2" :messages="$errors->get('name')" />
                         </div>
+
+                        <div>
+                            <x-input-label for="currency" :value="__('Currency')" required />
+                            <x-input-text id="currency" name="currency" type="text" :value="old('name')" required />
+                            <x-input-error :messages="$errors->get('name')" />
+                        </div>
                     </div>
                 </div>
             </div>
