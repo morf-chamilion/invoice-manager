@@ -30,8 +30,6 @@ class VendorService extends BaseService
 	{
 		if ($this->getAdminAuthUser()) {
 			$attributes['created_by'] = $this->getAdminAuthUser()->id;
-		} else if ($this->getCustomerAuthUser()) {
-			$attributes['created_by'] = $this->getCustomerAuthUser()->id;
 		}
 
 		$invoice = $this->invoiceRepository->create($attributes);
@@ -70,8 +68,6 @@ class VendorService extends BaseService
 	{
 		if ($this->getAdminAuthUser()) {
 			$newAttributes['updated_by'] = $this->getAdminAuthUser()->id;
-		} else if ($this->getCustomerAuthUser()) {
-			$newAttributes['updated_by'] = $this->getCustomerAuthUser()->id;
 		}
 
 		$updated = $this->invoiceRepository->update($invoiceId, $newAttributes);

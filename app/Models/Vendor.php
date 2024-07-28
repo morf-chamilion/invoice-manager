@@ -8,6 +8,7 @@ use App\Models\Traits\HasCreatedBy;
 use App\Models\Traits\HasUpdatedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -63,6 +64,22 @@ class Vendor extends Model implements HasMedia, HasRelationsInterface
 	 */
 	public function defineHasRelationships(): array
 	{
-		return [];
+		return ['users', 'invoices'];
+	}
+
+	/**
+	 * Get the users items assocbiated with the vendor.
+	 */
+	public function users(): HasMany
+	{
+		return $this->hasMany(User::class);
+	}
+
+	/**
+	 * Get the invoices items assocbiated with the vendor.
+	 */
+	public function invoices(): HasMany
+	{
+		return $this->hasMany(Invoice::class);
 	}
 }

@@ -127,7 +127,7 @@ class Customer extends Model implements Authenticatable, AuthCanResetPassword, M
      */
     public function defineHasRelationships(): array
     {
-        return ['jobs'];
+        return [];
     }
 
     /**
@@ -136,13 +136,5 @@ class Customer extends Model implements Authenticatable, AuthCanResetPassword, M
     public function invoices(): HasMany
     {
         return $this->hasMany(Invoice::class);
-    }
-
-    /**
-     * Get the jobs associated with the customer.
-     */
-    public function jobs(): HasMany
-    {
-        return $this->hasMany(Job::class);
     }
 }

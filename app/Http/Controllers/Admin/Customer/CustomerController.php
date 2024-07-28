@@ -48,7 +48,8 @@ class CustomerController extends AdminBaseController
         }
 
         $columns = $this->tableColumns(
-            ['name', 'email', 'phone',]
+            prefixes: [],
+            columns: ['name', 'email', 'phone'],
         );
 
         $this->registerBreadcrumb();

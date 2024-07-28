@@ -206,7 +206,8 @@
                 @endcanany
             @endif
 
-            @canany([SettingRoutePath::GENERAL, SettingRoutePath::MAIL, SettingRoutePath::INVOICE])
+            @canany([SettingRoutePath::GENERAL, SettingRoutePath::MAIL, SettingRoutePath::INVOICE,
+                VendorRoutePath::INVOICE_SETTING_EDIT])
                 @include('admin.layout.sidebar.menu-heading', ['content' => 'Settings'])
 
                 @can(SettingRoutePath::GENERAL)
@@ -225,12 +226,14 @@
                     ])
                 @endcan
 
-                @can(SettingRoutePath::INVOICE)
-                    @include('admin.layout.sidebar.menu-item', [
-                        'content' => 'Invoice Settings',
-                        'route' => route(SettingRoutePath::INVOICE),
-                        'icon' => 'update-file',
-                    ])
+                @can(VendorRoutePath::INVOICE_SETTING_EDIT)
+                    @if (auth()->user()->vendor)
+                        @include('admin.layout.sidebar.menu-item', [
+                            'content' => 'Invoice Settings',
+                            'route' => route(VendorRoutePath::INVOICE_SETTING_EDIT, auth()->user()->vendor->id),
+                            'icon' => 'update-file',
+                        ])
+                    @endif
                 @endcan
             @endcanany
 

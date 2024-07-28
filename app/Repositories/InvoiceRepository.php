@@ -65,6 +65,16 @@ class InvoiceRepository extends BaseRepository
 	}
 
 	/**
+	 * Get the last invoice for the vendor.
+	 */
+	public function getLastVendorInvoice(int $vendorId): ?Invoice
+	{
+		return $this->invoice->where('vendor_id', $vendorId)
+			->orderBy('vendor_invoice_number', 'desc')
+			->first();
+	}
+
+	/**
 	 * Delete a specific invoice.
 	 */
 	public function delete(int $invoiceId): bool|QueryException
@@ -91,6 +101,9 @@ class InvoiceRepository extends BaseRepository
 		$paymentReference = Arr::pull($attributes, 'payment_reference');
 
 		$invoice = $this->invoice::create($attributes);
+
+		$lastInvoice = $this->getLastVendorInvoice($attributes['vendor_id']);
+		$invoice->vendor_invoice_number = $lastInvoice ? ++$lastInvoice->vendor_invoice_number : 1;
 		$invoice->number = $invoice->id;
 
 		if (

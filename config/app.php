@@ -204,6 +204,7 @@ return [
         'InvoiceRoutePath' => App\RoutePaths\Admin\Invoice\InvoiceRoutePath::class,
         'CustomerRoutePath' => App\RoutePaths\Admin\Customer\CustomerRoutePath::class,
         'VendorRoutePath' => App\RoutePaths\Admin\Vendor\VendorRoutePath::class,
+        'VendorInvoiceSettingRoutePath' => App\RoutePaths\Admin\Vendor\VendorInvoiceSettingRoutePath::class,
 
         /** Common Route Paths */
         'CommonMediaRoutePath' => App\RoutePaths\Common\Media\MediaRoutePath::class,

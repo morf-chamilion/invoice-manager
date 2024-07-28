@@ -25,7 +25,6 @@ class InvoiceIndexResource extends JsonResource implements HasDataTableInterface
 	{
 		return collect($records)->map(function ($record) {
 			return [
-				$record->id,
 				$this->number($record),
 				$this->customer($record->customer),
 				$record->readableDate,

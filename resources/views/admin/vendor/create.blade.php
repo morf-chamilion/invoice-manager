@@ -22,8 +22,8 @@
 
                         <div>
                             <x-input-label for="currency" :value="__('Currency')" required />
-                            <x-input-text id="currency" name="currency" type="text" :value="old('name')" required />
-                            <x-input-error :messages="$errors->get('name')" />
+                            <x-input-text id="currency" name="currency" type="text" :value="old('currency')" required />
+                            <x-input-error :messages="$errors->get('currency')" />
                         </div>
                     </div>
                 </div>

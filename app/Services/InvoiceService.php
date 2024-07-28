@@ -44,8 +44,10 @@ class InvoiceService extends BaseService
 
 		if ($this->getAdminAuthUser()) {
 			$attributes['created_by'] = $this->getAdminAuthUser()->id;
-		} else if ($this->getCustomerAuthUser()) {
-			$attributes['created_by'] = $this->getCustomerAuthUser()->id;
+
+			if ($this->getAdminAuthUser()->vendor) {
+				$attributes['vendor_id'] = $this->getAdminAuthUser()->vendor->id;
+			}
 		}
 
 		$invoice = $this->invoiceRepository->create($attributes);
@@ -226,6 +228,12 @@ class InvoiceService extends BaseService
 		$query = $this->invoiceRepository->getModel()->select('*');
 
 		$query->where(function ($subQuery) use ($filterQuery) {
+			if ($this->getAdminAuthUser()->vendor) {
+				$subQuery->whereHas('vendor', function ($subQuery) {
+					$subQuery->where('id', $this->getAdminAuthUser()->vendor->id);
+				});
+			}
+
 			if (isset($filterQuery->status)) {
 				if ($filterQuery->status === 'past_due_date') {
 					$subQuery->where('status', InvoiceStatus::ACTIVE->value);

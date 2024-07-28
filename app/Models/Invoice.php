@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -45,6 +46,8 @@ class Invoice extends Model implements HasMedia, HasRelationsInterface
 		'payment_data->transaction_id',
 		'payment_data->reference',
 		'payment_date',
+		'vendor_id',
+		'vendor_invoice_number',
 		'updated_by',
 		'created_by',
 	];
@@ -78,10 +81,11 @@ class Invoice extends Model implements HasMedia, HasRelationsInterface
 	{
 		return Attribute::make(
 			set: function (string $value): string {
-				$id = str_pad($value, 5, '0', STR_PAD_LEFT);
+				$id = str_pad($this->vendor_invoice_number, 5, '0', STR_PAD_LEFT);
 				$currentYear = now()->format('y');
 				$currentMonth = now()->format('m');
-				$formattedNumber = "INV/{$currentYear}{$currentMonth}/{$id}";
+				$vendorName = Str::of($this->vendor->name)->kebab()->upper();
+				$formattedNumber = "$vendorName/{$currentYear}/{$currentMonth}/{$id}";
 
 				return $this->attributes['number'] = $formattedNumber;
 			},
@@ -146,6 +150,14 @@ class Invoice extends Model implements HasMedia, HasRelationsInterface
 	public function customer(): BelongsTo
 	{
 		return $this->belongsTo(Customer::class);
+	}
+
+	/**
+	 * Get the vendor that owns the invoice.
+	 */
+	public function vendor(): BelongsTo
+	{
+		return $this->belongsTo(Vendor::class);
 	}
 
 	/**

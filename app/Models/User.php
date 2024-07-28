@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Contracts\Auth\CanResetPassword as AuthCanResetPassword;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
@@ -42,6 +43,7 @@ class User extends Authenticatable implements MustVerifyEmail, AuthCanResetPassw
         'email',
         'password',
         'roles',
+        'vendor_id',
         'created_by',
         'updated_by',
     ];
@@ -115,5 +117,13 @@ class User extends Authenticatable implements MustVerifyEmail, AuthCanResetPassw
                 'hash' => sha1($this->email)
             ],
         );
+    }
+
+    /**
+     * Get the vendor that owns the user.
+     */
+    public function vendor(): BelongsTo
+    {
+        return $this->belongsTo(Vendor::class);
     }
 }

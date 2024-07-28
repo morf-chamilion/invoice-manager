@@ -53,7 +53,8 @@ class InvoiceController extends AdminBaseController
 		}
 
 		$columns = $this->tableColumns(
-			['number', 'customer', 'date', 'due_date', 'total_price']
+			prefixes: [],
+			columns: ['number', 'customer', 'date', 'due_date', 'total_price']
 		);
 
 		$this->registerBreadcrumb();

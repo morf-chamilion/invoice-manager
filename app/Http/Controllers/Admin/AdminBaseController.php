@@ -88,9 +88,9 @@ class AdminBaseController extends Controller implements AdminBaseControllerInter
 	/**
 	 * Set the data table columns.
 	 */
-	public function tableColumns(array $columns)
+	public function tableColumns(array $columns, array $prefixes = ['id'], array $appends = ['status', 'actions'])
 	{
-		return array_merge(['id'], $columns, ['status', 'actions']);
+		return array_merge($prefixes, $columns, $appends);
 	}
 
 	/**

@@ -57,6 +57,20 @@
                             </x-input-select>
                             <x-input-error class="mt-2" :messages="$errors->get('roles')" />
                         </div>
+
+                        <div class="mb-8">
+                            <x-input-label for="vendor_id" :value="__('Vendor')" required />
+                            <x-input-select id="vendor_id" name="vendor_id" data-placeholder="Select Vendor" required>
+                                @if ($roles->isNotEmpty())
+                                    @foreach ($vendors as $vendor)
+                                        <option value="{{ $vendor->id }}" @selected($vendor->id == old('vendor_id'))>
+                                            {{ $vendor->name }}
+                                        </option>
+                                    @endforeach
+                                @endif
+                            </x-input-select>
+                            <x-input-error :messages="$errors->get('vendor_id')" />
+                        </div>
                     </div>
                 </div>
             </div>

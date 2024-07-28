@@ -56,12 +56,12 @@ class MakeUserCommand extends Command
                 },
             ),
             'password' => password(
-                    label: 'Password',
-                    required: true,
-                    validate: fn (string $password): ?string => match (true) {
-                        str()->of($password)->length() < 8 => 'Password length must at least be 8 characters long.',
-                        default => null,
-                    },
+                label: 'Password',
+                required: true,
+                validate: fn (string $password): ?string => match (true) {
+                    str()->of($password)->length() < 8 => 'Password length must at least be 8 characters long.',
+                    default => null,
+                },
             ),
         ];
     }

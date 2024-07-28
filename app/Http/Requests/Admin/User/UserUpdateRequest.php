@@ -6,6 +6,7 @@ use App\Enums\UserStatus;
 use App\Http\Requests\BaseRequest;
 use Illuminate\Validation\Rule;
 use App\Models\User;
+use App\Models\Vendor;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\Rules\Password;
 
@@ -33,6 +34,9 @@ class UserUpdateRequest extends BaseRequest
 			],
 			'role' => [
 				'int', 'nullable',
+			],
+			'vendor_id' => [
+				'required', Rule::exists(Vendor::class, 'id'),
 			],
 		];
 	}

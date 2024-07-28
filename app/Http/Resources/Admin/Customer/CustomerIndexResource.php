@@ -23,7 +23,6 @@ class CustomerIndexResource extends JsonResource implements HasDataTableInterfac
         return collect($records)->map(function ($record) {
 
             return [
-                $record->id,
                 $record->name,
                 $this->emailLink($record),
                 $this->phoneLink($record),
