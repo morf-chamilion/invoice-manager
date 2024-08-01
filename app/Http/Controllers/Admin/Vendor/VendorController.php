@@ -117,6 +117,25 @@ class VendorController extends AdminBaseController
     }
 
     /**
+     * Show the form for editing the specified resource settings.
+     */
+    public function editSettings(Vendor $vendor): Renderable
+    {
+        $this->registerBreadcrumb(
+            parentRouteName: $this->vendorRoutePath::INDEX,
+            routeParameter: $vendor->id,
+        );
+
+        $this->sharePageData([
+            'title' => $this->getActionTitle(),
+        ]);
+
+        return view($this->vendorRoutePath::INVOICE_SETTING_EDIT, [
+            'vendor' => $vendor,
+        ]);
+    }
+
+    /**
      * Update the specified resource in storage.
      */
     public function update(Vendor $vendor, VendorUpdateRequest $request): RedirectResponse|RedirectResponseException

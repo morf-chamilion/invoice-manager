@@ -18,6 +18,7 @@ use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -49,6 +50,7 @@ class Customer extends Model implements Authenticatable, AuthCanResetPassword, M
         'password',
         'created_by',
         'updated_by',
+        'vendor_id',
     ];
 
     /**
@@ -136,5 +138,13 @@ class Customer extends Model implements Authenticatable, AuthCanResetPassword, M
     public function invoices(): HasMany
     {
         return $this->hasMany(Invoice::class);
+    }
+
+    /**
+     * Get the vendor that owns the customer.
+     */
+    public function vendor(): BelongsTo
+    {
+        return $this->belongsTo(Vendor::class);
     }
 }

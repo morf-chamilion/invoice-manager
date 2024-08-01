@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\InvoicePaymentStatus;
 use App\Enums\InvoiceStatus;
 use App\Models\Invoice;
+use App\Models\Vendor;
 use App\Notifications\Invoice\InvoiceCreateCustomerNotification;
 use App\Notifications\Invoice\InvoiceOverdueCustomerNotification;
 use App\Notifications\Invoice\InvoiceUpdateCustomerNotification;
@@ -28,6 +29,18 @@ class InvoiceService extends BaseService
 	}
 
 	/**
+	 * Get the authenticated vendor.
+	 */
+	public function getAuthVendor(): ?Vendor
+	{
+		if ($this->getAdminAuthUser()->vendor) {
+			return $this->getAdminAuthUser()->vendor;
+		}
+
+		return null;
+	}
+
+	/**
 	 * Get all invoices.
 	 */
 	public function getAllInvoices(): Collection
@@ -44,10 +57,7 @@ class InvoiceService extends BaseService
 
 		if ($this->getAdminAuthUser()) {
 			$attributes['created_by'] = $this->getAdminAuthUser()->id;
-
-			if ($this->getAdminAuthUser()->vendor) {
-				$attributes['vendor_id'] = $this->getAdminAuthUser()->vendor->id;
-			}
+			$attributes['vendor_id'] = $this->getAuthVendor()->id;
 		}
 
 		$invoice = $this->invoiceRepository->create($attributes);
@@ -133,8 +143,6 @@ class InvoiceService extends BaseService
 
 		if ($this->getAdminAuthUser()) {
 			$newAttributes['updated_by'] = $this->getAdminAuthUser()->id;
-		} else if ($this->getCustomerAuthUser()) {
-			$newAttributes['updated_by'] = $this->getCustomerAuthUser()->id;
 		}
 
 		$updated = $this->invoiceRepository->update($invoiceId, $newAttributes);
@@ -230,7 +238,7 @@ class InvoiceService extends BaseService
 		$query->where(function ($subQuery) use ($filterQuery) {
 			if ($this->getAdminAuthUser()->vendor) {
 				$subQuery->whereHas('vendor', function ($subQuery) {
-					$subQuery->where('id', $this->getAdminAuthUser()->vendor->id);
+					$subQuery->where('id', $this->getAuthVendor()->id);
 				});
 			}
 
@@ -298,6 +306,8 @@ class InvoiceService extends BaseService
 	 */
 	public function getAllCustomers(): Collection
 	{
-		return $this->customerService->getAllActiveCustomers();
+		return $this->customerService->getAllActiveCustomers(
+			$this->getAuthVendor(),
+		);
 	}
 }

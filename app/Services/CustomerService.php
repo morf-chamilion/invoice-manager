@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\CustomerStatus;
 use App\Models\Customer;
+use App\Models\Vendor;
 use App\Notifications\Customer\CustomerCreateNotification;
 use App\Providers\AuthServiceProvider;
 use App\Repositories\CustomerRepository;
@@ -22,6 +23,18 @@ class CustomerService extends BaseService
 	}
 
 	/**
+	 * Get the authenticated vendor.
+	 */
+	public function getAuthVendor(): ?Vendor
+	{
+		if ($this->getAdminAuthUser()->vendor) {
+			return $this->getAdminAuthUser()->vendor;
+		}
+
+		return null;
+	}
+
+	/**
 	 * Get all customers.
 	 */
 	public function getAllCustomers(): Collection
@@ -32,9 +45,9 @@ class CustomerService extends BaseService
 	/**
 	 * Get all active customers.
 	 */
-	public function getAllActiveCustomers(): Collection
+	public function getAllActiveCustomers(Vendor $vendor = null): Collection
 	{
-		return $this->customerRepository->getAllActive();
+		return $this->customerRepository->getAllActive($vendor);
 	}
 
 	/**
@@ -46,6 +59,10 @@ class CustomerService extends BaseService
 
 		if ($this->getAdminAuthUser()) {
 			$attributes['created_by'] = $this->getAdminAuthUser()->id;
+
+			if ($this->getAdminAuthUser()->vendor) {
+				$attributes['vendor_id'] = $this->getAdminAuthUser()->vendor->id;
+			}
 		} else {
 			$attributes['created_by'] = AuthServiceProvider::SUPER_ADMIN;
 		}
@@ -94,8 +111,6 @@ class CustomerService extends BaseService
 
 		if ($this->getAdminAuthUser()) {
 			$newAttributes['updated_by'] = $this->getAdminAuthUser()->id;
-		} else if ($this->getCustomerAuthUser()) {
-			$newAttributes['updated_by'] = $this->getCustomerAuthUser()->id;
 		}
 
 		$updated = $this->customerRepository->update($customerId, $newAttributes);
@@ -150,5 +165,47 @@ class CustomerService extends BaseService
 		}
 
 		return false;
+	}
+
+	/**
+	 * return the custom filtered result as a page.
+	 *
+	 * @return integer 	$data[count]		Results Count
+	 * @return array 	$data[data]			Results
+	 */
+	public function getAllWithCustomFilter($filterQuery, $filterColumns)
+	{
+		$query = $this->customerRepository->getModel()->select('*');
+
+		$query->where(function ($subQuery) use ($filterQuery) {
+			if ($this->getAdminAuthUser()->vendor) {
+				$subQuery->whereHas('vendor', function ($subQuery) {
+					$subQuery->where('id', $this->getAuthVendor()->id);
+				});
+			}
+		});
+
+		$query->where(function ($query) use ($filterColumns, $filterQuery) {
+			foreach ($filterColumns as $column) {
+				if ($column) {
+					$query->orWhere($column, 'like', '%' . $filterQuery->search['value'] . '%');
+				}
+			}
+		});
+
+		$data['count'] = $query->count();
+
+		$orderByColumn = $filterColumns[$filterQuery->order[0]['column']] ?? $filterColumns[count($filterColumns) - 1];
+		$orderByDirection = $filterQuery->order[0]['dir'];
+
+		$query->orderBy($orderByColumn, $orderByDirection);
+
+		if ($filterQuery->length != -1) {
+			$query->skip($filterQuery->start)->take($filterQuery->length);
+		}
+
+		$data['data'] = $query->get();
+
+		return $data;
 	}
 }

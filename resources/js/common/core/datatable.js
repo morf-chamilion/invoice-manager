@@ -53,8 +53,8 @@ class DataTable {
                 e.preventDefault();
 
                 const parent = e.target.closest("tr");
-                const resourceId = parent.querySelectorAll("td")[0].innerText;
                 const resourceName = parent.querySelectorAll("td")[1].innerText;
+                const url = e.target.href;
 
                 Swal.fire({
                     text:
@@ -72,7 +72,7 @@ class DataTable {
                     if (result.isConfirmed) {
                         $.ajax({
                             type: "DELETE",
-                            url: `${window.location.href}/${resourceId}`,
+                            url: `${url}`,
                             beforeSend: function (xhr, options) {
                                 Swal.fire({
                                     text: "Deleting..",

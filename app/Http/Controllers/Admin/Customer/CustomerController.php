@@ -38,7 +38,7 @@ class CustomerController extends AdminBaseController
 
             $request->merge([
                 'recordsAll' => $this->customerService->getAllCustomers(),
-                'recordsFiltered' => $this->customerService->getAllWithFilter(
+                'recordsFiltered' => $this->customerService->getAllWithCustomFilter(
                     filterColumns: ['id', 'name', 'email', 'phone', 'status'],
                     filterQuery: $attributes,
                 ),

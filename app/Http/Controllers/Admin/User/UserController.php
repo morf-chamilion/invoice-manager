@@ -48,7 +48,7 @@ class UserController extends AdminBaseController
         }
 
         $columns = $this->tableColumns(
-            ['name', 'email', 'role']
+            ['name', 'email', 'vendor', 'role']
         );
 
         $this->registerBreadcrumb();

@@ -37,7 +37,7 @@ Route::middleware(['verified.admin'])->group(function () {
 					Route::post('/list', 'index');
 				});
 
-			Route::get('/invoice-setting-edit', 'edit')
+			Route::get('/invoice-setting-edit/{vendor}', 'editSettings')
 				->middleware(Authorize::using(VendorRoutePath::INVOICE_SETTING_EDIT))
 				->name(VendorRoutePath::INVOICE_SETTING_EDIT);
 		});

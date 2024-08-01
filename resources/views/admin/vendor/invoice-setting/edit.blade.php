@@ -1,7 +1,6 @@
 <x-default-layout :model="$vendor">
 
-    <form method="POST" action="{{ route(VendorInvoiceSettingRoutePath::UPDATE, $vendor) }}" autocomplete="off"
-        id="resource_form">
+    <form method="POST" action="{{ route(VendorRoutePath::UPDATE, $vendor) }}" autocomplete="off" id="resource_form">
         @method('put')
         @csrf
 

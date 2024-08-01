@@ -230,7 +230,7 @@
                     @if (auth()->user()->vendor)
                         @include('admin.layout.sidebar.menu-item', [
                             'content' => 'Invoice Settings',
-                            'route' => route(VendorRoutePath::INVOICE_SETTING_EDIT, auth()->user()->vendor->id),
+                            'route' => route(VendorRoutePath::INVOICE_SETTING_EDIT, auth()->user()->vendor),
                             'icon' => 'update-file',
                         ])
                     @endif
