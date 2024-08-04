@@ -18,7 +18,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -84,8 +83,8 @@ class Invoice extends Model implements HasMedia, HasRelationsInterface
 				$id = str_pad($this->vendor_invoice_number, 5, '0', STR_PAD_LEFT);
 				$currentYear = now()->format('y');
 				$currentMonth = now()->format('m');
-				$vendorName = Str::of($this->vendor->name)->kebab()->upper();
-				$formattedNumber = "$vendorName/{$currentYear}/{$currentMonth}/{$id}";
+				$vendorPrefix = $this->vendor->invoice_number_prefix;
+				$formattedNumber = "$vendorPrefix/{$currentYear}/{$currentMonth}/{$id}";
 
 				return $this->attributes['number'] = $formattedNumber;
 			},

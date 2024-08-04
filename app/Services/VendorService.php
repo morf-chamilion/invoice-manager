@@ -9,22 +9,22 @@ use Illuminate\Support\Collection;
 class VendorService extends BaseService
 {
 	public function __construct(
-		private VendorRepository $invoiceRepository,
+		private VendorRepository $vendorRepository,
 		private SettingService $settingService,
 	) {
-		parent::__construct($invoiceRepository);
+		parent::__construct($vendorRepository);
 	}
 
 	/**
-	 * Get all invoices.
+	 * Get all vendors.
 	 */
 	public function getAllVendors(): Collection
 	{
-		return $this->invoiceRepository->getAll();
+		return $this->vendorRepository->getAll();
 	}
 
 	/**
-	 * Create a new invoice.
+	 * Create a new vendor.
 	 */
 	public function createVendor(array $attributes): Vendor
 	{
@@ -32,45 +32,59 @@ class VendorService extends BaseService
 			$attributes['created_by'] = $this->getAdminAuthUser()->id;
 		}
 
-		$invoice = $this->invoiceRepository->create($attributes);
+		$vendor = $this->vendorRepository->create($attributes);
 
-		return $invoice;
+		return $vendor;
 	}
 
 	/**
-	 * Get the specified invoice.
+	 * Get the specified vendor.
 	 */
-	public function getVendor(int $invoiceId): ?Vendor
+	public function getVendor(int $vendorId): ?Vendor
 	{
-		return $this->invoiceRepository->getById($invoiceId);
+		return $this->vendorRepository->getById($vendorId);
 	}
 
 	/**
-	 * Get the specified invoice attribute.
+	 * Get the specified vendor attribute.
 	 */
 	public function getVendorWhere(string $columnName, mixed $value): ?Vendor
 	{
-		return $this->invoiceRepository->getFirstWhere($columnName, $value);
+		return $this->vendorRepository->getFirstWhere($columnName, $value);
 	}
 
 	/**
-	 * Delete a specific invoice.
+	 * Delete a specific vendor.
 	 */
-	public function deleteVendor(int $invoiceId): int
+	public function deleteVendor(int $vendorId): int
 	{
-		return $this->invoiceRepository->delete($invoiceId);
+		return $this->vendorRepository->delete($vendorId);
 	}
 
 	/**
-	 * Update an existing invoice.
+	 * Update an existing vendor.
 	 */
-	public function updateVendor(int $invoiceId, array $newAttributes): bool
+	public function updateVendor(int $vendorId, array $newAttributes): bool
 	{
 		if ($this->getAdminAuthUser()) {
 			$newAttributes['updated_by'] = $this->getAdminAuthUser()->id;
 		}
 
-		$updated = $this->invoiceRepository->update($invoiceId, $newAttributes);
+		$updated = $this->vendorRepository->update($vendorId, $newAttributes);
+
+		return $updated;
+	}
+
+	/**
+	 * Update an existing vendor.
+	 */
+	public function updateVendorSettings(int $vendorId, array $newAttributes): bool
+	{
+		if ($this->getAdminAuthUser()) {
+			$newAttributes['updated_by'] = $this->getAdminAuthUser()->id;
+		}
+
+		$updated = $this->vendorRepository->updateSettings($vendorId, $newAttributes);
 
 		return $updated;
 	}

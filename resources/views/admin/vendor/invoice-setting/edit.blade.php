@@ -1,6 +1,7 @@
 <x-default-layout :model="$vendor">
 
-    <form method="POST" action="{{ route(VendorRoutePath::UPDATE, $vendor) }}" autocomplete="off" id="resource_form">
+    <form method="POST" action="{{ route(VendorRoutePath::INVOICE_SETTING_UPDATE, $vendor) }}" autocomplete="off"
+        id="resource_form">
         @method('put')
         @csrf
 
@@ -15,24 +16,24 @@
                         </header>
                     </div>
                     <div class="card-body">
-                        <div class="mb-8 col-xl-4">
+                        <div class="mb-8 col-xl-6">
                             <x-input-label for="logo" :value="__('Logo')" />
-                            <x-input-file id="logo" name="logo" :fileMaxSize="2" :value="null" />
+                            <x-input-file id="logo" name="logo" :fileMaxSize="2" :value="$vendor->logo" />
                             <x-input-error :messages="$errors->get('logo')" />
                         </div>
 
                         <div class="mb-8">
-                            <x-input-label for="company_content" :value="__('Company Content')" />
-                            <x-input-editor name="company_content" id="company_content">
-                                {{ old('company_content') }}
-                            </x-input-editor>
-                            <x-input-error :messages="$errors->get('company_content')" />
+                            <x-input-label for="address" :value="__('Address')" />
+                            <x-input-textarea name="address" id="address">
+                                {{ old('address', $vendor->address) }}
+                            </x-input-textarea>
+                            <x-input-error :messages="$errors->get('address')" />
                         </div>
 
                         <div class="mb-8">
                             <x-input-label for="footer_content" :value="__('Footer Content')" />
                             <x-input-editor name="footer_content" id="footer_content">
-                                {{ old('footer_content') }}
+                                {{ old('footer_content', $vendor->footer_content) }}
                             </x-input-editor>
                             <x-input-error :messages="$errors->get('footer_content')" />
                         </div>

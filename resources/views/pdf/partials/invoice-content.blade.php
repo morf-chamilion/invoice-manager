@@ -23,13 +23,15 @@
                         </span>
                     </td>
                     <td colspan="4" style="text-align: right;">
-                        @if ($logo = settings(SettingModule::INVOICE)->getFirstMedia('logo'))
+                        @if ($logo = $invoice->vendor?->logo->first())
                             <img src="{{ isset($pdf) && $pdf ? $logo?->getPath() : $logo?->getFullUrl() }}"
                                 alt="Company Logo" style="max-width: 200px;" />
                         @endif
-                        <div style="margin-top: 20px; font-weight: 400; font-size: 14px; text-align: right;">
-                            {!! settings(SettingModule::INVOICE)->get('company_content') !!}
-                        </div>
+                        @if ($invoice->vendor->address)
+                            <div style="margin-top: 20px; font-weight: 400; font-size: 14px; text-align: right;">
+                                {{ nl2br($invoice->vendor->address) }}
+                            </div>
+                        @endif
                     </td>
                 </tr>
             </tbody>
@@ -193,6 +195,6 @@
 
     <footer
         style="@empty($pdf) margin-top: 30px; @else position: absolute; bottom: 0;  @endif width: 100%; font-size: 14px;">
-        {!! settings(SettingModule::INVOICE)->get('footer_content') !!}
+        {!! $invoice->vendor?->footer_content !!}
     </footer>
 </table>

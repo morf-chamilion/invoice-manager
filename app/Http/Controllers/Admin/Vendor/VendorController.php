@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Vendor;
 
 use App\Exceptions\RedirectResponseException;
 use App\Http\Controllers\Admin\AdminBaseController;
+use App\Http\Requests\Admin\Vendor\VendorSettingUpdateRequest;
 use App\Http\Requests\Admin\Vendor\VendorStoreRequest;
 use App\Http\Requests\Admin\Vendor\VendorUpdateRequest;
 use App\Http\Resources\Admin\Vendor\VendorIndexResource;
@@ -117,25 +118,6 @@ class VendorController extends AdminBaseController
     }
 
     /**
-     * Show the form for editing the specified resource settings.
-     */
-    public function editSettings(Vendor $vendor): Renderable
-    {
-        $this->registerBreadcrumb(
-            parentRouteName: $this->vendorRoutePath::INDEX,
-            routeParameter: $vendor->id,
-        );
-
-        $this->sharePageData([
-            'title' => $this->getActionTitle(),
-        ]);
-
-        return view($this->vendorRoutePath::INVOICE_SETTING_EDIT, [
-            'vendor' => $vendor,
-        ]);
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(Vendor $vendor, VendorUpdateRequest $request): RedirectResponse|RedirectResponseException
@@ -161,5 +143,39 @@ class VendorController extends AdminBaseController
 
         return $this->jsonResponse()->message($this->vendorMessage->deleteSuccess())
             ->success();
+    }
+
+    /**
+     * Show the form for editing the specified resource settings.
+     */
+    public function editSettings(Vendor $vendor): Renderable
+    {
+        $this->registerBreadcrumb(
+            parentRouteName: $this->vendorRoutePath::INDEX,
+            routeParameter: $vendor->id,
+        );
+
+        $this->sharePageData([
+            'title' => $this->getActionTitle(),
+        ]);
+
+        return view($this->vendorRoutePath::INVOICE_SETTING_EDIT, [
+            'vendor' => $vendor,
+        ]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function updateSettings(Vendor $vendor, VendorSettingUpdateRequest $request): RedirectResponse|RedirectResponseException
+    {
+        $updated = $this->vendorService->updateVendorSettings($vendor->id, $request->getAttributes());
+
+        throw_if(!$updated, RedirectResponseException::class, $this->vendorMessage->updateFailed());
+
+        return redirect()->route($this->vendorRoutePath::INVOICE_SETTING_EDIT, $vendor)->with([
+            'message' => $this->vendorMessage->updateSuccess(),
+            'status' => true,
+        ]);
     }
 }

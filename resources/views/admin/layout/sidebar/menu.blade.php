@@ -26,37 +26,64 @@
                 </div>
             @endcan
 
-            @canany([InvoiceRoutePath::INDEX, InvoiceRoutePath::CREATE])
-                @include('admin.layout.sidebar.menu-heading', ['content' => 'Invoices'])
-                @php $invoiceService = app()->make(App\Services\InvoiceService::class); @endphp
+            @if (auth()->user()->vendor)
+                @canany([InvoiceRoutePath::INDEX, InvoiceRoutePath::CREATE])
+                    @include('admin.layout.sidebar.menu-heading', ['content' => 'Management'])
+                    @php $invoiceService = app()->make(App\Services\InvoiceService::class); @endphp
 
-                <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
-                    @include('admin.layout.sidebar.menu-item-group', [
-                        'content' => 'Invoices',
-                        'icon' => 'book',
-                        'count' => $invoiceService->dueInvoiceCount(),
-                    ])
+                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+                        @include('admin.layout.sidebar.menu-item-group', [
+                            'content' => 'Invoices',
+                            'icon' => 'book',
+                            'count' => $invoiceService->dueInvoiceCount(),
+                        ])
 
-                    <div class="menu-sub menu-sub-accordion">
-                        @can(InvoiceRoutePath::INDEX)
-                            @include('admin.layout.sidebar.menu-item', [
-                                'content' => 'View All Invoices',
-                                'route' => route(InvoiceRoutePath::INDEX),
-                            ])
-                        @endcan
+                        <div class="menu-sub menu-sub-accordion">
+                            @can(InvoiceRoutePath::INDEX)
+                                @include('admin.layout.sidebar.menu-item', [
+                                    'content' => 'View All Invoices',
+                                    'route' => route(InvoiceRoutePath::INDEX),
+                                ])
+                            @endcan
 
-                        @can(InvoiceRoutePath::CREATE)
-                            @include('admin.layout.sidebar.menu-item', [
-                                'content' => 'Create New Invoice',
-                                'route' => route(InvoiceRoutePath::CREATE),
-                            ])
-                        @endcan
+                            @can(InvoiceRoutePath::CREATE)
+                                @include('admin.layout.sidebar.menu-item', [
+                                    'content' => 'Create New Invoice',
+                                    'route' => route(InvoiceRoutePath::CREATE),
+                                ])
+                            @endcan
+                        </div>
                     </div>
-                </div>
-            @endcanany
+                @endcanany
+
+                @canany([CustomerRoutePath::INDEX, CustomerRoutePath::CREATE])
+                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+                        @include('admin.layout.sidebar.menu-item-group', [
+                            'content' => 'Customers',
+                            'icon' => 'people',
+                        ])
+
+                        <div class="menu-sub menu-sub-accordion">
+                            @can(CustomerRoutePath::INDEX)
+                                @include('admin.layout.sidebar.menu-item', [
+                                    'content' => 'View All Customers',
+                                    'route' => route(CustomerRoutePath::INDEX),
+                                ])
+                            @endcan
+
+                            @can(CustomerRoutePath::CREATE)
+                                @include('admin.layout.sidebar.menu-item', [
+                                    'content' => 'Create New Customer',
+                                    'route' => route(CustomerRoutePath::CREATE),
+                                ])
+                            @endcan
+                        </div>
+                    </div>
+                @endcanany
+            @endif
 
             @canany([VendorRoutePath::INDEX, VendorRoutePath::CREATE])
-                @include('admin.layout.sidebar.menu-heading', ['content' => 'Organizations'])
+                @include('admin.layout.sidebar.menu-heading', ['content' => 'Administration'])
 
                 <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
                     @include('admin.layout.sidebar.menu-item-group', [
@@ -82,34 +109,7 @@
                 </div>
             @endcanany
 
-            @canany([CustomerRoutePath::INDEX, CustomerRoutePath::CREATE])
-                <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
-                    @include('admin.layout.sidebar.menu-item-group', [
-                        'content' => 'Customers',
-                        'icon' => 'people',
-                    ])
-
-                    <div class="menu-sub menu-sub-accordion">
-                        @can(CustomerRoutePath::INDEX)
-                            @include('admin.layout.sidebar.menu-item', [
-                                'content' => 'View All Customers',
-                                'route' => route(CustomerRoutePath::INDEX),
-                            ])
-                        @endcan
-
-                        @can(CustomerRoutePath::CREATE)
-                            @include('admin.layout.sidebar.menu-item', [
-                                'content' => 'Create New Customer',
-                                'route' => route(CustomerRoutePath::CREATE),
-                            ])
-                        @endcan
-                    </div>
-                </div>
-            @endcanany
-
             @canany([UserRoutePath::INDEX, UserRoutePath::CREATE])
-                @include('admin.layout.sidebar.menu-heading', ['content' => 'Admin Users'])
-
                 <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
                     @include('admin.layout.sidebar.menu-item-group', [
                         'content' => 'Users',
@@ -206,8 +206,7 @@
                 @endcanany
             @endif
 
-            @canany([SettingRoutePath::GENERAL, SettingRoutePath::MAIL, SettingRoutePath::INVOICE,
-                VendorRoutePath::INVOICE_SETTING_EDIT])
+            @canany([SettingRoutePath::GENERAL, SettingRoutePath::MAIL, VendorRoutePath::INVOICE_SETTING_EDIT])
                 @include('admin.layout.sidebar.menu-heading', ['content' => 'Settings'])
 
                 @can(SettingRoutePath::GENERAL)

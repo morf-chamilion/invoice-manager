@@ -6,6 +6,7 @@ use App\Enums\VendorStatus;
 use App\Models\Interfaces\HasRelationsInterface;
 use App\Models\Traits\HasCreatedBy;
 use App\Models\Traits\HasUpdatedBy;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -26,6 +27,9 @@ class Vendor extends Model implements HasMedia, HasRelationsInterface
 		'status',
 		'name',
 		'currency',
+		'address',
+		'footer_content',
+		'invoice_number_prefix',
 		'updated_by',
 		'created_by',
 	];
@@ -57,6 +61,16 @@ class Vendor extends Model implements HasMedia, HasRelationsInterface
 		$this->addMediaCollection('invoiceImage')
 			->useDisk('media')
 			->singleFile();
+	}
+
+	/**
+	 * Interact with media.
+	 */
+	protected function logo(): Attribute
+	{
+		return Attribute::make(
+			get: fn () => $this->getMedia('logo'),
+		);
 	}
 
 	/**

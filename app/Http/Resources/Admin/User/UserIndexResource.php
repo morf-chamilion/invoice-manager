@@ -26,7 +26,7 @@ class UserIndexResource extends JsonResource implements HasDataTableInterface
                 $record->id,
                 $record->name,
                 $record->email,
-                $record->vendor->name,
+                $record->vendor?->name,
                 $this->userRoleBadges($record->roles),
                 UserStatus::toBadge($record->status),
                 $this->actions($record),

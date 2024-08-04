@@ -26,6 +26,8 @@ class VendorRoutePath implements AdminRoutePathInterface
 
 	public const INVOICE_SETTING_EDIT = 'admin.vendor.invoice-setting.edit';
 
+	public const INVOICE_SETTING_UPDATE = 'admin.vendor.invoice-setting.update';
+
 	/**
 	 * Name of the resource.
 	 */
@@ -44,7 +46,7 @@ class VendorRoutePath implements AdminRoutePathInterface
 			'Create' => [self::CREATE, self::STORE],
 			'Edit' => [self::EDIT, self::UPDATE],
 			'Delete' => [self::DESTROY],
-			'Invoice Setting Edit' => [self::INVOICE_SETTING_EDIT, self::UPDATE],
+			'Invoice Setting Edit' => [self::INVOICE_SETTING_EDIT, self::INVOICE_SETTING_UPDATE],
 		];
 	}
 }

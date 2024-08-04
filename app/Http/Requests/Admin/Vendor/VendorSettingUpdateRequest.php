@@ -17,7 +17,7 @@ class VendorSettingUpdateRequest extends BaseRequest
 			'logo' => [
 				'nullable', 'string',
 			],
-			'company_content' => [
+			'address' => [
 				'nullable', 'string', 'max:5000',
 			],
 			'footer_content' => [

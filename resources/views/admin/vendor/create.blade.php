@@ -20,10 +20,17 @@
                             <x-input-error :messages="$errors->get('name')" />
                         </div>
 
-                        <div>
+                        <div class="mb-8">
                             <x-input-label for="currency" :value="__('Currency')" required />
                             <x-input-text id="currency" name="currency" type="text" :value="old('currency')" required />
                             <x-input-error :messages="$errors->get('currency')" />
+                        </div>
+
+                        <div>
+                            <x-input-label for="invoice_number_prefix" :value="__('Invoice Number Prefix')" required />
+                            <x-input-text id="invoice_number_prefix" name="invoice_number_prefix" type="text"
+                                :value="old('invoice_number_prefix')" required />
+                            <x-input-error :messages="$errors->get('invoice_number_prefix')" />
                         </div>
                     </div>
                 </div>
