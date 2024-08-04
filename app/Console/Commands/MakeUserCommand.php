@@ -86,7 +86,7 @@ class MakeUserCommand extends Command
         ]);
 
         if (AuthServiceProvider::SUPER_ADMIN === $user->id) {
-            Artisan::call('db:seed', ['--class' => 'UserRoleSeeder']);
+            Artisan::call('db:seed', ['--class' => 'UserRoleSeeder', '--force' => true]);
             $user->assignRole(AuthServiceProvider::SUPER_ADMIN);
         }
 
