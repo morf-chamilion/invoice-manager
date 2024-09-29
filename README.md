@@ -1,4 +1,4 @@
-# Laravel Base
+# Invoice Manager
 
 [![Laravel](https://img.shields.io/badge/Laravel-%23FF2D20.svg?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com/)
 
