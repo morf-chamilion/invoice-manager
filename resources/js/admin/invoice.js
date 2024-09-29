@@ -370,6 +370,7 @@ KTUtil.onDOMContentLoaded(function () {
         const paymentMethods = {
             card: 0,
             cash: 1,
+            bankTransfer: 2,
         };
 
         /**
@@ -389,6 +390,11 @@ KTUtil.onDOMContentLoaded(function () {
                 $('textarea[name="payment_reference"]')
                     .prop("disabled", true)
                     .hide();
+
+                $('label[for="payment_reference_receipt"]').hide();
+                $('#payment_reference_receipt')
+                    .prop("disabled", true)
+                    .hide();
             }
 
             if (selectedPaymentMethod == paymentMethods.cash) {
@@ -402,6 +408,29 @@ KTUtil.onDOMContentLoaded(function () {
                 $('textarea[name="payment_reference"]')
                     .prop("disabled", false)
                     .show();
+
+                $('label[for="payment_reference_receipt"]').hide();
+                $('#payment_reference_receipt')
+                    .prop("disabled", true)
+                    .hide();
+            }
+
+            if (selectedPaymentMethod == paymentMethods.bankTransfer) {
+                $('label[for="payment_date"]').show();
+                $('input[name="payment_date"]').prop("disabled", false).show();
+
+                $('label[for="payment_link"]').hide();
+                $('input[name="payment_link"]').hide();
+
+                $('label[for="payment_reference_receipt"]').show();
+                $('#payment_reference_receipt')
+                    .prop("disabled", false)
+                    .show();
+
+                $('label[for="payment_reference"]').hide();
+                $('textarea[name="payment_reference"]')
+                    .prop("disabled", true)
+                    .hide();
             }
         }
 

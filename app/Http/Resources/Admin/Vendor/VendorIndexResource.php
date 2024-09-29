@@ -23,6 +23,7 @@ class VendorIndexResource extends JsonResource implements HasDataTableInterface
             return [
                 $record->id,
                 $record->name,
+                $record->currency,
                 VendorStatus::toBadge($record->status),
                 $this->actions($record),
             ];

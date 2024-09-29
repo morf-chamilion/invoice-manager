@@ -1,7 +1,7 @@
 <!--begin::Wrapper-->
-<div class="d-md-flex flex-stack mb-5">
+<div class="d-flex flex-wrap justify-content-between gap-5 mb-5">
     <!--begin::Search-->
-    <div class="d-flex align-items-center position-relative my-1">
+    <div class="d-flex align-items-center position-relative">
         {!! getIcon('magnifier', 'ki-duotone fs-1 position-absolute ms-6') !!}
         <input type="text" data-kt-docs-table-filter="search" class="form-control form-control-solid w-250px ps-15"
             placeholder="Search" />

@@ -49,7 +49,7 @@ class VendorController extends AdminBaseController
         }
 
         $columns = $this->tableColumns(
-            ['name']
+            ['name', 'currency']
         );
 
         $this->registerBreadcrumb();
@@ -156,7 +156,7 @@ class VendorController extends AdminBaseController
         );
 
         $this->sharePageData([
-            'title' => $this->getActionTitle(),
+            'title' => 'Invoice Settings',
         ]);
 
         return view($this->vendorRoutePath::INVOICE_SETTING_EDIT, [

@@ -6,13 +6,17 @@
         <!--begin::Wrapper-->
         <div class="d-flex flex-column flex-lg-row flex-column-fluid">
             <!--begin::Aside-->
-            <div class="d-flex flex-lg-row-fluid w-lg-50 bg-dark order-1">
+            <div class="d-flex flex-lg-row-fluid w-lg-50 bg-light-primary order-1">
                 <!--begin::Content-->
                 <div class="d-flex flex-column flex-center py-7 py-lg-15 px-5 px-md-15 w-100">
 
                     <!--begin::Title-->
                     @if ($logo = settings(SettingModule::GENERAL)->getFirstMedia('site_logo'))
                         <img src="{{ $logo?->getFullUrl() }}" style="max-width: 350px;" />
+                    @else
+                        <h1 class="fs-3x text-primary">
+                            {{ settings(SettingModule::GENERAL)->get('site_name') ?? env('APP_NAME') }}
+                        </h1>
                     @endif
                     <!--end::Title-->
 

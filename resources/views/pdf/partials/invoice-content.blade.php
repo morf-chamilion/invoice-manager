@@ -163,17 +163,6 @@
                     {{ $invoice->readableTotalPrice }}
                 </td>
             </tr>
-            @empty($pdf)
-                <tr>
-                    @if ($invoice->status !== InvoiceStatus::COMPLETED)
-                        <td colspan="4" style="padding-top: 15px; text-align: right;">
-                            <a href="{{ $invoice->checkout_link }}" target="_blank" class="btn btn-sm btn-primary">
-                                {{ __('Pay Now') }}
-                            </a>
-                        </td>
-                    @endif
-                </tr>
-            @endempty
         </tbody>
     </table>
 

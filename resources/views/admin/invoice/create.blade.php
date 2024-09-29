@@ -59,108 +59,113 @@
                         </header>
                     </div>
                     <div class="card-body">
-                        <table id="invoice"
-                            class="table table-rounded table-row-bordered table-responsive border gy-4 gs-4 mb-8">
-                            <thead class="border">
-                                <tr class="fw-bold fs-7 text-gray-500 text-uppercase">
-                                    <th style="width: 40%;">{{ __('Item') }}</th>
-                                    <th>{{ __('Quantity') }}</th>
-                                    <th>{{ __('Unit Price') }}</th>
-                                    <th>{{ __('Amount') }}</th>
-                                    <th class="text-end">{{ __('Actions') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody class="draggable-zone border" data-repeater-list="invoice_items"
-                                class="draggable-zone">
-                                @php
-                                    $defaultItem = [
-                                        'type' => InvoiceItemType::DESCRIPTION->value,
-                                        'content' => '',
-                                        'quantity' => '',
-                                        'unit_price' => '',
-                                        'amount' => '',
-                                    ];
+                        <div class="table-wrapper mb-8">
+                            <table id="invoice"
+                                class="table table-rounded table-row-bordered table-responsive border gy-4 gs-4">
+                                <thead class="border">
+                                    <tr class="fw-bold fs-7 text-gray-500 text-uppercase">
+                                        <th style="width: 40%;">{{ __('Item') }}</th>
+                                        <th>{{ __('Quantity') }}</th>
+                                        <th>{{ __('Unit Price') }}</th>
+                                        <th>{{ __('Amount') }}</th>
+                                        <th class="text-end">{{ __('Actions') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="draggable-zone border" data-repeater-list="invoice_items"
+                                    class="draggable-zone">
+                                    @php
+                                        $defaultItem = [
+                                            'type' => InvoiceItemType::DESCRIPTION->value,
+                                            'content' => '',
+                                            'quantity' => '',
+                                            'unit_price' => '',
+                                            'amount' => '',
+                                        ];
 
-                                    $invoiceItems = old('invoice_items', [$defaultItem]);
-                                @endphp
-                                @foreach ($invoiceItems as $index => $item)
-                                    <tr class="draggable" data-repeater-item>
-                                        <input type="hidden" name="type" id="type"
-                                            value="{{ old('invoice_items.' . $index . '.' . 'type', isset($defaultItem['type']) ? $defaultItem['type'] : '') }}">
-                                        <td style="width: 40%;" @if ($item['type'] === InvoiceItemType::HEADING->value) colspan="4" @endif>
-                                            <input id="content" name="content" type="text" class="form-control"
-                                                style="height: 35px; border-radius: 4px;"
-                                                value="{{ old('invoice_items.' . $index . '.' . 'content') }}" />
-                                            <x-input-error :messages="$errors->get('invoice_items.' . $index . '.' . 'content')" />
-                                        </td>
-                                        <td class="@if ($item['type'] === InvoiceItemType::HEADING->value) d-none @endif">
-                                            <input id="quantity" name="quantity" type="number" class="form-control"
-                                                style="height: 35px; border-radius: 4px;"
-                                                value="{{ old('invoice_items.' . $index . '.' . 'quantity') }}"
-                                                min="0" />
-                                            <x-input-error :messages="$errors->get('invoice_items.' . $index . '.' . 'quantity')" />
-                                        </td>
-                                        <td class="@if ($item['type'] === InvoiceItemType::HEADING->value) d-none @endif">
-                                            <input id="unit_price" name="unit_price" type="number" class="form-control"
-                                                style="height: 35px; border-radius: 4px;"
-                                                value="{{ old('invoice_items.' . $index . '.' . 'unit_price') }}"
-                                                min="0" step="0.01" />
-                                            <x-input-error :messages="$errors->get('invoice_items.' . $index . '.' . 'unit_price')" />
-                                        </td>
-                                        <td class="@if ($item['type'] === InvoiceItemType::HEADING->value) d-none @endif">
-                                            <input id="amount" name="amount" type="number"
-                                                class="form-control form-control-solid"
-                                                style="height: 35px; border-radius: 4px;"
-                                                value="{{ old('invoice_items.' . $index . '.' . 'amount') }}" readonly
-                                                min="0" step="0.01" />
-                                            <x-input-error :messages="$errors->get('invoice_items.' . $index . '.' . 'amount')" />
-                                        </td>
-                                        <td class="text-end">
-                                            <div class="d-flex gap-3 justify-content-end">
-                                                <button class="btn btn-sm btn-icon btn-light-secondary draggable-handle"
-                                                    title="Move" type="button" style="cursor: grab;">
-                                                    <i class="fa-solid fa-arrows-alt text-dark"></i>
+                                        $invoiceItems = old('invoice_items', [$defaultItem]);
+                                    @endphp
+                                    @foreach ($invoiceItems as $index => $item)
+                                        <tr class="draggable" data-repeater-item>
+                                            <input type="hidden" name="type" id="type"
+                                                value="{{ old('invoice_items.' . $index . '.' . 'type', isset($defaultItem['type']) ? $defaultItem['type'] : '') }}">
+                                            <td style="width: 40%;"
+                                                @if ($item['type'] === InvoiceItemType::HEADING->value) colspan="4" @endif>
+                                                <input id="content" name="content" type="text" class="form-control"
+                                                    style="height: 35px; border-radius: 4px;"
+                                                    value="{{ old('invoice_items.' . $index . '.' . 'content') }}" />
+                                                <x-input-error :messages="$errors->get('invoice_items.' . $index . '.' . 'content')" />
+                                            </td>
+                                            <td class="@if ($item['type'] === InvoiceItemType::HEADING->value) d-none @endif">
+                                                <input id="quantity" name="quantity" type="number"
+                                                    class="form-control" style="height: 35px; border-radius: 4px;"
+                                                    value="{{ old('invoice_items.' . $index . '.' . 'quantity') }}"
+                                                    min="0" />
+                                                <x-input-error :messages="$errors->get('invoice_items.' . $index . '.' . 'quantity')" />
+                                            </td>
+                                            <td class="@if ($item['type'] === InvoiceItemType::HEADING->value) d-none @endif">
+                                                <input id="unit_price" name="unit_price" type="number"
+                                                    class="form-control" style="height: 35px; border-radius: 4px;"
+                                                    value="{{ old('invoice_items.' . $index . '.' . 'unit_price') }}"
+                                                    min="0" step="0.01" />
+                                                <x-input-error :messages="$errors->get('invoice_items.' . $index . '.' . 'unit_price')" />
+                                            </td>
+                                            <td class="@if ($item['type'] === InvoiceItemType::HEADING->value) d-none @endif">
+                                                <input id="amount" name="amount" type="number"
+                                                    class="form-control form-control-solid"
+                                                    style="height: 35px; border-radius: 4px;"
+                                                    value="{{ old('invoice_items.' . $index . '.' . 'amount') }}"
+                                                    readonly min="0" step="0.01" />
+                                                <x-input-error :messages="$errors->get('invoice_items.' . $index . '.' . 'amount')" />
+                                            </td>
+                                            <td class="text-end">
+                                                <div class="d-flex gap-3 justify-content-end">
+                                                    <button
+                                                        class="btn btn-sm btn-icon btn-light-secondary draggable-handle"
+                                                        title="Move" type="button" style="cursor: grab;">
+                                                        <i class="fa-solid fa-arrows-alt text-dark"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-icon btn-light-danger" title="Delete"
+                                                        type="button" data-repeater-delete>
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                                <tfoot class="border">
+                                    <tr>
+                                        <td colspan="6" class="text-end">
+                                            <div class="d-flex flex-end gap-3">
+                                                <button class="btn btn-sm btn-light-secondary text-dark" type="button"
+                                                    data-repeater-create-custom="heading">
+                                                    <i class="fa-solid fa-plus text-dark"></i>
+                                                    {{ __('Add Heading') }}
                                                 </button>
-                                                <button class="btn btn-sm btn-icon btn-light-danger" title="Delete"
-                                                    type="button" data-repeater-delete>
-                                                    <i class="fa-solid fa-trash"></i>
+                                                <button class="btn btn-sm btn-light-primary" type="button"
+                                                    data-repeater-create-custom="description">
+                                                    <i class="fa-solid fa-plus"></i>
+                                                    {{ __('Add Item') }}
                                                 </button>
                                             </div>
                                         </td>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                            <tfoot class="border">
-                                <tr>
-                                    <td colspan="6" class="text-end">
-                                        <div class="d-flex flex-end gap-3">
-                                            <button class="btn btn-sm btn-light-secondary text-dark" type="button"
-                                                data-repeater-create-custom="heading">
-                                                <i class="fa-solid fa-plus text-dark"></i>
-                                                {{ __('Add Heading') }}
-                                            </button>
-                                            <button class="btn btn-sm btn-light-primary" type="button"
-                                                data-repeater-create-custom="description">
-                                                <i class="fa-solid fa-plus"></i>
-                                                {{ __('Add Item') }}
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr class="bg-gray-100">
-                                    <td colspan="3">
-                                        <h5>{{ __('Total Amount') }}</h5>
-                                    </td>
-                                    <td colspan="2">
-                                        <h5>
-                                            {{ MoneyHelper::currencyCode() }}
-                                            <span id="total_price_show">000</span>
-                                        </h5>
-                                        <input type="hidden" id="total_price" name="total_price" value="0" />
-                                    </td>
-                                </tr>
-                            </tfoot>
-                        </table>
+                                    <tr class="bg-gray-100">
+                                        <td colspan="3">
+                                            <h5>{{ __('Total Amount') }}</h5>
+                                        </td>
+                                        <td colspan="2" class="text-end">
+                                            <h5>
+                                                {{ MoneyHelper::currencyCode() }}
+                                                <span id="total_price_show">000</span>
+                                            </h5>
+                                            <input type="hidden" id="total_price" name="total_price"
+                                                value="0" />
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
 
                         <div class="mb-4">
                             <x-input-label for="notes" :value="__('Notes')" />
@@ -226,20 +231,21 @@
                     </x-input-select>
                     <x-input-error :messages="$errors->get('status')" />
                 </div>
-
-                <div class="separator separator-dashed mb-8"></div>
-
-                <div class="mb-8">
-                    <div class="d-flex gap-4 align-items-center justify-content-between">
-                        <x-input-label for="notification" :value="__('Email Notifications')" />
-                        <x-input-checkbox id="notification" name="notification" :value="old('notification')" />
-                    </div>
-                    <p class="text-muted">{{ __('The customer will be notified via an email.') }}</p>
-                    <x-input-error :messages="$errors->get('notification')" />
-                </div>
             </x-form-metadata>
         </div>
     </form>
+
+    @push('header')
+        <style>
+            .table-wrapper {
+                overflow-x: auto;
+            }
+
+            table td {
+                min-width: 150px;
+            }
+        </style>
+    @endpush
 
     @push('footer')
         @env('local')

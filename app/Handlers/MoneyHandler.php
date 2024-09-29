@@ -11,6 +11,10 @@ abstract class MoneyHandler
 	 */
 	public static function currencyCode(): string
 	{
+		if (auth()->user()->vendor) {
+			return auth()->user()->vendor->currency;
+		}
+
 		return Env::get('CHECKOUT_CURRENCY_CODE', 'USD');
 	}
 

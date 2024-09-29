@@ -6,8 +6,9 @@ use Illuminate\Support\Facades\Blade;
 
 enum InvoicePaymentMethod: int
 {
-    case CARD = 0;
+        // case CARD = 0;
     case CASH = 1;
+    case BANK_TRANSFER = 2;
 
     /**
      * Get the human readable name.
@@ -15,8 +16,9 @@ enum InvoicePaymentMethod: int
     public function getName(): string
     {
         return match ($this) {
-            self::CARD => 'Card',
+            // self::CARD => 'Card',
             self::CASH => 'Cash',
+            self::BANK_TRANSFER => 'Bank Transfer',
             default => 'Not known',
         };
     }
@@ -26,7 +28,7 @@ enum InvoicePaymentMethod: int
      */
     public static function toSelectOptions(): array
     {
-        return array_map(fn ($enum) => (object) [
+        return array_map(fn($enum) => (object) [
             'name' => $enum->getName(),
             'value' => $enum->value
         ], self::cases());
@@ -38,8 +40,9 @@ enum InvoicePaymentMethod: int
     public static function toBadge(Self $status): string
     {
         $classes = [
-            self::CARD->value => 'badge badge-info',
+            // self::CARD->value => 'badge badge-info',
             self::CASH->value => 'badge badge-success',
+            self::BANK_TRANSFER->value => 'badge badge-info',
         ];
 
         return Blade::render('<span class="{{ $class }}">{{ $status->getName() }}</span>', [

@@ -15,35 +15,37 @@
                         </header>
                     </div>
                     <div class="card-body">
-                        <div class="mb-8">
-                            <x-input-label for="name" :value="__('Name')" required />
-                            <x-input-text id="name" name="name" type="text" :value="old('name', $customer->name)" required />
-                            <x-input-error :messages="$errors->get('name')" />
-                        </div>
+                        <div class="row">
+                            <div class="mb-8 col-lg-6">
+                                <x-input-label for="name" :value="__('Name')" required />
+                                <x-input-text id="name" name="name" type="text" :value="old('name', $customer->name)" required />
+                                <x-input-error :messages="$errors->get('name')" />
+                            </div>
 
-                        <div class="mb-8">
-                            <x-input-label for="email" :value="__('Email')" required />
-                            <x-input-text id="email" name="email" type="email" :value="old('email', $customer->email)" required />
-                            <x-input-error :messages="$errors->get('email')" />
-                        </div>
+                            <div class="mb-8 col-lg-6">
+                                <x-input-label for="email" :value="__('Email')" required />
+                                <x-input-text id="email" name="email" type="email" :value="old('email', $customer->email)" required />
+                                <x-input-error :messages="$errors->get('email')" />
+                            </div>
 
-                        <div class="mb-8">
-                            <x-input-label for="phone" :value="__('Phone')" required />
-                            <x-input-text id="phone" name="phone" type="text" :value="old('phone', $customer->phone)" required />
-                            <x-input-error :messages="$errors->get('phone')" />
-                        </div>
+                            <div class="mb-8 col-lg-6">
+                                <x-input-label for="phone" :value="__('Phone')" required />
+                                <x-input-text id="phone" name="phone" type="text" :value="old('phone', $customer->phone)" required />
+                                <x-input-error :messages="$errors->get('phone')" />
+                            </div>
 
-                        <div class="mb-8">
-                            <x-input-label for="address" :value="__('Address')" required />
-                            <x-input-textarea id="address" name="address"
-                                required>{{ old('address', $customer->address) }}</x-input-textarea>
-                            <x-input-error :messages="$errors->get('address')" />
-                        </div>
+                            <div class="mb-8 col-lg-6">
+                                <x-input-label for="company" :value="__('Company')" />
+                                <x-input-text id="company" name="company" type="text" :value="old('company', $customer->company)" />
+                                <x-input-error :messages="$errors->get('company')" />
+                            </div>
 
-                        <div class="mb-8">
-                            <x-input-label for="company" :value="__('Company')" />
-                            <x-input-text id="company" name="company" type="text" :value="old('company', $customer->company)" />
-                            <x-input-error :messages="$errors->get('company')" />
+                            <div>
+                                <x-input-label for="address" :value="__('Address')" required />
+                                <x-input-textarea id="address" name="address"
+                                    required>{{ old('address', $customer->address) }}</x-input-textarea>
+                                <x-input-error :messages="$errors->get('address')" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -72,7 +74,7 @@
                             <x-input-error :messages="$errors->get('password')" class="mt-2" />
                         </div>
 
-                        <div class="mb-8" data-kt-password-meter="true">
+                        <div data-kt-password-meter="true">
                             <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
                             <div class="position-relative mb-3">
                                 <x-input-text id="password_confirmation" name="password_confirmation" type="password"

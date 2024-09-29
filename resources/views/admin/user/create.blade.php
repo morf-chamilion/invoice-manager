@@ -58,7 +58,7 @@
                             <x-input-error class="mt-2" :messages="$errors->get('roles')" />
                         </div>
 
-                        <div class="mb-8">
+                        <div>
                             <x-input-label for="vendor_id" :value="__('Vendor')" required />
                             <x-input-select id="vendor_id" name="vendor_id" data-placeholder="Select Vendor" required>
                                 @if ($roles->isNotEmpty())
