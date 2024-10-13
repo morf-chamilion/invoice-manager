@@ -4,8 +4,7 @@ namespace App\Http\Controllers\Front\Home;
 
 use App\Enums\SettingModule;
 use App\Http\Controllers\Front\FrontBaseController;
-use App\RoutePaths\Front\Customer\CustomerRoutePath;
-use App\RoutePaths\Front\Page\PageRoutePath;
+use App\RoutePaths\Admin\AdminRoutePath;
 use App\Services\SettingService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -25,7 +24,7 @@ class HomeController extends FrontBaseController
 	{
 		$this->sharePageData(SettingModule::HOME);
 
-		return redirect()->route(CustomerRoutePath::INVOICE_INDEX);
+		return redirect()->route(AdminRoutePath::DASHBOARD);
 
 		// return view(PageRoutePath::HOME);
 	}

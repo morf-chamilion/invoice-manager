@@ -68,9 +68,6 @@ class InvoiceUpdateRequest extends BaseRequest
 			'notes' =>	[
 				'nullable', 'string', 'max:510'
 			],
-			'notification' => [
-				'sometimes', 'bool',
-			],
 		];
 	}
 
