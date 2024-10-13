@@ -26,7 +26,7 @@ enum InvoiceItemType: int
      */
     public static function toSelectOptions(): array
     {
-        return array_map(fn ($enum) => (object) [
+        return array_map(fn($enum) => (object) [
             'name' => $enum->getName(),
             'value' => $enum->value
         ], self::cases());

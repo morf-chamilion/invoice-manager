@@ -16,8 +16,7 @@ class CheckoutService extends CyberSourcePaymentGateway
 	public function __construct(
 		private SettingService $settingService,
 		private InvoiceService $invoiceService,
-	) {
-	}
+	) {}
 
 	/**
 	 * Update payment data based on the transaction.
@@ -33,7 +32,7 @@ class CheckoutService extends CyberSourcePaymentGateway
 			'payment_data->transaction_id' => $transactionId,
 			'payment_data->amount' => $amount,
 			'payment_status' => $paymentStatus,
-			'payment_date' => Carbon::today()->format('Y-m-d'),
+			'payment_date' => Carbon::now(),
 		];
 
 		if ($invoiceStatus) {

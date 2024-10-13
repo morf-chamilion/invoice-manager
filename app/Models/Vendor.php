@@ -28,6 +28,7 @@ class Vendor extends Model implements HasMedia, HasRelationsInterface
 		'name',
 		'currency',
 		'address',
+		'bank_account_details',
 		'footer_content',
 		'invoice_number_prefix',
 		'updated_by',
@@ -69,7 +70,7 @@ class Vendor extends Model implements HasMedia, HasRelationsInterface
 	protected function logo(): Attribute
 	{
 		return Attribute::make(
-			get: fn () => $this->getMedia('logo'),
+			get: fn() => $this->getMedia('logo'),
 		);
 	}
 

@@ -13,6 +13,16 @@
 
         <!--begin::Actions-->
         <div class="d-flex align-items-center gap-2 gap-lg-3">
+            @if (!empty($pageData['showPage']))
+                <a href="{{ $pageData['showPage']['url'] }}"
+                    class="btn btn-sm btn-dark">{{ $pageData['showPage']['title'] }}</a>
+            @endif
+
+            @if (!empty($pageData['editPage']))
+                <a href="{{ $pageData['editPage']['url'] }}"
+                    class="btn btn-sm btn-dark">{{ $pageData['editPage']['title'] }}</a>
+            @endif
+
             @if (!empty($pageData['frontUrl']))
                 <a href="{{ $pageData['frontUrl'] }}" target="_blank" class="btn btn-sm btn-dark">View Page</a>
             @endif

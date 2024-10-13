@@ -10,16 +10,11 @@
                     <div class="card-header align-items-center">
                         <header>
                             <h2 class="m-0 text-lg font-medium text-gray-900">
-                                {{ __($pageData['title']) }}
+                                {{ __($pageData['title']) }}: <code class="fs-3">{{ $invoice->number }}</code>
                             </h2>
                         </header>
                     </div>
                     <div class="card-body">
-                        <div class="mb-8">
-                            <x-input-label for="number" :value="__('Number')" required />
-                            <x-input-text id="number" name="number" :value="old('number', $invoice->number)" required readonly />
-                            <x-input-error :messages="$errors->get('number')" />
-                        </div>
                         <div class="mb-8 row">
                             <div class="col-lg-6">
                                 <div>
@@ -56,74 +51,6 @@
                     </div>
                 </div>
 
-                @if ($invoice->payment_status !== InvoicePaymentStatus::PENDING)
-                    <div class="card mt-8">
-                        <div class="card-header">
-                            <header>
-                                <h2 class="text-lg mt-8 font-medium text-gray-800">
-                                    {{ __('Payment Receipt') }}
-                                </h2>
-                            </header>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                @if ($invoice->payment_data['transaction_id'])
-                                    <div class="col-sm-12 col-md-4 col-lg-2">
-                                        <label class="col-form-label font-weight-bold">
-                                            {{ __('Transaction ID') }}
-                                        </label>
-                                        <p style="font-size: 12px;">{{ $invoice->payment_data['transaction_id'] }}</p>
-                                    </div>
-                                @endif
-                                @if ($invoice->customer->name)
-                                    <div class="col-sm-12 col-md-4 col-lg-2">
-                                        <label class="col-form-label font-weight-bold">
-                                            {{ __('Billed To') }}
-                                        </label>
-                                        <p>
-                                            {{ $invoice->customer->name }}
-                                        </p>
-                                    </div>
-                                @endif
-                                @if ($invoice->payment_method)
-                                    <div class="col-sm-12 col-md-4 col-lg-2">
-                                        <label class="col-form-label font-weight-bold">
-                                            {{ __('Payment Method') }}
-                                        </label>
-                                        <div>
-                                            {!! InvoicePaymentMethod::toBadge($invoice->payment_method) !!}
-                                        </div>
-                                    </div>
-                                @endif
-                                @if ($invoice->payment_data['amount'])
-                                    <div class="col-sm-12 col-md-4 col-lg-2">
-                                        <label class="col-form-label font-weight-bold">
-                                            {{ __('Amount') }}
-                                        </label>
-                                        <p>
-                                            {{ MoneyHelper::print($invoice->payment_data['amount']) }}
-                                        </p>
-                                    </div>
-                                @endif
-                                @if ($invoice->payment_date)
-                                    <div class="col-sm-12 col-md-4 col-lg-2">
-                                        <label class="col-form-label font-weight-bold">
-                                            {{ __('Payment Date') }}
-                                        </label>
-                                        <p>{{ $invoice->payment_date }}</p>
-                                    </div>
-                                @endif
-                                <div class="col-sm-12 col-md-4 col-lg-2">
-                                    <label class="col-form-label font-weight-bold d-block">
-                                        {{ __('Payment Status') }}
-                                    </label>
-                                    {!! InvoicePaymentStatus::toBadge($invoice->payment_status) !!}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @endif
-
                 <div class="card mt-8">
                     <div class="card-header align-items-center">
                         <header>
@@ -139,9 +66,9 @@
                                 <thead class="border">
                                     <tr class="fw-bold fs-7 text-gray-500 text-uppercase">
                                         <th style="width: 40%;">{{ __('Item') }}</th>
-                                        <th>{{ __('Quantity') }}</th>
-                                        <th>{{ __('Unit Price') }}</th>
-                                        <th>{{ __('Amount') }}</th>
+                                        <th class="text-end">{{ __('Quantity') }}</th>
+                                        <th class="text-end">{{ __('Unit Price') }}</th>
+                                        <th class="text-end">{{ __('Amount') }}</th>
                                         <th class="text-end">{{ __('Actions') }}</th>
                                     </tr>
                                 </thead>
@@ -176,14 +103,16 @@
                                             </td>
                                             <td class="@if ($item['type'] === InvoiceItemType::HEADING->value) d-none @endif">
                                                 <input id="quantity" name="quantity" type="number"
-                                                    class="form-control" style="height: 35px; border-radius: 4px;"
+                                                    class="form-control"
+                                                    style="height: 35px; border-radius: 4px; text-align: end;"
                                                     value="{{ old('invoice_items.' . $index . '.' . 'quantity', isset($item['quantity']) ? $item['quantity'] : '') }}"
                                                     min="0" />
                                                 <x-input-error :messages="$errors->get('invoice_items.' . $index . '.' . 'quantity')" />
                                             </td>
                                             <td class="@if ($item['type'] === InvoiceItemType::HEADING->value) d-none @endif">
                                                 <input id="unit_price" name="unit_price" type="number"
-                                                    class="form-control" style="height: 35px; border-radius: 4px;"
+                                                    class="form-control"
+                                                    style="height: 35px; border-radius: 4px; text-align: end;"
                                                     value="{{ old('invoice_items.' . $index . '.' . 'unit_price', isset($item['unit_price']) ? $item['unit_price'] : '') }}"
                                                     min="0" step="0.01" />
                                                 <x-input-error :messages="$errors->get('invoice_items.' . $index . '.' . 'unit_price')" />
@@ -191,7 +120,7 @@
                                             <td class="@if ($item['type'] === InvoiceItemType::HEADING->value) d-none @endif">
                                                 <input id="amount" name="amount" type="number"
                                                     class="form-control form-control-solid"
-                                                    style="height: 35px; border-radius: 4px;"
+                                                    style="height: 35px; border-radius: 4px; text-align: end; padding-right: unset;"
                                                     value="{{ old('invoice_items.' . $index . '.' . 'amount', isset($item['amount']) ? $item['amount'] : '') }}"
                                                     readonly min="0" step="0.01" />
                                                 <x-input-error :messages="$errors->get('invoice_items.' . $index . '.' . 'amount')" />
@@ -203,8 +132,8 @@
                                                         title="Move" type="button" style="cursor: grab;">
                                                         <i class="fa-solid fa-arrows-alt text-dark"></i>
                                                     </button>
-                                                    <button class="btn btn-sm btn-icon btn-light-danger"
-                                                        title="Delete" type="button" data-repeater-delete>
+                                                    <button class="btn btn-sm btn-icon btn-light-danger" title="Delete"
+                                                        type="button" data-repeater-delete>
                                                         <i class="fa-solid fa-trash"></i>
                                                     </button>
                                                 </div>
@@ -216,9 +145,9 @@
                                     <tr>
                                         <td colspan="6">
                                             <div class="d-flex flex-end gap-3">
-                                                <button class="btn btn-sm btn-light-secondary text-dark"
-                                                    type="button" data-repeater-create-custom="heading">
-                                                    <i class="fa-solid fa-plus text-dark"></i>
+                                                <button class="btn btn-sm btn-light-secondary text-dark" type="button"
+                                                    data-repeater-create-custom="heading">
+                                                    <i class="fa-solid fa-heading text-dark"></i>
                                                     {{ __('Add Heading') }}
                                                 </button>
                                                 <button class="btn btn-sm btn-light-primary" type="button"
@@ -279,30 +208,35 @@
                         </div>
 
                         <div class="col-lg-12 mb-8">
-                            <x-input-label for="payment_date" :value="__('Payment Date')" required />
-                            <x-input-date id="payment_date" name="payment_date" :value="old('payment_date', $invoice->payment_date)"
-                                data-locale-format="YYYY-MM-DD" required />
+                            <x-input-label for="payment_date" :value="__('Payment Date')" />
+                            <x-input-date id="payment_date" name="payment_date" :value="old('payment_date', $invoice->payment_date?->format('Y-m-d'))"
+                                data-locale-format="YYYY-MM-DD" data-init-empty="true" />
                             <x-input-error :messages="$errors->get('payment_date')" />
                         </div>
 
-                        <div class="col-lg-12 mb-8">
-                            <x-input-label for="payment_reference" :value="__('Payment Reference')" required />
-                            <x-input-textarea id="payment_reference" name="payment_reference"
-                                required>{{ old('payment_reference', optional($invoice->payment_data)['payment_reference']) }}</x-input-textarea>
+                        <div class="col-lg-12">
+                            <x-input-label for="payment_reference" :value="__('Payment Reference')" />
+                            <x-input-textarea id="payment_reference"
+                                name="payment_reference">{{ old('payment_reference', optional($invoice->payment_data)['payment_reference']) }}</x-input-textarea>
                             <x-input-error :messages="$errors->get('payment_reference')" />
                         </div>
 
-                        <div class="col-lg-12 mb-8">
+                        <div class="col-lg-12 mt-8">
                             <x-input-label for="payment_reference_receipt" :value="__('Payment Reference Receipt')" required />
                             <x-input-file id="payment_reference_receipt" name="payment_reference_receipt"
-                                :fileMaxSize="2" :value="null" />
+                                :fileMaxSize="2" :value="$invoice->paymentReferenceReceipt" />
                             <x-input-error :messages="$errors->get('payment_reference_receipt')" />
                         </div>
 
-                        <div class="col-lg-12 mb-8">
+                        <div class="col-lg-12">
                             <x-input-label for="payment_link" :value="__('Payment Link')" required />
-                            <x-input-text id="payment_link" name="payment_link" :value="old('payment_link', $invoice->checkout_link)" required readonly
-                                disabled />
+                            <div class="input-group">
+                                <x-input-text id="payment_link" name="payment_link" :value="old('payment_link', $invoice->checkout_link)" required
+                                    disabled />
+                                <button id="payment_link_btn" class="btn btn-secondary"
+                                    type="button">{!! getIcon('copy', 'text-dark') !!}</button>
+                            </div>
+
                             <x-input-error :messages="$errors->get('payment_link')" />
                         </div>
                     </div>

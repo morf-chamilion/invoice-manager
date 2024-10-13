@@ -25,7 +25,7 @@
                     <td colspan="4" style="text-align: right;">
                         @if ($logo = $invoice->vendor?->logo->first())
                             <img src="{{ isset($pdf) && $pdf ? $logo?->getPath() : $logo?->getFullUrl() }}"
-                                alt="Company Logo" style="max-width: 200px;" />
+                                alt="Company Logo" style="max-width: 150px;" />
                         @endif
                         @if ($invoice->vendor->address)
                             <div style="margin-top: 20px; font-weight: 400; font-size: 14px; text-align: right;">
@@ -129,7 +129,7 @@
                 @if ($invoiceItem->type === InvoiceItemType::HEADING)
                     <tr>
                         <td colspan="4" style="border: 1px solid #ddd; padding: 8px;">
-                            <p style="margin: 3px 0 0; font-size: 14px; font-weight: 400;">
+                            <p style="margin: 3px 0 0; font-size: 14px; font-weight: 600;">
                                 {{ $invoiceItem->content }}
                             </p>
                         </td>
@@ -176,6 +176,22 @@
                             {{ __('Notes') }}
                         </h6>
                         <p style="margin-top: 6px; ">{{ $invoice->notes }}</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    @endif
+
+    @if ($invoice->payment_method === InvoicePaymentMethod::BANK_TRANSFER)
+        <table>
+            <tbody>
+                <tr>
+                    <td style="padding-top: 25px;">
+                        <h6
+                            style="margin-bottom: 0; font-weight: bold; font-size: 13px; text-transform: uppercase; color: #817c7a">
+                            {{ __('Bank Account Details') }}
+                        </h6>
+                        <p style="margin: 6px 0 0;">{!! nl2br($invoice->vendor->bank_account_details) !!}</p>
                     </td>
                 </tr>
             </tbody>

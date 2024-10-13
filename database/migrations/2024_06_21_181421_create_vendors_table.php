@@ -21,6 +21,7 @@ return new class extends Migration
 			$table->string('invoice_number_prefix');
 
 			$table->string('address')->nullable();
+			$table->string('bank_account_details')->nullable();
 			$table->string('footer_content')->nullable();
 
 			$table->foreignId('created_by')->constrained('users')->onDelete('restrict')->onUpdate('cascade');

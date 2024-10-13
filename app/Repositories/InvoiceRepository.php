@@ -6,6 +6,8 @@ use App\Enums\InvoicePaymentMethod;
 use App\Enums\InvoicePaymentStatus;
 use App\Enums\InvoiceStatus;
 use App\Models\Invoice;
+use App\Services\MediaService;
+use App\Services\Traits\HandlesMedia;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
@@ -13,8 +15,11 @@ use Illuminate\Support\Collection;
 
 class InvoiceRepository extends BaseRepository
 {
+	use HandlesMedia;
+
 	public function __construct(
 		private Invoice $invoice,
+		private MediaService $mediaService,
 	) {
 		parent::__construct($invoice);
 	}
@@ -99,6 +104,7 @@ class InvoiceRepository extends BaseRepository
 	{
 		$invoiceItems = Arr::pull($attributes, 'invoice_items');
 		$paymentReference = Arr::pull($attributes, 'payment_reference');
+		$paymentReferenceReceiptImage = Arr::pull($attributes, 'payment_reference_receipt');
 
 		$invoice = $this->invoice::create($attributes);
 
@@ -108,17 +114,21 @@ class InvoiceRepository extends BaseRepository
 
 		if (
 			isset($attributes['payment_method']) &&
+			$attributes['payment_method'] == InvoicePaymentMethod::BANK_TRANSFER->value
+		) {
+			$attributes = $this->prepareBankTransferPaymentData($attributes, $invoice, $paymentReference);
+
+			$this->syncMedia($invoice, 'payment_reference_receipt', $paymentReferenceReceiptImage);
+
+			$invoice->fill($attributes);
+		}
+
+		if (
+			isset($attributes['payment_method']) &&
 			$attributes['payment_method'] == InvoicePaymentMethod::CASH->value
 		) {
-			$paymentData = $invoice->payment_data;
-			$paymentData['transaction_id'] = $invoice->number;
-			$paymentData['amount'] = $invoice->total_price;
-			$paymentData['reference'] = $paymentReference;
-
-			$invoice->payment_data = $paymentData;
-			$invoice->payment_status = InvoicePaymentStatus::PAID;
-			$invoice->payment_date = Carbon::today()->format('Y-m-d');
-			$invoice->status = InvoiceStatus::COMPLETED;
+			$attributes = $this->prepareCashPaymentData($attributes, $invoice, $paymentReference);
+			$invoice->fill($attributes);
 		}
 
 		$invoice->save();
@@ -138,22 +148,24 @@ class InvoiceRepository extends BaseRepository
 	{
 		$invoiceItems = Arr::pull($newAttributes, 'invoice_items');
 		$paymentReference = Arr::pull($newAttributes, 'payment_reference');
+		$paymentReferenceReceiptImage = Arr::pull($newAttributes, 'payment_reference_receipt');
 
 		$invoice = $this->invoice::findOrFail($invoiceId);
 
 		if (
 			isset($newAttributes['payment_method']) &&
+			$newAttributes['payment_method'] == InvoicePaymentMethod::BANK_TRANSFER->value
+		) {
+			$newAttributes = $this->prepareBankTransferPaymentData($newAttributes, $invoice, $paymentReference);
+
+			$this->syncMedia($invoice, 'payment_reference_receipt', $paymentReferenceReceiptImage);
+		}
+
+		if (
+			isset($newAttributes['payment_method']) &&
 			$newAttributes['payment_method'] == InvoicePaymentMethod::CASH->value
 		) {
-			$paymentData = $invoice->payment_data;
-			$paymentData['transaction_id'] = $invoice->number;
-			$paymentData['amount'] = $invoice->total_price;
-			$paymentData['reference'] = $paymentReference;
-
-			$newAttributes['payment_data'] = $paymentData;
-			$newAttributes['payment_status'] = InvoicePaymentStatus::PAID;
-			$newAttributes['payment_date'] = Carbon::today()->format('Y-m-d');
-			$newAttributes['status'] = InvoiceStatus::COMPLETED;
+			$newAttributes = $this->prepareCashPaymentData($newAttributes, $invoice, $paymentReference);
 		}
 
 		$updated = $invoice->update($newAttributes);
@@ -164,5 +176,53 @@ class InvoiceRepository extends BaseRepository
 		}
 
 		return $updated;
+	}
+
+	/**
+	 * Prepare payment data for cash payment method.
+	 */
+	private function prepareCashPaymentData(array $attributes, Invoice $invoice, ?string $paymentReference): array
+	{
+		$paymentData = $invoice->payment_data;
+		$paymentData['reference'] = $paymentReference;
+
+		if ($invoice->payment_date) {
+			$paymentData['transaction_id'] = $invoice->number;
+			$paymentData['amount'] = $invoice->total_price;
+		}
+
+		$attributes['payment_data'] = $paymentData;
+
+		if ($invoice->payment_date) {
+			$attributes['payment_date'] = $invoice->payment_date;
+			$attributes['payment_status'] = InvoicePaymentStatus::PAID;
+			$attributes['status'] = InvoiceStatus::COMPLETED;
+		}
+
+		return $attributes;
+	}
+
+	/**
+	 * Prepare payment data for bank transfer payment method.
+	 */
+	private function prepareBankTransferPaymentData(array $attributes, Invoice $invoice, ?string $paymentReference): array
+	{
+		$paymentData = $invoice->payment_data;
+		$paymentData['reference'] = $paymentReference;
+
+		if ($invoice->payment_date) {
+			$paymentData['transaction_id'] = $invoice->number;
+			$paymentData['amount'] = $invoice->total_price;
+		}
+
+		$attributes['payment_data'] = $paymentData;
+
+		if ($invoice->payment_date) {
+			$attributes['payment_date'] = $invoice->payment_date;
+			$attributes['payment_status'] = InvoicePaymentStatus::PAID;
+			$attributes['status'] = InvoiceStatus::COMPLETED;
+		}
+
+		return $attributes;
 	}
 }

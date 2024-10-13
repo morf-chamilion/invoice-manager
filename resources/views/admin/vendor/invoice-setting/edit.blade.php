@@ -31,6 +31,14 @@
                         </div>
 
                         <div class="mb-8">
+                            <x-input-label for="bank_account_details" :value="__('Bank Account Details')" />
+                            <x-input-textarea name="bank_account_details" id="bank_account_details">
+                                {{ old('bank_account_details', $vendor->bank_account_details) }}
+                            </x-input-textarea>
+                            <x-input-error :messages="$errors->get('bank_account_details')" />
+                        </div>
+
+                        <div>
                             <x-input-label for="footer_content" :value="__('Footer Content')" />
                             <x-input-editor name="footer_content" id="footer_content">
                                 {{ old('footer_content', $vendor->footer_content) }}

@@ -9,8 +9,7 @@ class InvoiceRoutePath implements AdminRoutePathInterface
 {
 	public function __construct(
 		protected InvoiceService $invoiceService,
-	) {
-	}
+	) {}
 
 	public const INDEX = 'admin.invoice.index';
 
@@ -30,6 +29,12 @@ class InvoiceRoutePath implements AdminRoutePathInterface
 
 	public const OVERDUE = 'admin.invoice.overdue';
 
+	public const CUSTOMER_INDEX = 'admin.invoice.customer.index';
+
+	public const CUSTOMER_STORE = 'admin.invoice.customer.store';
+
+	public const CUSTOMER_NOTIFICATION = 'admin.invoice.customer.notification';
+
 	/**
 	 * Name of the resource.
 	 */
@@ -45,8 +50,8 @@ class InvoiceRoutePath implements AdminRoutePathInterface
 	{
 		return [
 			'List' => self::INDEX,
-			'Show' => [self::SHOW, self::OVERDUE, self::DOWNLOAD],
-			'Create' => [self::CREATE, self::STORE],
+			'Show' => [self::SHOW, self::OVERDUE, self::DOWNLOAD, self::CUSTOMER_NOTIFICATION],
+			'Create' => [self::CREATE, self::STORE, self::CUSTOMER_INDEX, self::CUSTOMER_STORE],
 			'Edit' => [self::EDIT, self::UPDATE],
 			'Delete' => self::DESTROY,
 		];

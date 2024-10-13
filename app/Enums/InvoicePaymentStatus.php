@@ -28,7 +28,7 @@ enum InvoicePaymentStatus: int
      */
     public static function toSelectOptions(): array
     {
-        return array_map(fn ($enum) => (object) [
+        return array_map(fn($enum) => (object) [
             'name' => $enum->getName(),
             'value' => $enum->value
         ], self::cases());
@@ -40,7 +40,7 @@ enum InvoicePaymentStatus: int
     public static function toBadge(self $status): string
     {
         $classes = [
-            self::PENDING->value => 'badge badge-info',
+            self::PENDING->value => 'badge badge-warning',
             self::PAID->value => 'badge badge-success',
             self::DECLINED->value => 'badge badge-danger',
         ];

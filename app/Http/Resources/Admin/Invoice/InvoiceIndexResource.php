@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Admin\Invoice;
 
+use App\Enums\InvoicePaymentStatus;
 use App\Enums\InvoiceStatus;
 use App\Http\Resources\HasDataTableInterface;
 use App\Http\Resources\HasDataTableTrait;
@@ -30,6 +31,7 @@ class InvoiceIndexResource extends JsonResource implements HasDataTableInterface
 				$record->readableDate,
 				$this->dueDate($record),
 				$record->readableTotalPrice,
+				InvoicePaymentStatus::toBadge($record->payment_status),
 				InvoiceStatus::toBadge($record->status),
 				$this->actions($record),
 			];

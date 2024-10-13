@@ -80,10 +80,10 @@
 
                     <div class="col-sm text-end mb-5">
                         <div class="d-flex justify-content-md-end align-items-end h-100 gap-5">
-                            <button type="reset" class="btn btn-light-danger">
+                            <button type="reset" class="btn btn-sm btn-light-danger">
                                 <i class="fas fa-minus-circle"></i> {{ __('Reset Filter') }}
                             </button>
-                            <button type="submit" class="btn btn-light-primary">
+                            <button type="submit" class="btn btn-sm btn-light-primary">
                                 <i class="fas fa-filter"></i> {{ __('Filter Records') }}
                             </button>
                         </div>

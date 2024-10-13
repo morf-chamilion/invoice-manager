@@ -28,10 +28,10 @@ return new class extends Migration
 			$table->unsignedDecimal('total_price', 10, 2)->default(0);
 
 			/** Payment */
-			$table->tinyInteger('payment_method')->default(InvoicePaymentMethod::CARD);
+			$table->tinyInteger('payment_method')->default(InvoicePaymentMethod::CASH);
 			$table->tinyInteger('payment_status')->default(InvoicePaymentStatus::PENDING);
 			$table->json('payment_data')->nullable();
-			$table->date('payment_date')->nullable();
+			$table->timestamp('payment_date')->nullable();
 
 			$table->foreignIdFor(Customer::class)->constrained();
 

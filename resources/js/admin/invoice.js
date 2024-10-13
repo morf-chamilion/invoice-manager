@@ -45,6 +45,10 @@ var KTDatatablesServerSide = (function () {
                     width: 50,
                 },
                 {
+                    targets: ["total_price"],
+                    className: "text-end pe-5",
+                },
+                {
                     targets: ["status"],
                     className: "text-md-center",
                     width: 100,
@@ -69,7 +73,7 @@ var KTDatatablesServerSide = (function () {
                         let template = `<div class="d-flex gap-3 justify-content-end">`;
 
                         if (items.overdue) {
-                            template += `<button id="overdue" type="button" class="btn btn-sm btn-icon btn-danger" title="Overdue Notification"><i class="fa-solid fa-bell"></i></button>`;
+                            template += `<button id="overdue" type="button" class="btn btn-sm btn-icon btn-danger" title="Overdue Notification" data-timestamp="${items.data.overdueSentAt}"><i class="fa-solid fa-bell"></i></button>`;
                         }
 
                         if (items.show) {
@@ -136,6 +140,7 @@ var InvoiceHandler = (function () {
     const InvoiceItemType = {
         heading: 0,
         description: 1,
+        subtitle: 2,
     };
 
     let itemDraggable = function () {
@@ -178,6 +183,14 @@ var InvoiceHandler = (function () {
             row.find("#description, #quantity, #unit_price, #amount")
                 .parent()
                 .removeClass("d-none");
+        } else if (repeaterType === "subtitle") {
+            row.find("#content").parent().attr("colspan", "4");
+
+            row.find("#type").val(InvoiceItemType.subtitle);
+
+            row.find("#description, #quantity, #unit_price, #amount")
+                .parent()
+                .addClass("d-none");
         }
     }
 
@@ -250,6 +263,8 @@ var InvoiceHandler = (function () {
                 invoiceItemTypeHandler($(this), "description");
             } else if (repeaterType == InvoiceItemType.heading) {
                 invoiceItemTypeHandler($(this), "heading");
+            } else if (repeaterType == InvoiceItemType.subtitle) {
+                invoiceItemTypeHandler($(this), "subtitle");
             }
         });
     };
@@ -385,6 +400,7 @@ KTUtil.onDOMContentLoaded(function () {
 
                 $('label[for="payment_link"]').show();
                 $('input[name="payment_link"]').show();
+                $('#payment_link_btn').show();
 
                 $('label[for="payment_reference"]').hide();
                 $('textarea[name="payment_reference"]')
@@ -403,6 +419,7 @@ KTUtil.onDOMContentLoaded(function () {
 
                 $('label[for="payment_link"]').hide();
                 $('input[name="payment_link"]').hide();
+                $('#payment_link_btn').hide();
 
                 $('label[for="payment_reference"]').show();
                 $('textarea[name="payment_reference"]')
@@ -421,16 +438,17 @@ KTUtil.onDOMContentLoaded(function () {
 
                 $('label[for="payment_link"]').hide();
                 $('input[name="payment_link"]').hide();
+                $('#payment_link_btn').hide();
 
                 $('label[for="payment_reference_receipt"]').show();
                 $('#payment_reference_receipt')
                     .prop("disabled", false)
                     .show();
 
-                $('label[for="payment_reference"]').hide();
+                $('label[for="payment_reference"]').show();
                 $('textarea[name="payment_reference"]')
-                    .prop("disabled", true)
-                    .hide();
+                    .prop("disabled", false)
+                    .show();
             }
         }
 
@@ -456,10 +474,12 @@ KTUtil.onDOMContentLoaded(function () {
 
                 const parent = event.target.closest("tr");
                 const resourceId = parent.querySelectorAll("td")[0].innerText;
+                const lastSentTimestamp = $(this).data('timestamp');
 
                 Swal.fire({
                     title: "Send invoice overdue mail?",
                     icon: "info",
+                    text: lastSentTimestamp && 'Last Sent: ' + lastSentTimestamp,
                     showCancelButton: true,
                     reverseButtons: true,
                     confirmButtonText: "Send Mail",
@@ -502,7 +522,7 @@ KTUtil.onDOMContentLoaded(function () {
                             },
                             error: function ({ responseJSON }) {
                                 Swal.fire(
-                                    "Failed to Delete",
+                                    "Failed to process the request",
                                     responseJSON["message"],
                                     "error"
                                 );
@@ -516,4 +536,141 @@ KTUtil.onDOMContentLoaded(function () {
             });
         }
     }, 2000);
+
+    if ($('#customer_create button[type="submit"]').length) {
+        $('#customer_create button[type="submit"]').on('click', function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: `${window.location.href}/customers`,
+                method: 'POST',
+                data: {
+                    name: $('#customer_name').val(),
+                    email: $('#customer_email').val(),
+                    phone: $('#customer_phone').val(),
+                    address: $('#customer_address').val(),
+                },
+                success: function (response) {
+                    if (response.status) {
+                        let customer = response.body;
+
+                        $('#customer_id').empty();
+
+                        $('#customer_id').select2({
+                            ajax: {
+                                url: `${window.location.href}/customers`,
+                                method: 'GET',
+                                dataType: 'json',
+                                processResults: function ({ body }) {
+                                    return {
+                                        results: body.map(function (customer) {
+                                            return {
+                                                id: customer.id,
+                                                text: customer.name
+                                            };
+                                        })
+                                    };
+                                }
+                            }
+                        });
+
+                        $('#customer_id').select2('trigger', 'select', {
+                            data: { id: customer.id, text: customer.name }
+                        });
+
+                        $('#customer_create').modal('hide');
+                        $('#customer_create').find('input, select, textarea').val('');
+                    }
+                },
+                error: function (response) {
+                    let errorMessage = 'An unknown error has occurred';
+                    if (response.responseJSON && response.responseJSON.errors) {
+                        const inputPrefix = 'customer';
+                        let errors = response.responseJSON.errors;
+                        errorMessage = '';
+
+                        $(`#customer_create`).find('input, select, textarea')
+                            .removeClass('is-invalid');
+
+                        $.each(errors, function (field, messages) {
+                            errorMessage += messages.join(' ') + '\n';
+                            $(`[name="${inputPrefix}_${field}"]`)
+                                .addClass('is-invalid')
+                                .next('.invalid-feedback')
+                                .remove()
+                                .after(`<div class="invalid-feedback">${messages.join(' ')}</div>`);
+                        });
+                    }
+
+                    Swal.fire(
+                        "Error!",
+                        response?.responseJSON?.message ?? 'An unknown error has occured',
+                        "error"
+                    );
+                }
+            });
+        });
+    }
+
+    if ($("button#invoice_notification").length) {
+        $("button#invoice_notification").on("click", function (event) {
+            event.preventDefault();
+            const lastSentTimestamp = $(this).data('timestamp');
+
+            Swal.fire({
+                title: "Send invoice to client?",
+                text: lastSentTimestamp && 'Last Sent: ' + lastSentTimestamp,
+                icon: "info",
+                showCancelButton: true,
+                reverseButtons: true,
+                confirmButtonText: "Send Mail",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "POST",
+                        url: `${window.location.href}/notification`,
+                        beforeSend: function (xhr, options) {
+                            Swal.fire({
+                                text: "Sending..",
+                                icon: "info",
+                                showConfirmButton: false,
+                            });
+
+                            setTimeout(function () {
+                                $.ajax(
+                                    $.extend(options, {
+                                        beforeSend: $.noop,
+                                    })
+                                );
+                            }, 1000);
+
+                            return false;
+                        },
+                        success: function (response) {
+                            if (response["status"]) {
+                                Swal.fire(
+                                    "Success",
+                                    response["message"],
+                                    "success"
+                                );
+                            } else {
+                                Swal.fire(
+                                    "Error",
+                                    response["message"],
+                                    "error"
+                                );
+                            }
+                        },
+                        error: function ({ responseJSON }) {
+                            Swal.fire(
+                                "Failed to process the request",
+                                responseJSON["message"],
+                                "error"
+                            );
+                        },
+                    });
+                }
+            });
+        });
+    }
 });

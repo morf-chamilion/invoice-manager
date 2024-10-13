@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Invoice;
 use App\Enums\InvoiceStatus;
 use App\Exceptions\RedirectResponseException;
 use App\Http\Controllers\Admin\AdminBaseController;
+use App\Http\Requests\Admin\Invoice\InvoiceCustomerStoreRequest;
 use App\Http\Requests\Admin\Invoice\InvoiceStoreRequest;
 use App\Http\Requests\Admin\Invoice\InvoiceUpdateRequest;
 use App\Http\Resources\Admin\Invoice\InvoiceIndexResource;
@@ -36,8 +37,19 @@ class InvoiceController extends AdminBaseController
 		if ($request->ajax()) {
 			$attributes = (object) $request->only(
 				[
-					'draw', 'columns', 'order', 'start', 'length', 'search', 'date_start',
-					'date_end', 'status', 'payment_status', 'number', 'customer', 'company'
+					'draw',
+					'columns',
+					'order',
+					'start',
+					'length',
+					'search',
+					'date_start',
+					'date_end',
+					'status',
+					'payment_status',
+					'number',
+					'customer',
+					'company'
 				]
 			);
 
@@ -54,7 +66,7 @@ class InvoiceController extends AdminBaseController
 
 		$columns = $this->tableColumns(
 			prefixes: [],
-			columns: ['number', 'customer', 'date', 'due_date', 'total_price']
+			columns: ['number', 'customer', 'date', 'due_date', 'total_price', 'payment_status']
 		);
 
 		$this->registerBreadcrumb();
@@ -101,6 +113,10 @@ class InvoiceController extends AdminBaseController
 
 		$this->sharePageData([
 			'title' => $this->getActionTitle(),
+			'editPage' => $invoice->status != InvoiceStatus::COMPLETED ? [
+				'url' => route($this->invoiceRoutePath::EDIT, $invoice->id),
+				'title' => 'Edit Invoice',
+			] : [],
 		]);
 
 		return view($this->invoiceRoutePath::SHOW, [
@@ -137,6 +153,10 @@ class InvoiceController extends AdminBaseController
 
 		$this->sharePageData([
 			'title' => $this->getActionTitle(),
+			'showPage' => [
+				'url' => route($this->invoiceRoutePath::SHOW, $invoice->id),
+				'title' => 'Show Invoice',
+			],
 		]);
 
 		if ($invoice->status === InvoiceStatus::COMPLETED) {
@@ -203,6 +223,46 @@ class InvoiceController extends AdminBaseController
 
 		return $this->jsonResponse()
 			->message($this->invoiceMessage->overdueMailSuccess())
+			->success();
+	}
+
+	/**
+	 * Get all customers.
+	 */
+	public function customerIndex(): JsonResponse
+	{
+		$customers = $this->invoiceService->getAllCustomers();
+
+		if (!$customers) {
+			return $this->jsonResponse()
+				->message($this->invoiceMessage->getAllCustomersFailed())
+				->error();
+		}
+
+		return $this->jsonResponse()
+			->message($this->invoiceMessage->getAllCustomersSuccess())
+			->body($customers->toArray())
+			->success();
+	}
+
+	/**
+	 * Store customer in storage.
+	 */
+	public function customerStore(InvoiceCustomerStoreRequest $request): JsonResponse
+	{
+		$attributes = $request->getAttributes();
+
+		$created = $this->invoiceService->storeCustomer($attributes);
+
+		if (!$created) {
+			return $this->jsonResponse()
+				->message($this->invoiceMessage->createCustomerFailed())
+				->error();
+		}
+
+		return $this->jsonResponse()
+			->message($this->invoiceMessage->createCustomerSuccess())
+			->body($created->toArray())
 			->success();
 	}
 }

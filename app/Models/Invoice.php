@@ -60,6 +60,7 @@ class Invoice extends Model implements HasMedia, HasRelationsInterface
 		'status' => InvoiceStatus::class,
 		'payment_status' => InvoicePaymentStatus::class,
 		'payment_method' => InvoicePaymentMethod::class,
+		'payment_date' => 'datetime',
 		'payment_data' => 'array',
 	];
 
@@ -130,9 +131,19 @@ class Invoice extends Model implements HasMedia, HasRelationsInterface
 	 */
 	public function registerMediaCollections(): void
 	{
-		$this->addMediaCollection('invoiceImage')
+		$this->addMediaCollection('payment_reference_receipt')
 			->useDisk('media')
 			->singleFile();
+	}
+
+	/**
+	 * Interact with media.
+	 */
+	protected function paymentReferenceReceipt(): Attribute
+	{
+		return Attribute::make(
+			get: fn() => $this->getMedia('payment_reference_receipt'),
+		);
 	}
 
 	/**

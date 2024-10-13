@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Enums\CustomerStatus;
 use App\Enums\InvoicePaymentStatus;
 use App\Enums\InvoiceStatus;
+use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Vendor;
 use App\Notifications\Invoice\InvoiceCreateCustomerNotification;
@@ -309,5 +311,17 @@ class InvoiceService extends BaseService
 		return $this->customerService->getAllActiveCustomers(
 			$this->getAuthVendor(),
 		);
+	}
+
+	/**
+	 * Store a new customer.
+	 */
+	public function storeCustomer(array $attributes): Customer
+	{
+		return $this->customerService->createCustomer([
+			...$attributes,
+			'password' => Str::password(30),
+			'status' => CustomerStatus::ACTIVE,
+		]);
 	}
 }

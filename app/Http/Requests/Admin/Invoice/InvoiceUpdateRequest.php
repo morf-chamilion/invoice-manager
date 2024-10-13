@@ -41,6 +41,9 @@ class InvoiceUpdateRequest extends BaseRequest
 			'payment_reference' => [
 				'nullable', 'string', 'max:510',
 			],
+			'payment_reference_receipt' => [
+				'nullable', 'string',
+			],
 			'invoice_items' => [
 				'nullable', 'array', 'min:1',
 			],

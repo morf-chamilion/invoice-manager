@@ -49,5 +49,17 @@ Route::middleware(['verified.admin'])->group(function () {
 					Route::get('/', 'index')->name(InvoiceRoutePath::INDEX);
 					Route::post('/list', 'index');
 				});
+
+			Route::get('/create/customers', 'customerIndex')
+				->middleware(Authorize::using(InvoiceRoutePath::CUSTOMER_INDEX))
+				->name(InvoiceRoutePath::CUSTOMER_INDEX);
+
+			Route::post('/create/customers', 'customerStore')
+				->middleware(Authorize::using(InvoiceRoutePath::CUSTOMER_STORE))
+				->name(InvoiceRoutePath::CUSTOMER_STORE);
+
+			Route::post('/{invoice}/show/notification', 'customerNotification')
+				->middleware(Authorize::using(InvoiceRoutePath::CUSTOMER_NOTIFICATION))
+				->name(InvoiceRoutePath::CUSTOMER_NOTIFICATION);
 		});
 });
