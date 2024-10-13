@@ -121,6 +121,8 @@ class UserService extends BaseService
 	 */
 	public function syncRoles(int $userId, string|array|int|Role|Collection $roles): User
 	{
+		$roles = Collection::make($roles)->map(fn($val) => (int)$val);
+
 		return $this->getUser($userId)->syncRoles($roles);
 	}
 
