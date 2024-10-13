@@ -59,8 +59,8 @@
                         </div>
 
                         <div>
-                            <x-input-label for="vendor_id" :value="__('Vendor')" required />
-                            <x-input-select id="vendor_id" name="vendor_id" data-placeholder="Select Vendor" required>
+                            <x-input-label for="vendor_id" :value="__('Vendor')" />
+                            <x-input-select id="vendor_id" name="vendor_id" data-placeholder="Select Vendor">
                                 @if ($roles->isNotEmpty())
                                     @foreach ($vendors as $vendor)
                                         <option value="{{ $vendor->id }}" @selected($vendor->id == old('vendor_id'))>

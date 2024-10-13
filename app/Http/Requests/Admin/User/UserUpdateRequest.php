@@ -36,7 +36,7 @@ class UserUpdateRequest extends BaseRequest
 				'int', 'nullable',
 			],
 			'vendor_id' => [
-				'required', Rule::exists(Vendor::class, 'id'),
+				'nullable', Rule::exists(Vendor::class, 'id'),
 			],
 		];
 	}
