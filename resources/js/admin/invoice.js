@@ -132,205 +132,6 @@ var KTDatatablesServerSide = (function () {
     };
 })();
 
-// Class definition
-var InvoiceHandler = (function () {
-    let swappable;
-    let itemsRepeater;
-
-    const InvoiceItemType = {
-        heading: 0,
-        description: 1,
-        subtitle: 2,
-    };
-
-    let itemDraggable = function () {
-        var containers = document.querySelectorAll(".draggable-zone");
-
-        if (containers.length === 0) {
-            return false;
-        }
-
-        swappable = new Sortable.default(containers, {
-            draggable: ".draggable",
-            handle: ".draggable-handle",
-            mirror: {
-                appendTo: "body",
-                constrainDimensions: true,
-            },
-        });
-    };
-
-    /**
-     * Handles invoice item state.
-     *
-     * @param {jQuery} row repeater instance.
-     * @param {repeaterType} repeaterType repeater type.
-     */
-    function invoiceItemTypeHandler(row, repeaterType) {
-        if (repeaterType === "heading") {
-            row.find("#content").parent().attr("colspan", "4");
-
-            row.find("#type").val(InvoiceItemType.heading);
-
-            row.find("#description, #quantity, #unit_price, #amount")
-                .parent()
-                .addClass("d-none");
-        } else if (repeaterType === "description") {
-            row.find("#content").parent().attr("colspan", "1");
-
-            row.find("#type").val(InvoiceItemType.description);
-
-            row.find("#description, #quantity, #unit_price, #amount")
-                .parent()
-                .removeClass("d-none");
-        } else if (repeaterType === "subtitle") {
-            row.find("#content").parent().attr("colspan", "4");
-
-            row.find("#type").val(InvoiceItemType.subtitle);
-
-            row.find("#description, #quantity, #unit_price, #amount")
-                .parent()
-                .addClass("d-none");
-        }
-    }
-
-    /**
-     * Invoice row action handler.
-     */
-    let repeater = function () {
-        itemsRepeater = $("#invoice").repeater({
-            initEmpty: false,
-
-            show: function () {
-                $(this).slideDown();
-            },
-
-            hide: function (deleteElement) {
-                Swal.fire({
-                    title: "Are you sure you want to remove this row?",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonText: "Remove",
-                    denyButtonText: "Cancel",
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $(this).slideUp(deleteElement);
-
-                        // awaiting for DOM element removal.
-                        setTimeout(() => {
-                            invoiceStateHandler();
-                        }, 600);
-                    }
-                });
-            },
-
-            ready: function (setIndexes) {
-                swappable.on("sortable:sorted", () => {
-                    setTimeout(() => {
-                        setIndexes();
-                    }, 1000);
-                });
-
-                $("[data-repeater-create-custom]").on("click", function () {
-                    let $this = $(this);
-                    let repeaterType = $this.data("repeater-create-custom");
-                    let newRow = $('[data-repeater-list="invoice_items"]')
-                        .children()
-                        .first()
-                        .clone();
-
-                    invoiceItemTypeHandler(newRow, repeaterType);
-
-                    // flash state
-                    newRow.find('input[type="text"], textarea').val("");
-                    newRow.find('input[type="number"]').val("0");
-                    newRow.find("ul.validation-message").html("");
-
-                    $('[data-repeater-list="invoice_items"]').append(newRow);
-
-                    setIndexes();
-                    invoiceStateHandler();
-                });
-            },
-        });
-    };
-
-    let invoiceItemRenderer = function () {
-        $("table#invoice tbody tr").each(function () {
-            const repeaterType = $(this).find("input#type").val();
-
-            if (repeaterType == InvoiceItemType.description) {
-                invoiceItemTypeHandler($(this), "description");
-            } else if (repeaterType == InvoiceItemType.heading) {
-                invoiceItemTypeHandler($(this), "heading");
-            } else if (repeaterType == InvoiceItemType.subtitle) {
-                invoiceItemTypeHandler($(this), "subtitle");
-            }
-        });
-    };
-
-    /**
-     * Updates the prices based on the specified field sets.
-     */
-    let invoiceStateHandler = function () {
-        const invoiceTable = document.getElementById("invoice");
-        const quantityInputs = invoiceTable.querySelectorAll("#quantity");
-        const unitPriceInputs = invoiceTable.querySelectorAll("#unit_price");
-        const amountInputs = invoiceTable.querySelectorAll("#amount");
-        const totalPriceDisplay = document.getElementById("total_price_show");
-        const totalPriceInput = document.getElementById("total_price");
-
-        /**
-         * Handle state update calculations.
-         */
-        function handleTableRow() {
-            quantityInputs.forEach((quantityInput, index) => {
-                const unitPrice = parseFloat(unitPriceInputs[index].value || 0);
-                const quantity = parseFloat(quantityInput.value || 0);
-                const amount = quantity * unitPrice;
-
-                amountInputs[index].value = amount.toFixed(2);
-            });
-
-            let totalPrice = 0.0;
-            amountInputs.forEach((amountInput) => {
-                totalPrice += parseFloat(amountInput.value || 0);
-            });
-
-            totalPriceInput.value = totalPrice.toFixed(2);
-            totalPriceDisplay.textContent = totalPrice.toLocaleString(
-                undefined,
-                {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                }
-            );
-        }
-
-        // Initial state
-        handleTableRow();
-
-        // Life Cycle Updates
-        quantityInputs.forEach((quantityInput) => {
-            quantityInput.addEventListener("input", handleTableRow);
-        });
-
-        unitPriceInputs.forEach((unitPriceInput) => {
-            unitPriceInput.addEventListener("input", handleTableRow);
-        });
-    };
-
-    // Public methods
-    return {
-        init: function () {
-            itemDraggable();
-            repeater();
-            invoiceStateHandler();
-            invoiceItemRenderer();
-        },
-    };
-})();
-
 // On document ready
 KTUtil.onDOMContentLoaded(function () {
     // Configure jQuery to include the CSRF token with every AJAX request
@@ -355,7 +156,6 @@ KTUtil.onDOMContentLoaded(function () {
             paymentStatus = $("#payment_status").val();
             number = $("#number").val();
             customer = $("#customer").val();
-            company = $("#company").val();
             datatable.draw();
         });
 
@@ -366,7 +166,6 @@ KTUtil.onDOMContentLoaded(function () {
             paymentStatus = "";
             number = "";
             customer = "";
-            company = "";
             setTimeout(() => {
                 $(this).find("select").trigger("change");
             }, 200);
@@ -374,8 +173,12 @@ KTUtil.onDOMContentLoaded(function () {
         });
     }
 
-    if (document.getElementById("invoice")) {
-        InvoiceHandler.init();
+    if ($('.draggable-zone').length) {
+        InvoiceDraggable.init();
+    }
+
+    if ($('#invoiceData').length) {
+        InvoiceRepeater.init();
     }
 
     if (document.getElementById("payment_method")) {
@@ -537,6 +340,33 @@ KTUtil.onDOMContentLoaded(function () {
         }
     }, 2000);
 
+    if (document.getElementById('payment_link')) {
+        const target = document.getElementById('payment_link');
+        const button = target.nextElementSibling;
+
+        let clipboard = new ClipboardJS(button, {
+            target: target,
+            text: function () {
+                return target.value;
+            }
+        });
+
+        clipboard.on('success', function (e) {
+            const currentLabel = button.innerHTML;
+            const icon = '<i class="ki-duotone ki-copy-success"><span class="path1"></span><span class="path2"></span></i>';
+
+            if (button.innerHTML === icon) {
+                return;
+            }
+
+            button.innerHTML = icon;
+
+            setTimeout(function () {
+                button.innerHTML = currentLabel;
+            }, 3000)
+        });
+    }
+
     if ($('#customer_create button[type="submit"]').length) {
         $('#customer_create button[type="submit"]').on('click', function (e) {
             e.preventDefault();
@@ -674,3 +504,184 @@ KTUtil.onDOMContentLoaded(function () {
         });
     }
 });
+
+$('input[name="item_type"]').on('change', function (event) {
+    let value = parseInt($('input[name="item_type"]:checked').val());
+    $('.itinerary-type').addClass('d-none');
+
+    $('#customItem').removeClass('d-none');
+});
+
+$('#addInvoiceItemBtn').on('click', function (event) {
+    event.preventDefault();
+
+    let itemType = parseInt($('input[name="item_type"]:checked').val());
+    let itemTypeName = $('input[name="item_type"]:checked').parent().find('.form-check-label').text();
+    let itemName = null;
+    let itemID = null;
+
+    itemID = $('#title').val();
+    itemName = $('#title').val();
+    itemTypeName = 'Custom';
+    itemType = 1;
+
+    let description = $('#description').val();
+    let quantity = $('#quantity').val();
+    let unitPrice = parseFloat($('#unit_price').val())
+        .toFixed(2)
+        .toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
+
+    if (itemType && itemTypeName && itemID && itemName && unitPrice && !isNaN(unitPrice)) {
+        let currentInvoiceData = ($('tr.draggable').length) ? $('#invoiceData').repeaterVal()['invoice_items'] : [];
+
+        let updatedCurrentInvoiceData = [];
+
+        for (const [key, value] of Object.entries(currentInvoiceData)) {
+            updatedCurrentInvoiceData.push({
+                'type_id': value['type_id'],
+                'type': value['type'],
+                'item_id': value['item_id'],
+                'title': value['title'],
+                'description': value['description'],
+                'quantity': value['quantity'],
+                'unit_price': value['unit_price'],
+                'amount': value['amount'],
+            });
+        }
+
+        let rowTotal = parseFloat(parseFloat(quantity) * parseFloat(unitPrice))
+            .toFixed(2)
+            .toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            });
+
+        updatedCurrentInvoiceData.push({
+            'type_id': itemType,
+            'type': itemTypeName.trim(),
+            'item_id': itemID,
+            'title': itemName.trim(),
+            'description': description,
+            'quantity': quantity,
+            'unit_price': unitPrice,
+            'amount': rowTotal,
+        });
+
+        invoiceItemsRepeater.setList(updatedCurrentInvoiceData);
+
+        let totalPrice = parseFloat($('#totalPriceInput').val());
+        if (isNaN(totalPrice)) {
+            totalPrice = 0;
+        }
+
+        let total = parseFloat(parseFloat(totalPrice) + parseFloat(rowTotal))
+            .toFixed(2)
+            .toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            });
+
+        $('#totalPrice').text(total);
+        $('#totalPriceInput').val(total);
+
+        $('#invoiceItemForm input[type=text], #invoiceItemForm input[type=number]').val('');
+        $('#invoiceItemForm select').val('');
+        $('#invoiceItemForm select').trigger('change');
+    } else {
+        Swal.fire('Error', 'Please fill out all required fields.', 'error');
+    }
+});
+
+let swappable;
+let invoiceItemsRepeater;
+
+let InvoiceDraggable = function () {
+    return {
+        //main function to initiate the module
+        init: function () {
+            let containers = document.querySelectorAll('.draggable-zone');
+
+            if (containers.length === 0) {
+                return false;
+            }
+
+            swappable = new Sortable.default(containers, {
+                draggable: '.draggable',
+                handle: '.draggable-handle',
+                mirror: {
+                    appendTo: 'body',
+                    constrainDimensions: true
+                }
+            });
+        }
+    };
+}();
+
+// Invoice Items Repeater
+let InvoiceRepeater = function () {
+
+    // Private functions
+    let invoiceRepeater = function () {
+        invoiceItemsRepeater = $('#invoiceData').repeater({
+            initEmpty: true,
+
+            show: function () {
+                $(this).slideDown();
+            },
+
+            hide: function (deleteElement) {
+                Swal.fire({
+                    title: 'Are you sure you want to remove this item?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes! Remove',
+                    denyButtonText: 'Cancel',
+                    customClass: {
+                        confirmButton: "btn fw-bold btn-danger",
+                        cancelButton: "btn fw-bold btn-light-primary",
+                    },
+                }).then((result) => {
+                    if (result.isConfirmed) {
+
+                        let totalPrice = parseFloat($('#totalPriceInput').val());
+                        let amount = parseFloat($(this).find('#amount').val());
+
+                        totalPrice = (!isNaN(totalPrice)) ? totalPrice : 0;
+                        amount = (!isNaN(amount)) ? amount : 0;
+
+                        let total = parseFloat(totalPrice - amount)
+                            .toFixed(2)
+                            .toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                            });
+
+                        $('#totalPrice').text(total);
+                        $('#totalPriceInput').val(total);
+
+                        $(this).slideUp(deleteElement);
+                    }
+                });
+            },
+
+            ready: function (setIndexes) {
+                swappable.on('sortable:sorted', () => {
+                    setTimeout(() => {
+                        setIndexes();
+                    }, 1000);
+                });
+            },
+        });
+    }
+
+    return {
+        // public functions
+        init: function () {
+            invoiceRepeater();
+            invoiceItemsRepeater.setList(items);
+        }
+    };
+}();

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\InvoiceItemType;
 use App\Enums\InvoicePaymentMethod;
 use App\Enums\InvoicePaymentStatus;
 use App\Enums\InvoiceStatus;
@@ -10,6 +11,7 @@ use App\Models\Interfaces\HasRelationsInterface;
 use App\Models\Traits\HasCreatedBy;
 use App\Models\Traits\HasUpdatedBy;
 use App\RoutePaths\Front\Checkout\CheckoutRoutePath;
+use App\RoutePaths\Front\Invoice\InvoiceRoutePath;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Crypt;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -90,6 +93,46 @@ class Invoice extends Model implements HasMedia, HasRelationsInterface
 				return $this->attributes['number'] = $formattedNumber;
 			},
 		);
+	}
+
+	/**
+	 * Get formatted invoice items.
+	 */
+	public function getFormattedInvoiceItemsAttribute(): Collection
+	{
+		return $this->invoiceItems->map(function ($item) {
+			$itemType = $this->getItemType($item);
+			$formattedData = $itemType->getFormattedData($item);
+
+			return (object) [
+				'type_id' => $formattedData['id'],
+				'type' => $formattedData['name'],
+				'title' => $formattedData['title'],
+				'description' => $item->description,
+				'unit_price' => $item->unit_price,
+				'quantity' => $item->quantity,
+				'amount' => $item->amount,
+				'item_id' => $formattedData['item_id'] ?? false,
+			];
+		});
+	}
+
+	/**
+	 * Get invoice item type.
+	 */
+	private function getItemType($item): InvoiceItemType
+	{
+		return InvoiceItemType::CUSTOM;
+	}
+
+	/**
+	 * Get the show invoice link.
+	 */
+	protected function getShowLinkAttribute(): string
+	{
+		$sessionId = Crypt::encryptString($this->id);
+
+		return route(InvoiceRoutePath::SHOW, ['id' => $sessionId]);
 	}
 
 	/**

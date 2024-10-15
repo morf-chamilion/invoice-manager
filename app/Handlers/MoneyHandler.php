@@ -23,6 +23,14 @@ abstract class MoneyHandler
 	 */
 	public static function print(float $amount): string
 	{
-		return self::currencyCode() . " " . number_format($amount, 2);
+		return self::currencyCode() . " " . self::format($amount);
+	}
+
+	/**
+	 * Format amount.
+	 */
+	public static function format(float $amount): string
+	{
+		return number_format($amount, 2);
 	}
 }

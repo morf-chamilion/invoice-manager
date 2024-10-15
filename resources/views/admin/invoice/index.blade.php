@@ -49,7 +49,7 @@
 
                     <div class="col-sm-12 col-lg-3 mb-5">
                         <div class="form-group">
-                            <x-input-label for="number" :value="__('Number')" />
+                            <x-input-label for="number" :value="__('Invoice Number')" />
                             <x-input-text id="number" name="number" type="text" :value="old('number')" />
                             <x-input-error :messages="$errors->get('number')" />
                         </div>

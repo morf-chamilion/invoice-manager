@@ -25,7 +25,7 @@ return new class extends Migration
 			$table->date('due_date');
 
 			$table->longText('notes')->nullable();
-			$table->unsignedDecimal('total_price', 10, 2)->default(0);
+			$table->decimal('total_price', 10, 2)->default(0);
 
 			/** Payment */
 			$table->tinyInteger('payment_method')->default(InvoicePaymentMethod::CASH);

@@ -29,6 +29,7 @@ class RouteServiceProvider extends ServiceProvider
         'auth',
         'checkout',
         'customer',
+        'invoices',
     ];
 
     /**

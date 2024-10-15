@@ -1,4 +1,10 @@
 section.checkout {
+	padding: 50px;
+
+	&.sub-page-banner {
+		min-height: 350px;
+	}
+
 	.theme-card {
 		.content-wrapper {
 			margin-bottom: 30px;
@@ -38,6 +44,10 @@ section.checkout {
 				label {
 					font-weight: 600;
 					padding: 15px;
+				}
+
+				a {
+					display: block;
 				}
 			}
 		}
@@ -98,4 +108,78 @@ section.checkout {
 			}
 		}
 	}
+}
+
+.table-wrapper {
+	overflow-x: auto;
+
+	table {
+		table-layout: fixed;
+
+		@media @mobileTab {
+			table-layout: unset;
+		}
+
+		td {
+			min-width: 250px;
+		}
+	}
+}
+
+.invoice {
+	.invoice-wrapper {
+		border: 1px solid #d6d5d5;
+		border-radius: 12px;
+		background: #f3f3f3;
+		padding: 20px;
+		color: #3e3e3e;
+
+		.theme-btn {
+			width: fit-content;
+
+			@media @mobile {
+				margin-top: 15px;
+				width: 100% !important;
+			}
+		}
+
+		img {
+			@media @mobileTab {
+				max-width: 150px !important;
+			}
+		}
+
+		table {
+			th {
+
+				p,
+				span {
+					font-size: 12px !important
+				}
+			}
+
+			td {
+
+				p,
+				span {
+					font-size: 14px !important
+				}
+			}
+		}
+	}
+}
+
+.checkout-details-title {
+	.container {
+		border-top: 1px solid #ddd;
+		padding: 30px 0 15px;
+	}
+
+	.content-wrapper {
+		text-align: center;
+	}
+}
+
+.checkout-details {
+	margin-top: 40px;
 }

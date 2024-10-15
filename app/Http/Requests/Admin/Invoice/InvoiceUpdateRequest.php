@@ -21,52 +21,92 @@ class InvoiceUpdateRequest extends BaseRequest
 	{
 		return [
 			'status' => [
-				'integer', new Enum(InvoiceStatus::class),
+				'integer',
+				new Enum(InvoiceStatus::class),
 			],
 			'date' => [
-				'nullable', 'date',
+				'nullable',
+				'date',
 			],
 			'due_date' => [
-				'nullable', 'date',
+				'nullable',
+				'date',
 			],
 			'customer_id' => [
-				'required', Rule::exists(Customer::class, 'id'),
+				'required',
+				Rule::exists(Customer::class, 'id'),
 			],
 			'payment_method' => [
-				'required', 'integer', new Enum(InvoicePaymentMethod::class),
+				'required',
+				'integer',
+				new Enum(InvoicePaymentMethod::class),
 			],
 			'payment_date' => [
-				'nullable', 'date',
+				'nullable',
+				'date',
 			],
 			'payment_reference' => [
-				'nullable', 'string', 'max:510',
+				'nullable',
+				'string',
+				'max:510',
 			],
 			'payment_reference_receipt' => [
-				'nullable', 'string',
+				'nullable',
+				'string',
 			],
 			'invoice_items' => [
-				'nullable', 'array', 'min:1',
+				'nullable',
+				'array',
+				'min:1',
 			],
-			'invoice_items.*.type' => [
-				'required', 'integer', new Enum(InvoiceItemType::class),
+			'invoice_items.*.type_id' => [
+				'required',
+				'integer',
+				new Enum(InvoiceItemType::class),
 			],
-			'invoice_items.*.content' => [
-				'required', 'string',
+			'invoice_items.*.item_id' => [
+				'required',
+			],
+			'invoice_items.*.title' => [
+				'nullable',
+				'string',
+			],
+			'invoice_items.*.description' => [
+				'nullable',
+				'string',
 			],
 			'invoice_items.*.quantity' => [
-				'required_if:invoice_items.*.type,' . InvoiceItemType::DESCRIPTION->value, 'numeric', 'min:0', 'max:9999999',
+				'required',
+				'numeric',
+				'min:0',
+				'max:9999999',
 			],
 			'invoice_items.*.unit_price' => [
-				'required_if:invoice_items.*.type,' . InvoiceItemType::DESCRIPTION->value, 'numeric', 'min:0', 'max:9999999.99',
+				'required',
+				'numeric',
+				'min:0',
+				'max:9999999.99',
 			],
 			'invoice_items.*.amount' => [
-				'required_if:invoice_items.*.type,' . InvoiceItemType::DESCRIPTION->value, 'numeric', 'min:0', 'max:9999999.99',
+				'required',
+				'numeric',
+				'min:0',
+				'max:9999999.99',
 			],
 			'total_price' => [
-				'required', 'numeric', 'min:0', 'max:9999999.99',
+				'required',
+				'numeric',
+				'min:0',
+				'max:9999999.99',
 			],
 			'notes' =>	[
-				'nullable', 'string', 'max:510'
+				'nullable',
+				'string',
+				'max:510'
+			],
+			'notification' => [
+				'sometimes',
+				'bool',
 			],
 		];
 	}
@@ -81,10 +121,10 @@ class InvoiceUpdateRequest extends BaseRequest
 		return [
 			'invoice_items.*.type.required' => 'The type field for invoice item is required.',
 			'invoice_items.*.content.required' => 'This content is required for this item.',
-			'invoice_items.*.quantity.required_if' => 'The quantity is required for this item.',
-			'invoice_items.*.unit_price.required_if' => 'The unit price is required for this item.',
+			'invoice_items.*.quantity.required' => 'The quantity is required for this item.',
+			'invoice_items.*.unit_price.required' => 'The unit price is required for this item.',
 			'invoice_items.*.unit_price.max' => 'The unit price field must be at most 9999999.99.',
-			'invoice_items.*.amount.required_if' => 'The amount is required for this item.',
+			'invoice_items.*.amount.required' => 'The amount is required for this item.',
 			'invoice_items.*.amount.max' => 'The amount field must be at most 9999999.99.',
 		];
 	}

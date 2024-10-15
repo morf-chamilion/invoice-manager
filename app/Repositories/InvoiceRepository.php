@@ -2,10 +2,12 @@
 
 namespace App\Repositories;
 
+use App\Enums\InvoiceItemType;
 use App\Enums\InvoicePaymentMethod;
 use App\Enums\InvoicePaymentStatus;
 use App\Enums\InvoiceStatus;
 use App\Models\Invoice;
+use App\Models\InvoiceItem;
 use App\Services\MediaService;
 use App\Services\Traits\HandlesMedia;
 use Illuminate\Database\QueryException;
@@ -107,9 +109,6 @@ class InvoiceRepository extends BaseRepository
 		$paymentReferenceReceiptImage = Arr::pull($attributes, 'payment_reference_receipt');
 
 		$invoice = $this->invoice::create($attributes);
-
-		$lastInvoice = $this->getLastVendorInvoice($attributes['vendor_id']);
-		$invoice->vendor_invoice_number = $lastInvoice ? ++$lastInvoice->vendor_invoice_number : 1;
 		$invoice->number = $invoice->id;
 
 		if (
@@ -131,12 +130,18 @@ class InvoiceRepository extends BaseRepository
 			$invoice->fill($attributes);
 		}
 
-		$invoice->save();
+		$totalPrice = 0;
 
 		if ($invoiceItems) {
 			$invoice->invoiceItems()->delete();
-			$invoice->invoiceItems()->createMany($invoiceItems);
+
+			$totalPrice = $this->syncInvoiceItems($invoice, $invoiceItems);
+			$invoice->total_price = $totalPrice;
 		}
+
+		$invoice->total_price = $totalPrice;
+
+		$invoice->save();
 
 		return $invoice;
 	}
@@ -170,12 +175,61 @@ class InvoiceRepository extends BaseRepository
 
 		$updated = $invoice->update($newAttributes);
 
+		$totalPrice = 0;
+
 		if ($invoiceItems) {
+			$totalPrice = $this->syncInvoiceItems($invoice, $invoiceItems);
+			$invoice->total_price = $totalPrice;
+
+			$invoice->save();
+		} else {
 			$invoice->invoiceItems()->delete();
-			$invoice->invoiceItems()->createMany($invoiceItems);
 		}
 
 		return $updated;
+	}
+
+	/**
+	 * Update invoice items and calculate total price.
+	 */
+	private function syncInvoiceItems($invoice, array|object $invoiceItems): float
+	{
+		$invoice->invoiceItems()->delete();
+
+		$totalPrice = 0;
+
+		foreach ($invoiceItems as $invoiceItem) {
+			$item = new InvoiceItem;
+			$item->invoice_id = $invoice->id;
+
+			$this->setInvoiceItemType($item, $invoiceItem);
+
+			$item->description = is_array($invoiceItem) ? $invoiceItem['description'] : $invoiceItem->description;
+			$item->quantity = is_array($invoiceItem) ? $invoiceItem['quantity'] : $invoiceItem->quantity;
+			$item->unit_price = is_array($invoiceItem) ? $invoiceItem['unit_price'] : $invoiceItem->unit_price;
+			$item->amount = is_array($invoiceItem) ? $invoiceItem['amount'] : $invoiceItem->amount;
+
+			$item->save();
+
+			$totalPrice += $item->amount;
+		}
+
+		return $totalPrice;
+	}
+
+	/**
+	 * Set the item type for an invoice item.
+	 */
+	private function setInvoiceItemType(InvoiceItem $item, array|object $invoiceItem)
+	{
+		$typeId = is_array($invoiceItem) ? $invoiceItem['type_id'] : $invoiceItem->type_id;
+		$itemId = is_array($invoiceItem) ? $invoiceItem['item_id'] : $invoiceItem->item_id;
+		$itemTitle = is_array($invoiceItem) ? $invoiceItem['title'] : $invoiceItem->title;
+		$itemType = InvoiceItemType::from($typeId);
+
+		match ($itemType) {
+			InvoiceItemType::CUSTOM => $item->custom = $itemTitle,
+		};
 	}
 
 	/**

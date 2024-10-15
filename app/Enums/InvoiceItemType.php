@@ -6,8 +6,7 @@ use Illuminate\Support\Facades\Blade;
 
 enum InvoiceItemType: int
 {
-    case HEADING = 0;
-    case DESCRIPTION = 1;
+    case CUSTOM = 1;
 
     /**
      * Get the human readable name.
@@ -15,8 +14,7 @@ enum InvoiceItemType: int
     public function getName(): string
     {
         return match ($this) {
-            self::HEADING => 'Heading',
-            self::DESCRIPTION => 'Description',
+            self::CUSTOM => 'Custom',
             default => 'Not known',
         };
     }
@@ -38,13 +36,33 @@ enum InvoiceItemType: int
     public static function toBadge(Self $status): string
     {
         $classes = [
-            self::HEADING->value => 'badge badge-light',
-            self::DESCRIPTION->value => 'badge badge-warning',
+            self::CUSTOM->value => 'badge badge-light',
         ];
 
         return Blade::render('<span class="{{ $class }}">{{ $status->getName() }}</span>', [
             'class' => $classes[$status->value],
             'status' => $status
         ]);
+    }
+
+    /**
+     * Get formatted invoice item data.
+     */
+    public function getFormattedData($item): array
+    {
+        return match ($this) {
+            self::CUSTOM => [
+                'id' => $this->value,
+                'name' => $this->getName(),
+                'title' => $item->custom,
+                'item_id' => null,
+            ],
+            default => [
+                'id' => null,
+                'name' => 'Unknown',
+                'title' => '',
+                'item_id' => null,
+            ]
+        };
     }
 }
