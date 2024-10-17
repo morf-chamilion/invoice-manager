@@ -67,7 +67,7 @@ abstract class BaseMessage
 	 */
 	public function updateSuccess(): string
 	{
-		return "Successfully updated this {$this->modelName()}.";
+		return "Successfully updated {$this->modelName()}.";
 	}
 
 	/**

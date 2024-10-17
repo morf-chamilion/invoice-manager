@@ -18,11 +18,12 @@ return new class extends Migration
 
 			$table->string('name')->unique();
 			$table->string('currency');
-			$table->string('invoice_number_prefix');
+			$table->string('reference_number_prefix');
 
 			$table->string('address')->nullable();
 			$table->string('bank_account_details')->nullable();
-			$table->string('footer_content')->nullable();
+			$table->string('quotation_footer_content')->nullable();
+			$table->string('invoice_footer_content')->nullable();
 
 			$table->foreignId('created_by')->constrained('users')->onDelete('restrict')->onUpdate('cascade');
 			$table->foreignId('updated_by')->nullable()->constrained('users')->onDelete('restrict')->onUpdate('cascade');

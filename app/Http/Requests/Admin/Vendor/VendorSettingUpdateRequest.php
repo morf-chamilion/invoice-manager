@@ -15,16 +15,28 @@ class VendorSettingUpdateRequest extends BaseRequest
 	{
 		return [
 			'logo' => [
-				'nullable', 'string',
+				'nullable',
+				'string',
 			],
 			'address' => [
-				'nullable', 'string', 'max:255',
+				'nullable',
+				'string',
+				'max:255',
 			],
 			'bank_account_details' => [
-				'nullable', 'string', 'max:255',
+				'nullable',
+				'string',
+				'max:255',
 			],
-			'footer_content' => [
-				'nullable', 'string', 'max:5000',
+			'quotation_footer_content' => [
+				'nullable',
+				'string',
+				'max:5000',
+			],
+			'invoice_footer_content' => [
+				'nullable',
+				'string',
+				'max:5000',
 			],
 		];
 	}

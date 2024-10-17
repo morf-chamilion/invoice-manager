@@ -109,6 +109,9 @@ class InvoiceRepository extends BaseRepository
 		$paymentReferenceReceiptImage = Arr::pull($attributes, 'payment_reference_receipt');
 
 		$invoice = $this->invoice::create($attributes);
+
+		$lastInvoice = $this->getLastVendorInvoice($attributes['vendor_id']);
+		$invoice->vendor_invoice_number = $lastInvoice ? ++$lastInvoice->vendor_invoice_number : 1;
 		$invoice->number = $invoice->id;
 
 		if (
@@ -238,7 +241,10 @@ class InvoiceRepository extends BaseRepository
 	private function prepareCashPaymentData(array $attributes, Invoice $invoice, ?string $paymentReference): array
 	{
 		$paymentData = $invoice->payment_data;
-		$paymentData['reference'] = $paymentReference;
+
+		if ($paymentReference) {
+			$paymentData['reference'] = $paymentReference;
+		}
 
 		if ($invoice->payment_date) {
 			$paymentData['transaction_id'] = $invoice->number;
@@ -262,7 +268,10 @@ class InvoiceRepository extends BaseRepository
 	private function prepareBankTransferPaymentData(array $attributes, Invoice $invoice, ?string $paymentReference): array
 	{
 		$paymentData = $invoice->payment_data;
-		$paymentData['reference'] = $paymentReference;
+
+		if ($paymentReference) {
+			$paymentData['reference'] = $paymentReference;
+		}
 
 		if ($invoice->payment_date) {
 			$paymentData['transaction_id'] = $invoice->number;

@@ -211,8 +211,28 @@
         </table>
     @endif
 
+    @if (
+        $invoice->status === InvoiceStatus::ACTIVE &&
+            $invoice->payment_status === InvoicePaymentStatus::PENDING &&
+            $invoice->vendor->bank_account_details)
+        <table style="font-family: sans-serif">
+            <tbody>
+                <tr>
+                    <td style="padding-top:
+                    25px;">
+                        <h6
+                            style="margin-bottom: 0; font-weight: bold; font-size: 13px; text-transform: uppercase; color: #817c7a">
+                            {{ __('Bank Account Details') }}
+                        </h6>
+                        <p style="margin-top: 6px; ">{{ $invoice->vendor->bank_account_details }}</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    @endif
+
     <footer
         style="@empty($pdf) margin-top: 30px; @else position: absolute; bottom: 0;  @endif width: 100%; font-size: 14px; font-family: sans-serif">
-        {!! settings(SettingModule::INVOICE)->get('footer_content') !!}
+        {!! $invoice->vendor->invoice_footer_content !!}
     </footer>
 </table>

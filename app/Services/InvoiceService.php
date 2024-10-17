@@ -165,7 +165,7 @@ class InvoiceService extends BaseService
 	{
 		return Str::of($invoice->number)
 			->prepend('-')
-			->prepend('invoice')
+			->prepend('INVOICE')
 			->replace('/', '-');
 	}
 

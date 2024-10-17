@@ -27,8 +27,35 @@
             @endcan
 
             @if (auth()->user()->vendor)
-                @canany([InvoiceRoutePath::INDEX, InvoiceRoutePath::CREATE])
+                @canany([QuotationRoutePath::INDEX, QuotationRoutePath::CREATE])
                     @include('admin.layout.sidebar.menu-heading', ['content' => 'Management'])
+                    @php $quotationService = app()->make(App\Services\QuotationService::class); @endphp
+
+                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+                        @include('admin.layout.sidebar.menu-item-group', [
+                            'content' => 'Quotations',
+                            'icon' => 'document',
+                        ])
+
+                        <div class="menu-sub menu-sub-accordion">
+                            @can(QuotationRoutePath::INDEX)
+                                @include('admin.layout.sidebar.menu-item', [
+                                    'content' => 'View All Quotations',
+                                    'route' => route(QuotationRoutePath::INDEX),
+                                ])
+                            @endcan
+
+                            @can(QuotationRoutePath::CREATE)
+                                @include('admin.layout.sidebar.menu-item', [
+                                    'content' => 'Create New Quotation',
+                                    'route' => route(QuotationRoutePath::CREATE),
+                                ])
+                            @endcan
+                        </div>
+                    </div>
+                @endcanany
+
+                @canany([InvoiceRoutePath::INDEX, InvoiceRoutePath::CREATE])
                     @php $invoiceService = app()->make(App\Services\InvoiceService::class); @endphp
 
                     <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
@@ -206,7 +233,8 @@
                 @endcanany
             @endif
 
-            @canany([SettingRoutePath::GENERAL, SettingRoutePath::MAIL, VendorRoutePath::INVOICE_SETTING_EDIT])
+            @canany([SettingRoutePath::GENERAL, SettingRoutePath::MAIL, VendorRoutePath::GENERAL_SETTING_EDIT,
+                VendorRoutePath::QUOTATION_SETTING_EDIT, VendorRoutePath::INVOICE_SETTING_EDIT])
                 @include('admin.layout.sidebar.menu-heading', ['content' => 'Settings'])
 
                 @can(SettingRoutePath::GENERAL)
@@ -223,6 +251,26 @@
                         'route' => route(SettingRoutePath::MAIL),
                         'icon' => 'sms',
                     ])
+                @endcan
+
+                @can(VendorRoutePath::GENERAL_SETTING_EDIT)
+                    @if (auth()->user()->vendor)
+                        @include('admin.layout.sidebar.menu-item', [
+                            'content' => 'General Settings',
+                            'route' => route(VendorRoutePath::GENERAL_SETTING_EDIT, auth()->user()->vendor),
+                            'icon' => 'tablet-book',
+                        ])
+                    @endif
+                @endcan
+
+                @can(VendorRoutePath::QUOTATION_SETTING_EDIT)
+                    @if (auth()->user()->vendor)
+                        @include('admin.layout.sidebar.menu-item', [
+                            'content' => 'Quotation Settings',
+                            'route' => route(VendorRoutePath::QUOTATION_SETTING_EDIT, auth()->user()->vendor),
+                            'icon' => 'update-file',
+                        ])
+                    @endif
                 @endcan
 
                 @can(VendorRoutePath::INVOICE_SETTING_EDIT)

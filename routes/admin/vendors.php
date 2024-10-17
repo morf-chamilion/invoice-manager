@@ -37,11 +37,27 @@ Route::middleware(['verified.admin'])->group(function () {
 					Route::post('/list', 'index');
 				});
 
-			Route::get('/invoice-settings/{vendor}/edit', 'editSettings')
+			Route::get('/general-settings/{vendor}/edit', 'editGeneralSettings')
+				->middleware(Authorize::using(VendorRoutePath::GENERAL_SETTING_EDIT))
+				->name(VendorRoutePath::GENERAL_SETTING_EDIT);
+
+			Route::put('/general-settings/{vendor}', 'updateGeneralSettings')
+				->middleware(Authorize::using(VendorRoutePath::GENERAL_SETTING_UPDATE))
+				->name(VendorRoutePath::GENERAL_SETTING_UPDATE);
+
+			Route::get('/quotation-settings/{vendor}/edit', 'editQuotationSettings')
+				->middleware(Authorize::using(VendorRoutePath::QUOTATION_SETTING_EDIT))
+				->name(VendorRoutePath::QUOTATION_SETTING_EDIT);
+
+			Route::put('/quotation-settings/{vendor}', 'updateQuotationSettings')
+				->middleware(Authorize::using(VendorRoutePath::QUOTATION_SETTING_UPDATE))
+				->name(VendorRoutePath::QUOTATION_SETTING_UPDATE);
+
+			Route::get('/invoice-settings/{vendor}/edit', 'editInvoiceSettings')
 				->middleware(Authorize::using(VendorRoutePath::INVOICE_SETTING_EDIT))
 				->name(VendorRoutePath::INVOICE_SETTING_EDIT);
 
-			Route::put('/invoice-settings/{vendor}', 'updateSettings')
+			Route::put('/invoice-settings/{vendor}', 'updateInvoiceSettings')
 				->middleware(Authorize::using(VendorRoutePath::INVOICE_SETTING_UPDATE))
 				->name(VendorRoutePath::INVOICE_SETTING_UPDATE);
 		});

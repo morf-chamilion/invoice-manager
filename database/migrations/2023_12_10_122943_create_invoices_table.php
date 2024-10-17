@@ -4,6 +4,7 @@ use App\Enums\InvoicePaymentMethod;
 use App\Enums\InvoicePaymentStatus;
 use App\Enums\InvoiceStatus;
 use App\Models\Customer;
+use App\Models\Vendor;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -20,6 +21,7 @@ return new class extends Migration
 			$table->tinyInteger('status')->default(InvoiceStatus::DRAFT);
 
 			$table->string('number')->unique()->nullable();
+			$table->unsignedInteger('vendor_invoice_number')->nullable();
 
 			$table->date('date');
 			$table->date('due_date');
@@ -33,6 +35,7 @@ return new class extends Migration
 			$table->json('payment_data')->nullable();
 			$table->timestamp('payment_date')->nullable();
 
+			$table->foreignIdFor(Vendor::class)->constrained()->cascadeOnDelete();
 			$table->foreignIdFor(Customer::class)->constrained();
 
 			$table->foreignId('created_by')->constrained('users')->onDelete('restrict')->onUpdate('cascade');

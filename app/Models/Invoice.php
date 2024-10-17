@@ -84,11 +84,11 @@ class Invoice extends Model implements HasMedia, HasRelationsInterface
 	{
 		return Attribute::make(
 			set: function (string $value): string {
-				$id = str_pad($this->vendor_invoice_number, 5, '0', STR_PAD_LEFT);
+				$id = str_pad($this->vendor_invoice_number, 3, '0', STR_PAD_LEFT);
 				$currentYear = now()->format('y');
 				$currentMonth = now()->format('m');
-				$vendorPrefix = $this->vendor->invoice_number_prefix;
-				$formattedNumber = "$vendorPrefix/{$currentYear}/{$currentMonth}/{$id}";
+				$vendorPrefix = $this->vendor->reference_number_prefix;
+				$formattedNumber = "$vendorPrefix/INV/{$currentYear}/{$currentMonth}/{$id}";
 
 				return $this->attributes['number'] = $formattedNumber;
 			},

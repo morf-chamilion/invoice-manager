@@ -29,8 +29,9 @@ class Vendor extends Model implements HasMedia, HasRelationsInterface
 		'currency',
 		'address',
 		'bank_account_details',
-		'footer_content',
-		'invoice_number_prefix',
+		'quotation_footer_content',
+		'invoice_footer_content',
+		'reference_number_prefix',
 		'updated_by',
 		'created_by',
 	];

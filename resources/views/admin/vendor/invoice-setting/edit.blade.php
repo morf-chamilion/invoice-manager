@@ -16,34 +16,12 @@
                         </header>
                     </div>
                     <div class="card-body">
-                        <div class="mb-8 col-xl-6">
-                            <x-input-label for="logo" :value="__('Logo')" />
-                            <x-input-file id="logo" name="logo" :fileMaxSize="2" :value="$vendor->logo" />
-                            <x-input-error :messages="$errors->get('logo')" />
-                        </div>
-
-                        <div class="mb-8">
-                            <x-input-label for="address" :value="__('Address')" />
-                            <x-input-textarea name="address" id="address">
-                                {{ old('address', $vendor->address) }}
-                            </x-input-textarea>
-                            <x-input-error :messages="$errors->get('address')" />
-                        </div>
-
-                        <div class="mb-8">
-                            <x-input-label for="bank_account_details" :value="__('Bank Account Details')" />
-                            <x-input-textarea name="bank_account_details" id="bank_account_details">
-                                {{ old('bank_account_details', $vendor->bank_account_details) }}
-                            </x-input-textarea>
-                            <x-input-error :messages="$errors->get('bank_account_details')" />
-                        </div>
-
                         <div>
-                            <x-input-label for="footer_content" :value="__('Footer Content')" />
-                            <x-input-editor name="footer_content" id="footer_content">
-                                {{ old('footer_content', $vendor->footer_content) }}
+                            <x-input-label for="invoice_footer_content" :value="__('Footer Content')" />
+                            <x-input-editor name="invoice_footer_content" id="invoice_footer_content">
+                                {{ old('invoice_footer_content', $vendor->invoice_footer_content) }}
                             </x-input-editor>
-                            <x-input-error :messages="$errors->get('footer_content')" />
+                            <x-input-error :messages="$errors->get('invoice_footer_content')" />
                         </div>
                     </div>
                 </div>

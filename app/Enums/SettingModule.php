@@ -9,6 +9,7 @@ enum SettingModule
     case GENERAL;
     case MAIL;
     case INVOICE;
+    case QUOTATION;
 
     /** Pages */
     case HOME;

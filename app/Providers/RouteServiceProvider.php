@@ -30,6 +30,7 @@ class RouteServiceProvider extends ServiceProvider
         'checkout',
         'customer',
         'invoices',
+        'quotations',
     ];
 
     /**
@@ -43,6 +44,7 @@ class RouteServiceProvider extends ServiceProvider
         'settings',
         'pages',
         'invoices',
+        'quotations',
         'customers',
         'vendors',
     ];

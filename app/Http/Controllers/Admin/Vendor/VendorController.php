@@ -148,10 +148,75 @@ class VendorController extends AdminBaseController
     /**
      * Show the form for editing the specified resource settings.
      */
-    public function editSettings(Vendor $vendor): Renderable
+    public function editGeneralSettings(Vendor $vendor): Renderable
     {
         $this->registerBreadcrumb(
-            parentRouteName: $this->vendorRoutePath::INDEX,
+            routeParameter: $vendor->id,
+        );
+
+        $this->sharePageData([
+            'title' => 'General Settings',
+        ]);
+
+        return view($this->vendorRoutePath::GENERAL_SETTING_EDIT, [
+            'vendor' => $vendor,
+        ]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function updateGeneralSettings(Vendor $vendor, VendorSettingUpdateRequest $request): RedirectResponse|RedirectResponseException
+    {
+        $updated = $this->vendorService->updateVendorSettings($vendor->id, $request->getAttributes());
+
+        throw_if(!$updated, RedirectResponseException::class, $this->vendorMessage->updateFailed());
+
+        return redirect()->route($this->vendorRoutePath::GENERAL_SETTING_EDIT, $vendor)->with([
+            'message' => $this->vendorMessage->updateSuccess(),
+            'status' => true,
+        ]);
+    }
+
+    /**
+     * Show the form for editing the specified resource settings.
+     */
+    public function editQuotationSettings(Vendor $vendor): Renderable
+    {
+        $this->registerBreadcrumb(
+            routeParameter: $vendor->id,
+        );
+
+        $this->sharePageData([
+            'title' => 'Quotation Settings',
+        ]);
+
+        return view($this->vendorRoutePath::QUOTATION_SETTING_EDIT, [
+            'vendor' => $vendor,
+        ]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function updateQuotationSettings(Vendor $vendor, VendorSettingUpdateRequest $request): RedirectResponse|RedirectResponseException
+    {
+        $updated = $this->vendorService->updateVendorSettings($vendor->id, $request->getAttributes());
+
+        throw_if(!$updated, RedirectResponseException::class, $this->vendorMessage->updateFailed());
+
+        return redirect()->route($this->vendorRoutePath::QUOTATION_SETTING_EDIT, $vendor)->with([
+            'message' => $this->vendorMessage->updateSuccess(),
+            'status' => true,
+        ]);
+    }
+
+    /**
+     * Show the form for editing the specified resource settings.
+     */
+    public function editInvoiceSettings(Vendor $vendor): Renderable
+    {
+        $this->registerBreadcrumb(
             routeParameter: $vendor->id,
         );
 
@@ -167,7 +232,7 @@ class VendorController extends AdminBaseController
     /**
      * Update the specified resource in storage.
      */
-    public function updateSettings(Vendor $vendor, VendorSettingUpdateRequest $request): RedirectResponse|RedirectResponseException
+    public function updateInvoiceSettings(Vendor $vendor, VendorSettingUpdateRequest $request): RedirectResponse|RedirectResponseException
     {
         $updated = $this->vendorService->updateVendorSettings($vendor->id, $request->getAttributes());
 

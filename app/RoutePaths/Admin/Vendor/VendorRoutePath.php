@@ -9,8 +9,7 @@ class VendorRoutePath implements AdminRoutePathInterface
 {
 	public function __construct(
 		protected VendorService $vendorService,
-	) {
-	}
+	) {}
 
 	public const INDEX = 'admin.vendor.index';
 
@@ -23,6 +22,14 @@ class VendorRoutePath implements AdminRoutePathInterface
 	public const UPDATE = 'admin.vendor.update';
 
 	public const DESTROY = 'admin.vendor.destroy';
+
+	public const GENERAL_SETTING_EDIT = 'admin.vendor.general-setting.edit';
+
+	public const GENERAL_SETTING_UPDATE = 'admin.vendor.general-setting.update';
+
+	public const QUOTATION_SETTING_EDIT = 'admin.vendor.quotation-setting.edit';
+
+	public const QUOTATION_SETTING_UPDATE = 'admin.vendor.quotation-setting.update';
 
 	public const INVOICE_SETTING_EDIT = 'admin.vendor.invoice-setting.edit';
 
@@ -46,6 +53,8 @@ class VendorRoutePath implements AdminRoutePathInterface
 			'Create' => [self::CREATE, self::STORE],
 			'Edit' => [self::EDIT, self::UPDATE],
 			'Delete' => [self::DESTROY],
+			'General Setting Edit' => [self::GENERAL_SETTING_EDIT, self::GENERAL_SETTING_UPDATE],
+			'Quotation Setting Edit' => [self::QUOTATION_SETTING_EDIT, self::QUOTATION_SETTING_UPDATE],
 			'Invoice Setting Edit' => [self::INVOICE_SETTING_EDIT, self::INVOICE_SETTING_UPDATE],
 		];
 	}

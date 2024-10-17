@@ -27,10 +27,10 @@
                         </div>
 
                         <div>
-                            <x-input-label for="invoice_number_prefix" :value="__('Invoice Number Prefix')" required />
-                            <x-input-text id="invoice_number_prefix" name="invoice_number_prefix" type="text"
-                                :value="old('invoice_number_prefix')" required />
-                            <x-input-error :messages="$errors->get('invoice_number_prefix')" />
+                            <x-input-label for="reference_number_prefix" :value="__('Reference Number Prefix')" required />
+                            <x-input-text id="reference_number_prefix" name="reference_number_prefix" type="text"
+                                :value="old('reference_number_prefix')" required />
+                            <x-input-error :messages="$errors->get('reference_number_prefix')" />
                         </div>
                     </div>
                 </div>

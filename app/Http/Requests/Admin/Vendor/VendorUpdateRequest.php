@@ -17,16 +17,24 @@ class VendorUpdateRequest extends BaseRequest
 	{
 		return [
 			'name' => [
-				'string', 'min:3', 'max:255',
+				'string',
+				'min:3',
+				'max:255',
 			],
 			'status' => [
-				'integer', new Enum(VendorStatus::class),
+				'integer',
+				new Enum(VendorStatus::class),
 			],
 			'currency' => [
-				'string', 'min:0', 'max:255',
+				'string',
+				'min:0',
+				'max:255',
 			],
-			'invoice_number_prefix' => [
-				'required', 'string', 'min:0', 'max:24',
+			'reference_number_prefix' => [
+				'required',
+				'string',
+				'min:0',
+				'max:24',
 			],
 		];
 	}

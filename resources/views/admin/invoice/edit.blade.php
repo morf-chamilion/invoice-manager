@@ -192,6 +192,14 @@
                         <script>
                             let items = @json(!empty($items) ? $items : []);
                         </script>
+
+                        <div>
+                            <x-input-label for="notes" :value="__('Notes')" />
+                            <x-input-textarea name="notes" id="notes">
+                                {{ old('notes', $invoice->notes) }}
+                            </x-input-textarea>
+                            <x-input-error :messages="$errors->get('notes')" />
+                        </div>
                     </div>
                 </div>
 
