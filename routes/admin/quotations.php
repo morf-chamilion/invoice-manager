@@ -57,5 +57,9 @@ Route::middleware(['verified.admin'])->group(function () {
 			Route::post('/{quotation}/show/notification', 'customerNotification')
 				->middleware(Authorize::using(QuotationRoutePath::CUSTOMER_NOTIFICATION))
 				->name(QuotationRoutePath::CUSTOMER_NOTIFICATION);
+
+			Route::post('/{quotation}/edit/invoice-generate', 'invoiceGenerate')
+				->middleware(Authorize::using(QuotationRoutePath::CUSTOMER_NOTIFICATION))
+				->name(QuotationRoutePath::CUSTOMER_NOTIFICATION);
 		});
 });

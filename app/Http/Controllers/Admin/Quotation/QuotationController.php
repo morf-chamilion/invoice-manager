@@ -11,6 +11,7 @@ use App\Http\Requests\Admin\Quotation\QuotationUpdateRequest;
 use App\Http\Resources\Admin\Quotation\QuotationIndexResource;
 use App\Messages\QuotationMessage;
 use App\Models\Quotation;
+use App\RoutePaths\Admin\Invoice\InvoiceRoutePath;
 use App\RoutePaths\Admin\Quotation\QuotationRoutePath;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
@@ -245,6 +246,28 @@ class QuotationController extends AdminBaseController
 		return $this->jsonResponse()
 			->message($this->quotationMessage->createCustomerSuccess())
 			->body($created->toArray())
+			->success();
+	}
+
+	/**
+	 * Generate an invoice from the specified resource.
+	 */
+	public function invoiceGenerate(Quotation $quotation): JsonResponse
+	{
+		$invoice = $this->quotationService->generateInvoice($quotation);
+
+		if (!$invoice) {
+			return $this->jsonResponse()
+				->message($this->quotationMessage->generateInvoiceFailed())
+				->error();
+		}
+
+		return $this->jsonResponse()
+			->message($this->quotationMessage->generateInvoiceSuccess())
+			->body([
+				...$invoice->toArray(),
+				'redirect_url' => route(InvoiceRoutePath::SHOW, $invoice->id)
+			])
 			->success();
 	}
 }

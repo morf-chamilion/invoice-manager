@@ -34,7 +34,6 @@ class Quotation extends Model implements HasMedia, HasRelationsInterface
 	protected $fillable = [
 		'status',
 		'date',
-		'due_date',
 		'number',
 		'customer_id',
 		'total_price',
@@ -143,14 +142,6 @@ class Quotation extends Model implements HasMedia, HasRelationsInterface
 	}
 
 	/**
-	 * Get the formatted due date attribute.
-	 */
-	public function getReadableDueDateAttribute(): string
-	{
-		return Carbon::parse($this->due_date)->format('d M Y');
-	}
-
-	/**
 	 * Get the formatted total price attribute.
 	 */
 	public function getReadableTotalPriceAttribute(): string
@@ -161,22 +152,7 @@ class Quotation extends Model implements HasMedia, HasRelationsInterface
 	/**
 	 * Model media collections.
 	 */
-	public function registerMediaCollections(): void
-	{
-		$this->addMediaCollection('payment_reference_receipt')
-			->useDisk('media')
-			->singleFile();
-	}
-
-	/**
-	 * Interact with media.
-	 */
-	protected function paymentReferenceReceipt(): Attribute
-	{
-		return Attribute::make(
-			get: fn() => $this->getMedia('payment_reference_receipt'),
-		);
-	}
+	public function registerMediaCollections(): void {}
 
 	/**
 	 * Define model methods with Has relations.

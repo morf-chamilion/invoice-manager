@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\CustomerStatus;
 use App\Models\Customer;
+use App\Models\Invoice;
 use App\Models\Quotation;
 use App\Models\Vendor;
 use App\Notifications\Quotation\QuotationCreateCustomerNotification;
@@ -23,6 +24,7 @@ class QuotationService extends BaseService
 		private QuotationRepository $quotationRepository,
 		private SettingService $settingService,
 		private CustomerService $customerService,
+		private InvoiceService $invoiceService,
 	) {
 		parent::__construct($quotationRepository);
 	}
@@ -128,6 +130,25 @@ class QuotationService extends BaseService
 		}
 
 		return $updated;
+	}
+
+	/**
+	 * Generate an invoice for this quotation.
+	 */
+	public function generateInvoice(Quotation $quotation): ?Invoice
+	{
+		$attributes = Arr::except($quotation->toArray(), [
+			'vendor_quotation_number',
+			'created_at',
+			'created_by',
+			'updated_at',
+			'updated_by',
+			'vendor_id',
+			'status',
+			'id',
+		]);
+
+		return $this->invoiceService->createInvoice($attributes);
 	}
 
 	/**

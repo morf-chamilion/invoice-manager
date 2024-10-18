@@ -33,6 +33,8 @@ class QuotationRoutePath implements AdminRoutePathInterface
 
 	public const CUSTOMER_NOTIFICATION = 'admin.quotation.customer.notification';
 
+	public const INVOICE_GENERATE = 'admin.quotation.invoice.generate';
+
 	/**
 	 * Name of the resource.
 	 */
@@ -50,7 +52,7 @@ class QuotationRoutePath implements AdminRoutePathInterface
 			'List' => self::INDEX,
 			'Show' => [self::SHOW, self::DOWNLOAD, self::CUSTOMER_NOTIFICATION],
 			'Create' => [self::CREATE, self::STORE, self::CUSTOMER_INDEX, self::CUSTOMER_STORE],
-			'Edit' => [self::EDIT, self::UPDATE],
+			'Edit' => [self::EDIT, self::UPDATE, self::INVOICE_GENERATE],
 			'Delete' => self::DESTROY,
 		];
 	}

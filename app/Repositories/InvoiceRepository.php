@@ -109,6 +109,7 @@ class InvoiceRepository extends BaseRepository
 		$paymentReferenceReceiptImage = Arr::pull($attributes, 'payment_reference_receipt');
 
 		$invoice = $this->invoice::create($attributes);
+		$invoice->vendor()->associate($attributes['vendor_id']);
 
 		$lastInvoice = $this->getLastVendorInvoice($attributes['vendor_id']);
 		$invoice->vendor_invoice_number = $lastInvoice ? ++$lastInvoice->vendor_invoice_number : 1;

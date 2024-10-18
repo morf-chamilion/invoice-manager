@@ -55,4 +55,20 @@ class QuotationMessage extends BaseMessage
 	{
 		return "An error occurred while saving this customer.";
 	}
+
+	/**
+	 * Generate invoice success message.
+	 */
+	public function generateInvoiceSuccess(): string
+	{
+		return "Successfully created a new invoice.";
+	}
+
+	/**
+	 * Generate invoice failed message.
+	 */
+	public function generateInvoiceFailed(): string
+	{
+		return "An error occurred while creating a new invoice.";
+	}
 }

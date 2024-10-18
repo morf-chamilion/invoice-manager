@@ -15,7 +15,7 @@
                         </header>
                     </div>
                     <div class="card-body">
-                        <div class="mb-8 row">
+                        <div class="row">
                             <div class="col-lg-6">
                                 <div>
                                     <x-input-label for="date" :value="__('Date')" required />
@@ -27,26 +27,19 @@
 
                             <div class="col-lg-6">
                                 <div>
-                                    <x-input-label for="due_date" :value="__('Due Date')" required />
-                                    <x-input-date id="due_date" name="due_date" :value="old('due_date', $quotation->due_date)"
-                                        data-locale-format="YYYY-MM-DD" required />
-                                    <x-input-error :messages="$errors->get('due_date')" />
+                                    <x-input-label for="customer_id" :value="__('Customer')" required />
+                                    <x-input-select name="customer_id" data-placeholder="Select Customer" required>
+                                        @if ($customers->isNotEmpty())
+                                            @foreach ($customers as $customer)
+                                                <option value="{{ $customer->id }}" @selected($customer->id == old('customer_id', $quotation->customer_id))>
+                                                    {{ $customer->name }}
+                                                </option>
+                                            @endforeach
+                                        @endif
+                                    </x-input-select>
+                                    <x-input-error :messages="$errors->get('customer_id')" />
                                 </div>
                             </div>
-                        </div>
-
-                        <div>
-                            <x-input-label for="customer_id" :value="__('Customer')" required />
-                            <x-input-select name="customer_id" data-placeholder="Select Customer" required>
-                                @if ($customers->isNotEmpty())
-                                    @foreach ($customers as $customer)
-                                        <option value="{{ $customer->id }}" @selected($customer->id == old('customer_id', $quotation->customer_id))>
-                                            {{ $customer->name }}
-                                        </option>
-                                    @endforeach
-                                @endif
-                            </x-input-select>
-                            <x-input-error :messages="$errors->get('customer_id')" />
                         </div>
                     </div>
                 </div>
@@ -205,21 +198,76 @@
 
             </div>
 
-            <x-form-metadata :model="$quotation" type="Update">
-                <div class="mb-8">
-                    <x-input-label for="status" required>Status</x-input-label>
-                    <x-input-select name="status" data-placeholder="Select Status" data-hide-search="true" required>
-                        @foreach (QuotationStatus::toSelectOptions() as $option)
-                            @if ($option->value !== QuotationStatus::COMPLETED->value)
-                                <option value="{{ $option->value }}" @selected($option->value == old('status', $quotation->status->value))>
-                                    {{ $option->name }}
-                                </option>
+            <div class="col-lg-3" id="form_metadata_container">
+                <div data-kt-sticky="true" data-kt-sticky-name="form-metadata-card"
+                    data-kt-sticky-width="{target: '#form_metadata_container'}" data-kt-sticky-top="100px"
+                    data-kt-sticky-animation="false" data-kt-sticky-zindex="95">
+                    <div class="card mb-8">
+                        <div class="card-body">
+
+                            <div class="mb-8">
+                                <x-input-label for="status" required>Status</x-input-label>
+                                <x-input-select name="status" data-placeholder="Select Status"
+                                    data-hide-search="true" required>
+                                    @foreach (QuotationStatus::toSelectOptions() as $option)
+                                        @if ($option->value !== QuotationStatus::COMPLETED->value)
+                                            <option value="{{ $option->value }}" @selected($option->value == old('status', $quotation->status->value))>
+                                                {{ $option->name }}
+                                            </option>
+                                        @endif
+                                    @endforeach
+                                </x-input-select>
+                                <x-input-error :messages="$errors->get('status')" />
+                            </div>
+
+                            @if (!empty($quotation->createdByUser) || !empty($quotation->updatedByUser))
+                                <div class="separator separator-dashed mb-8"></div>
                             @endif
-                        @endforeach
-                    </x-input-select>
-                    <x-input-error :messages="$errors->get('status')" />
+
+                            @if (!empty($quotation->createdByUser))
+                                <h4 class="form-label">Created By</h4>
+                                <div class="d-flex justify-content-between mb-4">
+                                    <p class="text-muted">{{ $quotation->createdByUser->name }}</p>
+                                    <p class="text-muted">{{ $quotation->created_at->diffForHumans() }}
+                                    </p>
+                                </div>
+                            @endif
+
+                            @if (!empty($quotation->updatedByUser))
+                                <h4 class="form-label">{{ __('Last Updated By') }}</h4>
+                                <div class="d-flex justify-content-between mb-4">
+                                    <p class="text-muted">{{ $quotation?->updatedByUser->name }}</p>
+                                    <p class="text-muted">{{ $quotation?->updated_at->diffForHumans() }}</p>
+                                </div>
+                            @endif
+
+                            @if (!empty($quotation->createdByUser) || !empty($quotation->updatedByUser))
+                                <div class="separator separator-dashed mb-8"></div>
+                            @endif
+
+                            <div class="flex items-center gap-4">
+                                <x-button-primary class="w-100">{{ __('Update') }}</x-button-primary>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" data-kt-sticky="true" data-kt-sticky-name="form-metadata-card"
+                        data-kt-sticky-width="{target: '#form_metadata_container'}" data-kt-sticky-top="100px"
+                        data-kt-sticky-animation="false" data-kt-sticky-zindex="95">
+                        <div class="card-body">
+                            <div>
+                                <p class="text-muted">Convert to an invoice with billing capabilities.</p>
+                                <button type="button" class="btn btn-icon btn-light-info w-100"
+                                    id="invoice_generate">
+                                    <i class="fas fa-file-export"></i>
+                                    <span class="ms-2">{{ __('Convert To Invoice') }}</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </x-form-metadata>
+            </div>
+
         </div>
     </form>
 

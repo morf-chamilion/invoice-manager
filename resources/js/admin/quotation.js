@@ -13,7 +13,6 @@ if (window.GLOBAL_STATE?.ADMIN_DATATABLE_DEFAULTS) {
 let dateStart = "",
     dateEnd = "",
     status = "",
-    paymentStatus = "",
     number = "",
     customer = "",
     company = "";
@@ -52,11 +51,6 @@ var KTDatatablesServerSide = (function () {
                     targets: ["status"],
                     className: "text-md-center",
                     width: 100,
-                },
-                {
-                    targets: ["payment_status"],
-                    className: "text-md-center",
-                    width: 130,
                 },
                 {
                     targets: ["image"],
@@ -102,7 +96,6 @@ var KTDatatablesServerSide = (function () {
                     data.date_start = dateStart;
                     data.date_end = dateEnd;
                     data.status = status;
-                    data.payment_status = paymentStatus;
                     data.number = number;
                     data.customer = customer;
                     data.company = company;
@@ -153,7 +146,6 @@ KTUtil.onDOMContentLoaded(function () {
         $("#datatable_index").on("submit", function (event) {
             event.preventDefault();
             status = $("#status").val();
-            paymentStatus = $("#payment_status").val();
             number = $("#number").val();
             customer = $("#customer").val();
             datatable.draw();
@@ -163,7 +155,6 @@ KTUtil.onDOMContentLoaded(function () {
             dateStart = "";
             dateEnd = "";
             status = "";
-            paymentStatus = "";
             number = "";
             customer = "";
             setTimeout(() => {
@@ -181,189 +172,9 @@ KTUtil.onDOMContentLoaded(function () {
         QuotationRepeater.init();
     }
 
-    if (document.getElementById("payment_method")) {
-        $("#payment_date, #payment_link").hide();
-
-        // Map enum values to their corresponding strings
-        const paymentMethods = {
-            card: 0,
-            cash: 1,
-            bankTransfer: 2,
-        };
-
-        /**
-         * Handle payment method state ineactions.
-         */
-        function handlePaymentMethodInputs() {
-            const selectedPaymentMethod = parseInt($("#payment_method").val());
-
-            if (selectedPaymentMethod == paymentMethods.card) {
-                $('label[for="payment_date"]').hide();
-                $('input[name="payment_date"]').prop("disabled", true).hide();
-
-                $('label[for="payment_link"]').show();
-                $('input[name="payment_link"]').show();
-                $('#payment_link_btn').show();
-
-                $('label[for="payment_reference"]').hide();
-                $('textarea[name="payment_reference"]')
-                    .prop("disabled", true)
-                    .hide();
-
-                $('label[for="payment_reference_receipt"]').hide();
-                $('#payment_reference_receipt')
-                    .prop("disabled", true)
-                    .hide();
-            }
-
-            if (selectedPaymentMethod == paymentMethods.cash) {
-                $('label[for="payment_date"]').show();
-                $('input[name="payment_date"]').prop("disabled", false).show();
-
-                $('label[for="payment_link"]').hide();
-                $('input[name="payment_link"]').hide();
-                $('#payment_link_btn').hide();
-
-                $('label[for="payment_reference"]').show();
-                $('textarea[name="payment_reference"]')
-                    .prop("disabled", false)
-                    .show();
-
-                $('label[for="payment_reference_receipt"]').hide();
-                $('#payment_reference_receipt')
-                    .prop("disabled", true)
-                    .hide();
-            }
-
-            if (selectedPaymentMethod == paymentMethods.bankTransfer) {
-                $('label[for="payment_date"]').show();
-                $('input[name="payment_date"]').prop("disabled", false).show();
-
-                $('label[for="payment_link"]').hide();
-                $('input[name="payment_link"]').hide();
-                $('#payment_link_btn').hide();
-
-                $('label[for="payment_reference_receipt"]').show();
-                $('#payment_reference_receipt')
-                    .prop("disabled", false)
-                    .show();
-
-                $('label[for="payment_reference"]').show();
-                $('textarea[name="payment_reference"]')
-                    .prop("disabled", false)
-                    .show();
-            }
-        }
-
-        // on load.
-        handlePaymentMethodInputs();
-
-        // on update.
-        $('select[name="payment_method"]').on("change", () =>
-            handlePaymentMethodInputs()
-        );
-    }
-
     if (document.getElementById("quotation_download")) {
         $("#quotation_download").on("click", function () {
             window.open($(this).data("url"), "_blank");
-        });
-    }
-
-    setTimeout(() => {
-        if ($("button#overdue").length) {
-            $("button#overdue").on("click", function (event) {
-                event.preventDefault();
-
-                const parent = event.target.closest("tr");
-                const resourceId = parent.querySelectorAll("td")[0].innerText;
-                const lastSentTimestamp = $(this).data('timestamp');
-
-                Swal.fire({
-                    title: "Send quotation overdue mail?",
-                    icon: "info",
-                    text: lastSentTimestamp && 'Last Sent: ' + lastSentTimestamp,
-                    showCancelButton: true,
-                    reverseButtons: true,
-                    confirmButtonText: "Send Mail",
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            type: "POST",
-                            url: `${window.location.href}/${resourceId}/overdue`,
-                            beforeSend: function (xhr, options) {
-                                Swal.fire({
-                                    text: "Sending..",
-                                    icon: "info",
-                                    showConfirmButton: false,
-                                });
-
-                                setTimeout(function () {
-                                    $.ajax(
-                                        $.extend(options, {
-                                            beforeSend: $.noop,
-                                        })
-                                    );
-                                }, 1000);
-
-                                return false;
-                            },
-                            success: function (response) {
-                                if (response["status"]) {
-                                    Swal.fire(
-                                        "Success",
-                                        response["message"],
-                                        "success"
-                                    );
-                                } else {
-                                    Swal.fire(
-                                        "Error",
-                                        response["message"],
-                                        "error"
-                                    );
-                                }
-                            },
-                            error: function ({ responseJSON }) {
-                                Swal.fire(
-                                    "Failed to process the request",
-                                    responseJSON["message"],
-                                    "error"
-                                );
-                            },
-                            complete: function () {
-                                datatable.draw();
-                            },
-                        });
-                    }
-                });
-            });
-        }
-    }, 2000);
-
-    if (document.getElementById('payment_link')) {
-        const target = document.getElementById('payment_link');
-        const button = target.nextElementSibling;
-
-        let clipboard = new ClipboardJS(button, {
-            target: target,
-            text: function () {
-                return target.value;
-            }
-        });
-
-        clipboard.on('success', function (e) {
-            const currentLabel = button.innerHTML;
-            const icon = '<i class="ki-duotone ki-copy-success"><span class="path1"></span><span class="path2"></span></i>';
-
-            if (button.innerHTML === icon) {
-                return;
-            }
-
-            button.innerHTML = icon;
-
-            setTimeout(function () {
-                button.innerHTML = currentLabel;
-            }, 3000)
         });
     }
 
@@ -483,6 +294,69 @@ KTUtil.onDOMContentLoaded(function () {
                                     response["message"],
                                     "success"
                                 );
+                            } else {
+                                Swal.fire(
+                                    "Error",
+                                    response["message"],
+                                    "error"
+                                );
+                            }
+                        },
+                        error: function ({ responseJSON }) {
+                            Swal.fire(
+                                "Failed to process the request",
+                                responseJSON["message"],
+                                "error"
+                            );
+                        },
+                    });
+                }
+            });
+        });
+    }
+
+    if ($("button#invoice_generate").length) {
+        $("button#invoice_generate").on("click", function (event) {
+            event.preventDefault();
+
+            Swal.fire({
+                title: "Convert to an invoice?",
+                text: "This quotation will be locked and will be converted into an invoice.",
+                icon: "info",
+                showCancelButton: true,
+                reverseButtons: true,
+                confirmButtonText: "Convert To Invoice",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "POST",
+                        url: `${window.location.href}/invoice-generate`,
+                        beforeSend: function (xhr, options) {
+                            Swal.fire({
+                                text: "Converting..",
+                                icon: "info",
+                                showConfirmButton: false,
+                            });
+
+                            setTimeout(function () {
+                                $.ajax(
+                                    $.extend(options, {
+                                        beforeSend: $.noop,
+                                    })
+                                );
+                            }, 1000);
+
+                            return false;
+                        },
+                        success: function (response) {
+                            if (response["status"]) {
+                                Swal.fire(
+                                    "Success",
+                                    response["message"],
+                                    "success"
+                                ).then(() => {
+                                    window.location.href = response['body']['redirect_url'];
+                                });
                             } else {
                                 Swal.fire(
                                     "Error",

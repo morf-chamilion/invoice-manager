@@ -15,8 +15,8 @@
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-lg-6">
-                                <div class="mb-8">
+                            <div class="col-lg-4">
+                                <div>
                                     <x-input-label for="date" :value="__('Date')" required />
                                     <x-input-date id="date" name="date" :value="old('date')"
                                         data-locale-format="YYYY-MM-DD" required />
@@ -24,16 +24,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-6">
-                                <div class="mb-8">
-                                    <x-input-label for="due_date" :value="__('Due Date')" required />
-                                    <x-input-date id="due_date" name="due_date" :value="old('due_date')"
-                                        data-locale-format="YYYY-MM-DD" required />
-                                    <x-input-error :messages="$errors->get('due_date')" />
-                                </div>
-                            </div>
-
-                            <div class="col-lg-8">
+                            <div class="col-lg-5">
                                 <x-input-label for="customer_id" :value="__('Customer')" required />
                                 <x-input-select name="customer_id" data-placeholder="Select Customer" required>
                                     @if ($customers->isNotEmpty())
@@ -47,7 +38,7 @@
                                 <x-input-error :messages="$errors->get('customer_id')" />
                             </div>
 
-                            <div class="col-lg-4">
+                            <div class="col-lg-3">
                                 <button class="btn font-weight-bolder btn-light-primary w-100 mt-8" type="button"
                                     data-bs-toggle="modal" data-bs-target="#customer_create">
                                     <i class="fas fa-user-plus"></i> {{ __('Create New Customer') }}
