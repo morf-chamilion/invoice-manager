@@ -194,6 +194,7 @@ class CustomerService extends BaseService
 		});
 
 		$data['count'] = $query->count();
+		$data['data'] = [];
 
 		$orderByColumn = $filterColumns[$filterQuery->order[0]['column']] ?? $filterColumns[count($filterColumns) - 1];
 		$orderByDirection = $filterQuery->order[0]['dir'];
@@ -204,7 +205,9 @@ class CustomerService extends BaseService
 			$query->skip($filterQuery->start)->take($filterQuery->length);
 		}
 
-		$data['data'] = $query->get();
+		if ($this->getAdminAuthUser()->vendor) {
+			$data['data'] = $query->get();
+		}
 
 		return $data;
 	}

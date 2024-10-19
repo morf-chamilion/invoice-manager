@@ -35,6 +35,10 @@ class QuotationController extends AdminBaseController
 	 */
 	public function index(Request $request): QuotationIndexResource|Renderable
 	{
+		if (!auth()->user()->vendor?->id) {
+			return abort(403);
+		}
+
 		if ($request->ajax()) {
 			$attributes = (object) $request->only(
 				[
@@ -89,6 +93,10 @@ class QuotationController extends AdminBaseController
 	 */
 	public function create(): Renderable
 	{
+		if (!auth()->user()->vendor?->id) {
+			return abort(403);
+		}
+
 		$this->registerBreadcrumb(
 			parentRouteName: $this->quotationRoutePath::INDEX,
 		);
@@ -107,6 +115,10 @@ class QuotationController extends AdminBaseController
 	 */
 	public function show(Quotation $quotation): Renderable
 	{
+		if ($quotation->vendor->id !== auth()->user()->vendor?->id) {
+			return abort(403);
+		}
+
 		$this->registerBreadcrumb(
 			parentRouteName: $this->quotationRoutePath::INDEX,
 			routeParameter: $quotation->id,
@@ -147,6 +159,10 @@ class QuotationController extends AdminBaseController
 	 */
 	public function edit(Quotation $quotation): Renderable|RedirectResponse
 	{
+		if ($quotation->vendor->id !== auth()->user()->vendor?->id) {
+			return abort(403);
+		}
+
 		$this->registerBreadcrumb(
 			parentRouteName: $this->quotationRoutePath::INDEX,
 			routeParameter: $quotation->id,

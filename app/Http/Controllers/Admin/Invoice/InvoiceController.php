@@ -34,6 +34,10 @@ class InvoiceController extends AdminBaseController
 	 */
 	public function index(Request $request): InvoiceIndexResource|Renderable
 	{
+		if (!auth()->user()->vendor?->id) {
+			return abort(403);
+		}
+
 		if ($request->ajax()) {
 			$attributes = (object) $request->only(
 				[
@@ -88,6 +92,10 @@ class InvoiceController extends AdminBaseController
 	 */
 	public function create(): Renderable
 	{
+		if (!auth()->user()->vendor?->id) {
+			return abort(403);
+		}
+
 		$this->registerBreadcrumb(
 			parentRouteName: $this->invoiceRoutePath::INDEX,
 		);
@@ -106,6 +114,10 @@ class InvoiceController extends AdminBaseController
 	 */
 	public function show(Invoice $invoice): Renderable
 	{
+		if ($invoice->vendor->id !== auth()->user()->vendor?->id) {
+			return abort(403);
+		}
+
 		$this->registerBreadcrumb(
 			parentRouteName: $this->invoiceRoutePath::INDEX,
 			routeParameter: $invoice->id,
@@ -146,6 +158,10 @@ class InvoiceController extends AdminBaseController
 	 */
 	public function edit(Invoice $invoice): Renderable|RedirectResponse
 	{
+		if ($invoice->vendor->id !== auth()->user()->vendor?->id) {
+			return abort(403);
+		}
+
 		$this->registerBreadcrumb(
 			parentRouteName: $this->invoiceRoutePath::INDEX,
 			routeParameter: $invoice->id,

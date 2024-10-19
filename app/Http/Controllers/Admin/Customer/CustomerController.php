@@ -31,6 +31,10 @@ class CustomerController extends AdminBaseController
      */
     public function index(Request $request): CustomerIndexResource|Renderable
     {
+        if (!auth()->user()->vendor?->id) {
+            return abort(403);
+        }
+
         if ($request->ajax()) {
             $attributes = (object) $request->only(
                 ['draw', 'columns', 'order', 'start', 'length', 'search']
@@ -70,6 +74,10 @@ class CustomerController extends AdminBaseController
      */
     public function create(): Renderable
     {
+        if (!auth()->user()->vendor?->id) {
+            return abort(403);
+        }
+
         $this->registerBreadcrumb(
             parentRouteName: $this->customerRoutePath::INDEX,
         );
@@ -101,6 +109,10 @@ class CustomerController extends AdminBaseController
      */
     public function edit(Customer $customer): Renderable
     {
+        if ($customer->vendor->id !== auth()->user()->vendor?->id) {
+            return abort(403);
+        }
+
         $this->registerBreadcrumb(
             parentRouteName: $this->customerRoutePath::INDEX,
             routeParameter: $customer->id,

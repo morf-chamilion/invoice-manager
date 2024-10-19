@@ -150,6 +150,10 @@ class VendorController extends AdminBaseController
      */
     public function editGeneralSettings(Vendor $vendor): Renderable
     {
+        if ($vendor->id !== auth()->user()->vendor?->id) {
+            return abort(403);
+        }
+
         $this->registerBreadcrumb(
             routeParameter: $vendor->id,
         );
@@ -183,6 +187,10 @@ class VendorController extends AdminBaseController
      */
     public function editQuotationSettings(Vendor $vendor): Renderable
     {
+        if ($vendor->id !== auth()->user()->vendor?->id) {
+            return abort(403);
+        }
+
         $this->registerBreadcrumb(
             routeParameter: $vendor->id,
         );
@@ -216,6 +224,10 @@ class VendorController extends AdminBaseController
      */
     public function editInvoiceSettings(Vendor $vendor): Renderable
     {
+        if ($vendor->id !== auth()->user()->vendor?->id) {
+            return abort(403);
+        }
+
         $this->registerBreadcrumb(
             routeParameter: $vendor->id,
         );
