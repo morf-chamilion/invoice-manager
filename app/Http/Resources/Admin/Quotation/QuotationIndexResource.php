@@ -50,7 +50,7 @@ class QuotationIndexResource extends JsonResource implements HasDataTableInterfa
 			'destroy' => Gate::check($destroy) ? route($destroy, $record) : '',
 		];
 
-		if ($record->status === QuotationStatus::COMPLETED) {
+		if ($record->status === QuotationStatus::CONVERTED) {
 			$actions['edit'] = null;
 		}
 

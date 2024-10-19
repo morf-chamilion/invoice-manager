@@ -35,40 +35,40 @@ class QuotationUpdateRequest extends BaseRequest
 				'required',
 				Rule::exists(Customer::class, 'id'),
 			],
-			'invoice_items' => [
+			'quotation_items' => [
 				'nullable',
 				'array',
 				'min:1',
 			],
-			'invoice_items.*.type_id' => [
+			'quotation_items.*.type_id' => [
 				'required',
 				'integer',
 				new Enum(QuotationItemType::class),
 			],
-			'invoice_items.*.item_id' => [
+			'quotation_items.*.item_id' => [
 				'required',
 			],
-			'invoice_items.*.title' => [
+			'quotation_items.*.title' => [
 				'nullable',
 				'string',
 			],
-			'invoice_items.*.description' => [
+			'quotation_items.*.description' => [
 				'nullable',
 				'string',
 			],
-			'invoice_items.*.quantity' => [
+			'quotation_items.*.quantity' => [
 				'required',
 				'numeric',
 				'min:0',
 				'max:9999999',
 			],
-			'invoice_items.*.unit_price' => [
+			'quotation_items.*.unit_price' => [
 				'required',
 				'numeric',
 				'min:0',
 				'max:9999999.99',
 			],
-			'invoice_items.*.amount' => [
+			'quotation_items.*.amount' => [
 				'required',
 				'numeric',
 				'min:0',
@@ -100,13 +100,13 @@ class QuotationUpdateRequest extends BaseRequest
 	public function messages(): array
 	{
 		return [
-			'invoice_items.*.type.required' => 'The type field for invoice item is required.',
-			'invoice_items.*.content.required' => 'This content is required for this item.',
-			'invoice_items.*.quantity.required' => 'The quantity is required for this item.',
-			'invoice_items.*.unit_price.required' => 'The unit price is required for this item.',
-			'invoice_items.*.unit_price.max' => 'The unit price field must be at most 9999999.99.',
-			'invoice_items.*.amount.required' => 'The amount is required for this item.',
-			'invoice_items.*.amount.max' => 'The amount field must be at most 9999999.99.',
+			'quotation_items.*.type.required' => 'The type field for quotation item is required.',
+			'quotation_items.*.content.required' => 'This content is required for this item.',
+			'quotation_items.*.quantity.required' => 'The quantity is required for this item.',
+			'quotation_items.*.unit_price.required' => 'The unit price is required for this item.',
+			'quotation_items.*.unit_price.max' => 'The unit price field must be at most 9999999.99.',
+			'quotation_items.*.amount.required' => 'The amount is required for this item.',
+			'quotation_items.*.amount.max' => 'The amount field must be at most 9999999.99.',
 		];
 	}
 }

@@ -192,4 +192,15 @@ class QuotationRepository extends BaseRepository
 			QuotationItemType::CUSTOM => $item->custom = $itemTitle,
 		};
 	}
+
+	/**
+	 * Update the status of the specified resource.
+	 */
+	public function updateStatus(int $quotationId, QuotationStatus $status): bool
+	{
+		/** @var Quotation $quotation */
+		$quotation = $this->quotation::findOrFail($quotationId);
+
+		return $quotation->update(['status' => $status]);
+	}
 }

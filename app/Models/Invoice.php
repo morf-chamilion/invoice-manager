@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -211,6 +212,14 @@ class Invoice extends Model implements HasMedia, HasRelationsInterface
 	public function vendor(): BelongsTo
 	{
 		return $this->belongsTo(Vendor::class);
+	}
+
+	/**
+	 * Get the quotation that owns the invoice.
+	 */
+	public function quotation(): HasOne
+	{
+		return $this->hasOne(Quotation::class);
 	}
 
 	/**

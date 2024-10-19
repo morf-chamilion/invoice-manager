@@ -114,7 +114,7 @@ class QuotationController extends AdminBaseController
 
 		$this->sharePageData([
 			'title' => $this->getActionTitle(),
-			'editPage' => $quotation->status != QuotationStatus::COMPLETED ? [
+			'editPage' => $quotation->status != QuotationStatus::CONVERTED ? [
 				'url' => route($this->quotationRoutePath::EDIT, $quotation->id),
 				'title' => 'Edit Quotation',
 			] : [],
@@ -160,7 +160,7 @@ class QuotationController extends AdminBaseController
 			],
 		]);
 
-		if ($quotation->status === QuotationStatus::COMPLETED) {
+		if ($quotation->status === QuotationStatus::CONVERTED) {
 			return redirect()->route($this->quotationRoutePath::SHOW, $quotation);
 		}
 

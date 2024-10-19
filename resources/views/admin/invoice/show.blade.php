@@ -39,7 +39,7 @@
                 <div class="mb-4">
                     <a href="{{ $invoice->show_link }}" target="_blank" class="btn btn-icon btn-secondary w-100">
                         <i class="fa-solid fa-eye"></i>
-                        <span class="ms-2">{{ __('View Invoice') }}</span>
+                        <span class="ms-2">{{ __('Preview Invoice') }}</span>
                     </a>
                 </div>
             </x-form-metadata>

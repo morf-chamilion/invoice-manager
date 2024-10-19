@@ -8,7 +8,8 @@ enum QuotationStatus: int
 {
     case DRAFT = 0;
     case ACTIVE = 1;
-    case COMPLETED = 3;
+    case APPROVED = 5;
+    case CONVERTED = 9;
 
     /**
      * Get the human readable name.
@@ -18,7 +19,8 @@ enum QuotationStatus: int
         return match ($this) {
             self::DRAFT => 'Draft',
             self::ACTIVE => 'Active',
-            self::COMPLETED => 'Completed',
+            self::APPROVED => 'Approved',
+            self::CONVERTED => 'Converted',
             default => 'Not known',
         };
     }
@@ -41,8 +43,9 @@ enum QuotationStatus: int
     {
         $classes = [
             self::DRAFT->value => 'badge badge-light',
-            self::ACTIVE->value => 'badge badge-success',
-            self::COMPLETED->value => 'badge badge-info',
+            self::ACTIVE->value => 'badge badge-primary',
+            self::APPROVED->value => 'badge badge-info',
+            self::CONVERTED->value => 'badge badge-success',
         ];
 
         return Blade::render('<span class="{{ $class }}">{{ $status->getName() }}</span>', [

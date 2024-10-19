@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\CustomerStatus;
+use App\Enums\QuotationStatus;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Quotation;
@@ -17,6 +18,7 @@ use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Barryvdh\DomPDF\PDF as DomPDF;
 use Exception;
+use Illuminate\Support\Facades\Date;
 
 class QuotationService extends BaseService
 {
@@ -137,18 +139,34 @@ class QuotationService extends BaseService
 	 */
 	public function generateInvoice(Quotation $quotation): ?Invoice
 	{
-		$attributes = Arr::except($quotation->toArray(), [
+		$quotationData = $quotation->toArray();
+		$quotationData['invoice_items'] = $quotation->formattedQuotationItems->toArray();
+
+		$attributes = Arr::except($quotationData, [
 			'vendor_quotation_number',
 			'created_at',
 			'created_by',
 			'updated_at',
 			'updated_by',
 			'vendor_id',
+			'invoice_id',
 			'status',
 			'id',
 		]);
 
-		return $this->invoiceService->createInvoice($attributes);
+		$invoice = $this->invoiceService->createInvoice([
+			'due_date' => Date::today()->addWeek(),
+			...$attributes
+		]);
+
+		if ($invoice) {
+			$this->updateQuotation($quotation->id, [
+				'status' => QuotationStatus::CONVERTED,
+				'invoice_id' => $invoice->id,
+			]);
+		}
+
+		return $invoice;
 	}
 
 	/**

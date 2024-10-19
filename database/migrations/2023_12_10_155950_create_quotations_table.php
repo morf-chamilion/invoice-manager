@@ -2,6 +2,7 @@
 
 use App\Enums\QuotationStatus;
 use App\Models\Customer;
+use App\Models\Invoice;
 use App\Models\Vendor;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -22,13 +23,13 @@ return new class extends Migration
 			$table->unsignedInteger('vendor_quotation_number')->nullable();
 
 			$table->date('date');
-			$table->date('due_date');
 
 			$table->longText('notes')->nullable();
 			$table->decimal('total_price', 10, 2)->default(0);
 
 			$table->foreignIdFor(Customer::class)->constrained();
 			$table->foreignIdFor(Vendor::class)->constrained()->cascadeOnDelete();
+			$table->foreignIdFor(Invoice::class)->nullable()->constrained()->cascadeOnDelete();
 
 			$table->foreignId('created_by')->constrained('users')->onDelete('restrict')->onUpdate('cascade');
 			$table->foreignId('updated_by')->nullable()->constrained('users')->onDelete('restrict')->onUpdate('cascade');

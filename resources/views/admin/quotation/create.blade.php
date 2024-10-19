@@ -207,7 +207,7 @@
                     <x-input-label for="status" required>Status</x-input-label>
                     <x-input-select name="status" data-placeholder="Select Status" data-hide-search="true" required>
                         @foreach (QuotationStatus::toSelectOptions() as $option)
-                            @if ($option->value !== QuotationStatus::COMPLETED->value)
+                            @if ($option->value !== QuotationStatus::CONVERTED->value)
                                 <option value="{{ $option->value }}" @selected($option->value == old('status'))>
                                     {{ $option->name }}
                                 </option>

@@ -39,6 +39,7 @@ class Quotation extends Model implements HasMedia, HasRelationsInterface
 		'total_price',
 		'notes',
 		'vendor_id',
+		'invoice_id',
 		'vendor_quotation_number',
 		'updated_by',
 		'created_by',
@@ -176,6 +177,14 @@ class Quotation extends Model implements HasMedia, HasRelationsInterface
 	public function vendor(): BelongsTo
 	{
 		return $this->belongsTo(Vendor::class);
+	}
+
+	/**
+	 * Get the invoice that owns the quotation.
+	 */
+	public function invoice(): BelongsTo
+	{
+		return $this->belongsTo(Invoice::class);
 	}
 
 	/**

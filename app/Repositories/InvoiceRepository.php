@@ -227,7 +227,6 @@ class InvoiceRepository extends BaseRepository
 	private function setInvoiceItemType(InvoiceItem $item, array|object $invoiceItem)
 	{
 		$typeId = is_array($invoiceItem) ? $invoiceItem['type_id'] : $invoiceItem->type_id;
-		$itemId = is_array($invoiceItem) ? $invoiceItem['item_id'] : $invoiceItem->item_id;
 		$itemTitle = is_array($invoiceItem) ? $invoiceItem['title'] : $invoiceItem->title;
 		$itemType = InvoiceItemType::from($typeId);
 

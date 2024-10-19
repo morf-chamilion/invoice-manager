@@ -15,6 +15,20 @@
             </div>
 
             <x-form-metadata :model="$quotation">
+                <h4 class="form-label">{{ __('Invoice') }}</h4>
+
+                @if ($quotation->invoice)
+                    <div class="mb-4">
+                        <button type="button" class="btn btn-icon btn-success w-100" id="quotation_download"
+                            data-url="{{ route(InvoiceRoutePath::SHOW, $quotation->invoice->id) }}">
+                            <i class="fas fa-file-invoice"></i>
+                            <span class="ms-2">{{ __('View Converted Invoice') }}</span>
+                        </button>
+                    </div>
+                @endif
+
+                <div class="separator separator-dashed mb-8"></div>
+
                 <h4 class="form-label">{{ __('Quotation Tools') }}</h4>
 
                 <div class="mb-4">
@@ -37,7 +51,7 @@
                 <div class="mb-4">
                     <a href="{{ $quotation->show_link }}" target="_blank" class="btn btn-icon btn-secondary w-100">
                         <i class="fa-solid fa-eye"></i>
-                        <span class="ms-2">{{ __('View Quotation') }}</span>
+                        <span class="ms-2">{{ __('Preview Quotation') }}</span>
                     </a>
                 </div>
             </x-form-metadata>
