@@ -118,76 +118,78 @@
                             }
                         @endphp
 
-                        <table id="invoiceData"
-                            class="table table-rounded table-row-bordered table-responsive border gy-4 gs-4 mb-8">
-                            <thead>
-                                <tr class="fw-bold fs-7 text-gray-500 text-uppercase">
-                                    <th id="type" class="d-none">{{ __('Type') }}</th>
-                                    <th id="item">{{ __('Item') }}</th>
-                                    <th id="description">{{ __('Description') }}</th>
-                                    <th id="quantity" width="10%" class="text-end">{{ __('Quantity') }}</th>
-                                    <th id="unit_price" width="15%" class="text-end">{{ __('Unit Price') }}</th>
-                                    <th id="amount" width="15%" class="text-end">{{ __('Amount') }}</th>
-                                    <th id="actions" width="150px" class="text-end">{{ __('Actions') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody data-repeater-list="invoice_items" class="draggable-zone">
-                                <tr data-repeater-item class="draggable">
-                                    <td class="d-none">
-                                        <input type="hidden" name="type_id">
-                                        <x-input-text type="text" name="type" id="type"
-                                            class="bg-none bg-body p-0 border-0" readonly />
-                                    </td>
-                                    <td>
-                                        <input type="hidden" name="item_id">
-                                        <x-input-text type="text" name="title" id="title"
-                                            class="bg-body p-0 border-0" readonly />
-                                    </td>
-                                    <td>
-                                        <x-input-text type="text" name="description" id="description"
-                                            class="bg-body p-0 border-0" readonly />
-                                    </td>
-                                    <td>
-                                        <x-input-text type="text" name="quantity" id="quantity"
-                                            class="text-end bg-body p-0 border-0" min="1" readonly />
-                                    </td>
-                                    <td>
-                                        <x-input-text type="text" name="unit_price" id="unit_price"
-                                            class="text-end bg-body p-0 border-0" min="0" readonly />
-                                    </td>
-                                    <td>
-                                        <x-input-text type="text" name="amount" id="amount"
-                                            class="text-end bg-body p-0 border-0" min="0" readonly />
-                                    </td>
-                                    <td class="text-end">
-                                        <button type="button"
-                                            class="btn btn-sm btn-icon btn-light-secondary draggable-handle"
-                                            title="Move">
-                                            <i class="fa-solid fa-arrows-alt text-dark"></i>
-                                        </button>
+                        <div class="table-wrapper mb-8">
+                            <table id="invoiceData"
+                                class="table table-rounded table-row-bordered table-responsive border gy-4 gs-4 mb-8">
+                                <thead>
+                                    <tr class="fw-bold fs-7 text-gray-500 text-uppercase">
+                                        <th id="type" class="d-none">{{ __('Type') }}</th>
+                                        <th id="item">{{ __('Item') }}</th>
+                                        <th id="description">{{ __('Description') }}</th>
+                                        <th id="quantity" width="10%" class="text-end">{{ __('Quantity') }}</th>
+                                        <th id="unit_price" width="15%" class="text-end">{{ __('Unit Price') }}</th>
+                                        <th id="amount" width="15%" class="text-end">{{ __('Amount') }}</th>
+                                        <th id="actions" width="150px" class="text-end">{{ __('Actions') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-repeater-list="invoice_items" class="draggable-zone">
+                                    <tr data-repeater-item class="draggable">
+                                        <td class="d-none">
+                                            <input type="hidden" name="type_id">
+                                            <x-input-text type="text" name="type" id="type"
+                                                class="bg-none bg-body p-0 border-0" readonly />
+                                        </td>
+                                        <td>
+                                            <input type="hidden" name="item_id">
+                                            <x-input-text type="text" name="title" id="title"
+                                                class="bg-body p-0 border-0" readonly />
+                                        </td>
+                                        <td>
+                                            <x-input-text type="text" name="description" id="description"
+                                                class="bg-body p-0 border-0" readonly />
+                                        </td>
+                                        <td>
+                                            <x-input-text type="text" name="quantity" id="quantity"
+                                                class="text-end bg-body p-0 border-0" min="1" readonly />
+                                        </td>
+                                        <td>
+                                            <x-input-text type="text" name="unit_price" id="unit_price"
+                                                class="text-end bg-body p-0 border-0" min="0" readonly />
+                                        </td>
+                                        <td>
+                                            <x-input-text type="text" name="amount" id="amount"
+                                                class="text-end bg-body p-0 border-0" min="0" readonly />
+                                        </td>
+                                        <td class="text-end">
+                                            <button type="button"
+                                                class="btn btn-sm btn-icon btn-light-secondary draggable-handle"
+                                                title="Move">
+                                                <i class="fa-solid fa-arrows-alt text-dark"></i>
+                                            </button>
 
-                                        <button type="button" data-repeater-delete=""
-                                            class="btn btn-sm btn-icon btn-light-danger" title="Delete">
-                                            <i class="fa fa-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                            <tfoot class="border">
-                                <tr class="bg-gray-100">
-                                    <td colspan="5" class="text-right border-right-0 py-7"><span
-                                            class="font-weight-bolder h3">{{ __('Total Amount') }}</span></td>
-                                    <td colspan="2" class="border-right-0 py-7">
-                                        <span class="font-weight-bolder h3 d-block text-end">
-                                            <span>{{ MoneyHelper::currencyCode() }}</span>
-                                            <span id="totalPrice">{{ MoneyHelper::format($totalPrice) }}</span>
-                                        </span>
-                                        <input type="hidden" name="total_price" id="totalPriceInput"
-                                            value="{{ $totalPrice }}">
-                                    </td>
-                                </tr>
-                            </tfoot>
-                        </table>
+                                            <button type="button" data-repeater-delete=""
+                                                class="btn btn-sm btn-icon btn-light-danger" title="Delete">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot class="border">
+                                    <tr class="bg-gray-100">
+                                        <td colspan="5" class="text-right border-right-0 py-7"><span
+                                                class="font-weight-bolder h3">{{ __('Total Amount') }}</span></td>
+                                        <td colspan="2" class="border-right-0 py-7">
+                                            <span class="font-weight-bolder h3 d-block text-end">
+                                                <span>{{ MoneyHelper::currencyCode() }}</span>
+                                                <span id="totalPrice">{{ MoneyHelper::format($totalPrice) }}</span>
+                                            </span>
+                                            <input type="hidden" name="total_price" id="totalPriceInput"
+                                                value="{{ $totalPrice }}">
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
 
                         <script>
                             let items = @json(!empty($items) ? $items : []);
@@ -286,6 +288,7 @@
                 overflow-x: auto;
             }
 
+            table th,
             table td {
                 min-width: 150px;
             }
