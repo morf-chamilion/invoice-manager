@@ -28,23 +28,25 @@
             </div>
 
             <div class="col-lg-3" id="form_metadata_container">
-                <div class="card" data-kt-sticky="true" data-kt-sticky-name="form-metadata-card"
-                    data-kt-sticky-width="{target: '#form_metadata_container'}" data-kt-sticky-top="100px"
-                    data-kt-sticky-animation="false" data-kt-sticky-zindex="95">
-                    <div class="card-body">
+                <div class="form-metadata-sticky-container" data-kt-sticky="true"
+                    data-kt-sticky-name="form-metadata-card" data-kt-sticky-width="{target: '#form_metadata_container'}"
+                    data-kt-sticky-top="100px" data-kt-sticky-animation="false" data-kt-sticky-zindex="95">
+                    <div class="card">
+                        <div class="card-body">
 
-                        @if (!empty($vendor->updatedByUser))
-                            <h4 class="form-label">{{ __('Last Updated By') }}</h4>
-                            <div class="d-flex justify-content-between mb-4">
-                                <p class="text-muted">{{ $vendor?->updatedByUser->name }}</p>
-                                <p class="text-muted">{{ $vendor?->updated_at->diffForHumans() }}</p>
+                            @if (!empty($vendor->updatedByUser))
+                                <h4 class="form-label">{{ __('Last Updated By') }}</h4>
+                                <div class="d-flex justify-content-between mb-4">
+                                    <p class="text-muted">{{ $vendor?->updatedByUser->name }}</p>
+                                    <p class="text-muted">{{ $vendor?->updated_at->diffForHumans() }}</p>
+                                </div>
+
+                                <div class="separator separator-dashed mb-8"></div>
+                            @endif
+
+                            <div class="flex items-center gap-4">
+                                <x-button-primary class="w-100">{{ __('Update') }}</x-button-primary>
                             </div>
-
-                            <div class="separator separator-dashed mb-8"></div>
-                        @endif
-
-                        <div class="flex items-center gap-4">
-                            <x-button-primary class="w-100">{{ __('Update') }}</x-button-primary>
                         </div>
                     </div>
                 </div>

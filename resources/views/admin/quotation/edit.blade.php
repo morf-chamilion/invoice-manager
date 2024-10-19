@@ -206,7 +206,8 @@
             </div>
 
             <div class="col-lg-3" id="form_metadata_container">
-                <div data-kt-sticky="true" data-kt-sticky-name="form-metadata-card"
+                <div class="form-metadata-sticky-container" data-kt-sticky="true"
+                    data-kt-sticky-name="form-metadata-card"
                     data-kt-sticky-width="{target: '#form_metadata_container'}" data-kt-sticky-top="100px"
                     data-kt-sticky-animation="false" data-kt-sticky-zindex="95">
                     <div class="card mb-8">
@@ -258,9 +259,7 @@
                         </div>
                     </div>
 
-                    <div class="card" data-kt-sticky="true" data-kt-sticky-name="form-metadata-card"
-                        data-kt-sticky-width="{target: '#form_metadata_container'}" data-kt-sticky-top="100px"
-                        data-kt-sticky-animation="false" data-kt-sticky-zindex="95">
+                    <div class="card mb-8">
                         <div class="card-body">
                             <div>
                                 <p class="text-muted">Convert to an invoice with billing capabilities.</p>

@@ -3,12 +3,14 @@
 //
 
 // Base
-.card {    
-    @if ($card-border-enabled)  {
-        border: $card-border-width $card-border-style var(--#{$prefix}card-border-color);
+.card {
+    @if ($card-border-enabled) {
+        border: $card-border-width
+            $card-border-style
+            var(--#{$prefix}card-border-color);
     } @else {
         border: 0;
-    }  
+    }
 
     // Header
     .card-header {
@@ -20,7 +22,8 @@
         padding: 0 $card-px;
         color: var(--#{$prefix}card-cap-color);
         background-color: var(--#{$prefix}card-cap-bg);
-        border-bottom: $card-border-width $card-border-style var(--#{$prefix}card-border-color);
+        border-bottom: $card-border-width $card-border-style
+            var(--#{$prefix}card-border-color);
 
         // Title
         .card-title {
@@ -74,7 +77,12 @@
             }
 
             // Headings
-            h1, h2, h3, h4, h5, h6 {
+            h1,
+            h2,
+            h3,
+            h4,
+            h5,
+            h6 {
                 margin-bottom: 0;
             }
         }
@@ -99,7 +107,8 @@
         padding: $card-py $card-px;
         color: var(--#{$prefix}card-cap-color);
         background-color: var(--#{$prefix}card-cap-bg);
-        border-top: $card-border-width $card-border-style var(--#{$prefix}card-border-color);
+        border-top: $card-border-width $card-border-style
+            var(--#{$prefix}card-border-color);
     }
 
     // Scroll
@@ -165,7 +174,7 @@
             border-top: 0 !important;
         }
     }
-    
+
     // Enable shadow
     &.card-shadow {
         box-shadow: var(--#{$prefix}card-box-shadow);
@@ -209,8 +218,8 @@
 // Responsive stretch heights
 .card {
     @each $breakpoint in map-keys($grid-breakpoints) {
-    	@include media-breakpoint-up($breakpoint) {
-    		$infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+        @include media-breakpoint-up($breakpoint) {
+            $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
 
             // Stretch
             &.card#{$infix}-stretch {
@@ -227,7 +236,7 @@
                 height: calc(50% - var(--#{$prefix}gutter-y));
             }
 
-             // Stretch 33
+            // Stretch 33
             &.card#{$infix}-stretch-33 {
                 height: calc(33.333% - var(--#{$prefix}gutter-y));
             }
@@ -242,7 +251,7 @@
                 padding-top: 0 !important;
                 padding-bottom: 0 !important;
                 align-items: stretch;
-    
+
                 .card-toolbar {
                     margin: 0;
                     align-items: stretch;
@@ -297,7 +306,7 @@
 
 // Mobile mode
 @include media-breakpoint-down(lg) {
-    .card {
+    .form-metadata-sticky-container {
         position: unset !important;
     }
 }
