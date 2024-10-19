@@ -23,6 +23,7 @@ return new class extends Migration
 			$table->unsignedInteger('vendor_quotation_number')->nullable();
 
 			$table->date('date');
+			$table->date('valid_until_date');
 
 			$table->longText('notes')->nullable();
 			$table->decimal('total_price', 10, 2)->default(0);

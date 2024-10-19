@@ -26,19 +26,26 @@
                             </div>
 
                             <div class="col-lg-6">
-                                <div>
-                                    <x-input-label for="customer_id" :value="__('Customer')" required />
-                                    <x-input-select name="customer_id" data-placeholder="Select Customer" required>
-                                        @if ($customers->isNotEmpty())
-                                            @foreach ($customers as $customer)
-                                                <option value="{{ $customer->id }}" @selected($customer->id == old('customer_id', $quotation->customer_id))>
-                                                    {{ $customer->name }}
-                                                </option>
-                                            @endforeach
-                                        @endif
-                                    </x-input-select>
-                                    <x-input-error :messages="$errors->get('customer_id')" />
+                                <div class="mb-8">
+                                    <x-input-label for="valid_until_date" :value="__('Valid Until Date')" required />
+                                    <x-input-date id="valid_until_date" name="valid_until_date" :value="old('valid_until_date', $quotation->valid_until_date)"
+                                        data-locale-format="YYYY-MM-DD" required />
+                                    <x-input-error :messages="$errors->get('valid_until_date')" />
                                 </div>
+                            </div>
+
+                            <div>
+                                <x-input-label for="customer_id" :value="__('Customer')" required />
+                                <x-input-select name="customer_id" data-placeholder="Select Customer" required>
+                                    @if ($customers->isNotEmpty())
+                                        @foreach ($customers as $customer)
+                                            <option value="{{ $customer->id }}" @selected($customer->id == old('customer_id', $quotation->customer_id))>
+                                                {{ $customer->name }}
+                                            </option>
+                                        @endforeach
+                                    @endif
+                                </x-input-select>
+                                <x-input-error :messages="$errors->get('customer_id')" />
                             </div>
                         </div>
                     </div>

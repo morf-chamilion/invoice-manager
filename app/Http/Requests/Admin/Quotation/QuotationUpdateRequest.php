@@ -27,7 +27,7 @@ class QuotationUpdateRequest extends BaseRequest
 				'nullable',
 				'date',
 			],
-			'due_date' => [
+			'valid_until_date' => [
 				'nullable',
 				'date',
 			],

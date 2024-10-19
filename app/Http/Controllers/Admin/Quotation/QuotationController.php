@@ -67,7 +67,7 @@ class QuotationController extends AdminBaseController
 
 		$columns = $this->tableColumns(
 			prefixes: [],
-			columns: ['number', 'customer', 'date', 'total_price']
+			columns: ['number', 'customer', 'date', 'is_valid_until', 'total_price']
 		);
 
 		$this->registerBreadcrumb();

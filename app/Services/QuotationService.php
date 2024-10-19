@@ -144,6 +144,7 @@ class QuotationService extends BaseService
 
 		$attributes = Arr::except($quotationData, [
 			'vendor_quotation_number',
+			'valid_until_date',
 			'created_at',
 			'created_by',
 			'updated_at',
@@ -167,6 +168,19 @@ class QuotationService extends BaseService
 		}
 
 		return $invoice;
+	}
+
+	/**
+	 * Check if the quotation is past valid date.
+	 */
+	public function isPastValidUntilQuotation(Quotation $quotation): bool
+	{
+		return $this->quotationRepository->getModel()
+			->where('id', $quotation->id)
+			->whereDate('valid_until_date', '<', now())
+			->where('status', '!=', QuotationStatus::DRAFT)
+			->where('invoice_id', '=', null)
+			->exists();
 	}
 
 	/**

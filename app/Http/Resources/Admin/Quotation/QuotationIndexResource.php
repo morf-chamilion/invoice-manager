@@ -28,6 +28,7 @@ class QuotationIndexResource extends JsonResource implements HasDataTableInterfa
 				$this->number($record),
 				$this->customer($record->customer),
 				$record->readableDate,
+				$this->validUntilDate($record),
 				$record->readableTotalPrice,
 				QuotationStatus::toBadge($record->status),
 				$this->actions($record),
@@ -82,6 +83,22 @@ class QuotationIndexResource extends JsonResource implements HasDataTableInterfa
 
 		return Blade::render('{{ $name }}', [
 			'name' => $customer->name,
+		]);
+	}
+
+	/**
+	 * Render valid until date.
+	 */
+	private function validUntilDate(Model $resource): string
+	{
+		/** @var QuotationService $quotationService */
+		$quotationService = App::make(QuotationService::class);
+
+		$isDueQuotation = $quotationService->isPastValidUntilQuotation($resource);
+
+		return Blade::render('<div class="d-flex justify-content-between @if ($isDueQuotation) text-danger @endif">{{ $date }}</div>', [
+			'date' => $resource->readableValidUntilDate,
+			'isDueQuotation' => $isDueQuotation,
 		]);
 	}
 }

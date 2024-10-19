@@ -34,6 +34,7 @@ class Quotation extends Model implements HasMedia, HasRelationsInterface
 	protected $fillable = [
 		'status',
 		'date',
+		'valid_until_date',
 		'number',
 		'customer_id',
 		'total_price',
@@ -140,6 +141,14 @@ class Quotation extends Model implements HasMedia, HasRelationsInterface
 	public function getReadableDateAttribute(): string
 	{
 		return Carbon::parse($this->date)->format('d M Y');
+	}
+
+	/**
+	 * Get the formatted is valid until attribute.
+	 */
+	public function getReadableValidUntilDateAttribute(): string
+	{
+		return Carbon::parse($this->valid_until_date)->format('d M Y');
 	}
 
 	/**
