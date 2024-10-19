@@ -3,7 +3,7 @@
         <div class="card-title d-flex flex-column">
             <span class="fs-2x fw-bold me-2 lh-1 ls-n2">
                 @if (auth()->user()->vendor)
-                    {{ auth()->user()->vendor->count() }}
+                    {{ auth()->user()->vendor->users()->active()->count() }}
                 @else
                     {{ $users->count() }}
                 @endif
