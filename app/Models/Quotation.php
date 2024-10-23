@@ -156,6 +156,10 @@ class Quotation extends Model implements HasMedia, HasRelationsInterface
 	 */
 	public function getReadableTotalPriceAttribute(): string
 	{
+		if ($this->vendor?->currency) {
+			return $this->vendor->currency . " " . MoneyHelper::format($this->total_price);
+		}
+
 		return MoneyHelper::print($this->total_price);
 	}
 

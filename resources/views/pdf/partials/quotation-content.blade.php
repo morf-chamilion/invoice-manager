@@ -102,21 +102,21 @@
                         </p>
                     </th>
                     <th align="right"
-                        style="border: 1px solid #ddd; padding: 8px; background-color: #f0f1f3; color: #555250; text-align: end;  @empty($pdf) width: 200px; @else width: 120px; @endempty">
+                        style="border: 1px solid #ddd; padding: 8px; background-color: #f0f1f3; color: #555250; text-align: end;  @empty($pdf) width: 150px; @else width: 100px; @endempty">
                         <p style="margin: 0; font-size: 11px; font-weight: bold; text-transform: uppercase;">
-                            {{ __('Unit Price (:currency)', ['currency' => MoneyHelper::currencyCode()]) }}
+                            {{ __('Unit Price (:currency)', ['currency' => $quotation->vendor->currency]) }}
                         </p>
                     </th>
                     <th align="right"
-                        style="border: 1px solid #ddd; padding: 8px; background-color: #f0f1f3; color: #555250; text-align: end; @empty($pdf) width: 100px; @else width: 60px; @endempty">
+                        style="border: 1px solid #ddd; padding: 8px; background-color: #f0f1f3; color: #555250; text-align: end; @empty($pdf) width: 60px; @else width: 40px; @endempty">
                         <p style="margin: 0; font-size: 11px; font-weight: bold; text-transform: uppercase;">
                             {{ __('Qty') }}
                         </p>
                     </th>
                     <th align="right"
-                        style="border: 1px solid #ddd; padding: 8px; background-color: #f0f1f3; color: #555250; text-align: end; @empty($pdf) width: 200px; @else width: 120px; @endempty">
+                        style="border: 1px solid #ddd; padding: 8px; background-color: #f0f1f3; color: #555250; text-align: end; @empty($pdf) width: 120px; @else width: 100px; @endempty">
                         <p style="margin: 0; font-size: 11px; font-weight: bold; text-transform: uppercase;">
-                            {{ __('Amount (:currency)', ['currency' => MoneyHelper::currencyCode()]) }}
+                            {{ __('Amount (:currency)', ['currency' => $quotation->vendor->currency]) }}
                         </p>
                     </th>
                 </tr>
