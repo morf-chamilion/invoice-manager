@@ -253,6 +253,33 @@ KTUtil.onDOMContentLoaded(function () {
         });
     }
 
+    if (document.getElementById('payment_link')) {
+        const target = document.getElementById('payment_link');
+        const button = target.nextElementSibling;
+
+        let clipboard = new ClipboardJS(button, {
+            target: target,
+            text: function () {
+                return target.value;
+            }
+        });
+
+        clipboard.on('success', function (e) {
+            const currentLabel = button.innerHTML;
+            const icon = '<i class="ki-duotone ki-copy-success"><span class="path1"></span><span class="path2"></span></i> Copied';
+
+            if (button.innerHTML === icon) {
+                return;
+            }
+
+            button.innerHTML = icon;
+
+            setTimeout(function () {
+                button.innerHTML = currentLabel;
+            }, 3000)
+        });
+    }
+
     if ($("button#quotation_notification").length) {
         $("button#quotation_notification").on("click", function (event) {
             event.preventDefault();

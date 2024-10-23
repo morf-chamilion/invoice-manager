@@ -353,7 +353,7 @@ KTUtil.onDOMContentLoaded(function () {
 
         clipboard.on('success', function (e) {
             const currentLabel = button.innerHTML;
-            const icon = '<i class="ki-duotone ki-copy-success"><span class="path1"></span><span class="path2"></span></i>';
+            const icon = '<i class="ki-duotone ki-copy-success"><span class="path1"></span><span class="path2"></span></i> Copied';
 
             if (button.innerHTML === icon) {
                 return;

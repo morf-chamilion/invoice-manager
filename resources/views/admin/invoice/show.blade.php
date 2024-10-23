@@ -23,24 +23,32 @@
                     <button type="button" class="btn btn-icon btn-primary w-100" id="invoice_download"
                         data-url="{{ route(InvoiceRoutePath::DOWNLOAD, $invoice) }}">
                         <i class="fas fa-file-download"></i>
-                        <span class="ms-2">{{ __('Invoice PDF Download') }}</span>
+                        <span class="ms-2">{{ __('PDF Download') }}</span>
                     </button>
                 </div>
 
                 <div class="mb-4">
                     <button type="button" class="btn btn-icon btn-secondary w-100" onclick="invoicePrint()">
                         <i class="fas fa-print"></i>
-                        <span class="ms-2">{{ __('Print Invoice') }}</span>
+                        <span class="ms-2">{{ __('Print Document') }}</span>
                     </button>
                 </div>
 
-                <h4 class="form-label">{{ __('Invoice Actions') }}</h4>
-
                 <div class="mb-4">
-                    <a href="{{ $invoice->show_link }}" target="_blank" class="btn btn-icon btn-secondary w-100">
-                        <i class="fa-solid fa-eye"></i>
-                        <span class="ms-2">{{ __('Preview Invoice') }}</span>
-                    </a>
+                    <h4 class="form-label">{{ __('Invoice Preview') }}</h4>
+                    <div class="d-flex gap-4">
+                        <a href="{{ $invoice->show_link }}" target="_blank" class="btn btn-icon btn-secondary w-100">
+                            <i class="fa-solid fa-eye"></i>
+                            <span class="ms-2">{{ __('View') }}</span>
+                        </a>
+                        <div class="w-100">
+                            <input type="hidden" id="payment_link" name="payment_link"
+                                value="{{ old('payment_link', $invoice->show_link) }}" disabled />
+                            <button class="btn btn-secondary w-100" id="payment_link_btn" type="button">
+                                {!! getIcon('copy', 'text-dark') !!} {{ __('Link') }}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </x-form-metadata>
         </div>

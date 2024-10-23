@@ -24,13 +24,13 @@
                         </span>
                     </td>
                     <td colspan="4" style="text-align: right;">
-                        @if ($logo = settings(SettingModule::INVOICE)->getFirstMedia('logo'))
+                        @if ($logo = $invoice->vendor->getFirstMedia('logo'))
                             <img src="{{ isset($pdf) && $pdf ? $logo?->getPath() : $logo?->getFullUrl() }}"
-                                alt="Company Logo" style="max-width: 200px;" />
+                                alt="Company Logo" style="max-width: 150px;" />
                         @endif
-                        @if ($content = settings(SettingModule::INVOICE)->get('company_content'))
+                        @if ($content = $invoice->vendor->address)
                             <div style="margin-top: 20px; font-weight: 400; font-size: 14px; text-align: right;">
-                                {!! $content !!}
+                                {!! nl2br($content) !!}
                             </div>
                         @endif
                     </td>
@@ -114,21 +114,21 @@
                         </p>
                     </th>
                     <th align="right"
-                        style="border: 1px solid #ddd; padding: 8px; background-color: #f0f1f3; color: #555250; text-align: end;  @empty($pdf) width: 200px; @else width: 120px; @endempty">
+                        style="border: 1px solid #ddd; padding: 8px; background-color: #f0f1f3; color: #555250; text-align: end;  @empty($pdf) width: 150px; @else width: 100px; @endempty">
                         <p style="margin: 0; font-size: 11px; font-weight: bold; text-transform: uppercase;">
-                            {{ __('Unit Price') }}
+                            {{ __('Unit Price (:currency)', ['currency' => MoneyHelper::currencyCode()]) }}
                         </p>
                     </th>
                     <th align="right"
-                        style="border: 1px solid #ddd; padding: 8px; background-color: #f0f1f3; color: #555250; text-align: end; @empty($pdf) width: 100px; @else width: 60px; @endempty">
+                        style="border: 1px solid #ddd; padding: 8px; background-color: #f0f1f3; color: #555250; text-align: end; @empty($pdf) width: 60px; @else width: 40px; @endempty">
                         <p style="margin: 0; font-size: 11px; font-weight: bold; text-transform: uppercase;">
-                            {{ __('Quantity') }}
+                            {{ __('Qty') }}
                         </p>
                     </th>
                     <th align="right"
-                        style="border: 1px solid #ddd; padding: 8px; background-color: #f0f1f3; color: #555250; text-align: end; @empty($pdf) width: 200px; @else width: 120px; @endempty">
+                        style="border: 1px solid #ddd; padding: 8px; background-color: #f0f1f3; color: #555250; text-align: end; @empty($pdf) width: 150px; @else width: 100px; @endempty">
                         <p style="margin: 0; font-size: 11px; font-weight: bold; text-transform: uppercase;">
-                            {{ __('Amount') }}
+                            {{ __('Amount (:currency)', ['currency' => MoneyHelper::currencyCode()]) }}
                         </p>
                     </th>
                 </tr>
@@ -147,22 +147,22 @@
                             </p>
                         </td>
                         <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
-                            <span style="font-size: 12px;">{{ MoneyHelper::print($invoiceItem->unit_price) }}</span>
+                            <span style="font-size: 12px;">{{ MoneyHelper::format($invoiceItem->unit_price) }}</span>
                         </td>
                         <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
                             <span style="font-size: 12px;">{{ $invoiceItem->quantity }}</span>
                         </td>
                         <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
-                            <span style="font-size: 12px;">{{ MoneyHelper::print($invoiceItem->amount) }}</span>
+                            <span style="font-size: 12px;">{{ MoneyHelper::format($invoiceItem->amount) }}</span>
                         </td>
                     </tr>
                 @endforeach
                 <tr>
-                    <td colspan="4"
+                    <td colspan="2"
                         style="border: 1px solid #ddd; padding: 8px; font-size: 18px; font-weight: bold;">
                         {{ __('Total Amount') }}
                     </td>
-                    <td
+                    <td colspan="3"
                         style="border: 1px solid #ddd; padding: 8px; text-align: right; font-size: 18px; font-weight: bold;">
                         {{ $invoice->readableTotalPrice }}
                     </td>
@@ -195,11 +195,10 @@
     @endempty
 
     @if ($invoice->notes)
-        <table style="font-family: sans-serif">
+        <table style="font-family: sans-serif; margin-bottom: 30px;">
             <tbody>
                 <tr>
-                    <td style="padding-top:
-                    25px;">
+                    <td style="padding-top: 25px;">
                         <h6
                             style="margin-bottom: 0; font-weight: bold; font-size: 13px; text-transform: uppercase; color: #817c7a">
                             {{ __('Notes') }}

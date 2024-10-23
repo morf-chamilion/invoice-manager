@@ -13,9 +13,9 @@
                         </span>
                     </td>
                     <td colspan="4" style="text-align: right;">
-                        @if ($logo = settings(SettingModule::QUOTATION)->getFirstMedia('logo'))
+                        @if ($logo = $quotation->vendor->getFirstMedia('logo'))
                             <img src="{{ isset($pdf) && $pdf ? $logo?->getPath() : $logo?->getFullUrl() }}"
-                                alt="Company Logo" style="max-width: 200px;" />
+                                alt="Company Logo" style="max-width: 150px;" />
                         @endif
                         @if ($content = settings(SettingModule::QUOTATION)->get('company_content'))
                             <div style="margin-top: 20px; font-weight: 400; font-size: 14px; text-align: right;">
@@ -104,19 +104,19 @@
                     <th align="right"
                         style="border: 1px solid #ddd; padding: 8px; background-color: #f0f1f3; color: #555250; text-align: end;  @empty($pdf) width: 200px; @else width: 120px; @endempty">
                         <p style="margin: 0; font-size: 11px; font-weight: bold; text-transform: uppercase;">
-                            {{ __('Unit Price') }}
+                            {{ __('Unit Price (:currency)', ['currency' => MoneyHelper::currencyCode()]) }}
                         </p>
                     </th>
                     <th align="right"
                         style="border: 1px solid #ddd; padding: 8px; background-color: #f0f1f3; color: #555250; text-align: end; @empty($pdf) width: 100px; @else width: 60px; @endempty">
                         <p style="margin: 0; font-size: 11px; font-weight: bold; text-transform: uppercase;">
-                            {{ __('Quantity') }}
+                            {{ __('Qty') }}
                         </p>
                     </th>
                     <th align="right"
                         style="border: 1px solid #ddd; padding: 8px; background-color: #f0f1f3; color: #555250; text-align: end; @empty($pdf) width: 200px; @else width: 120px; @endempty">
                         <p style="margin: 0; font-size: 11px; font-weight: bold; text-transform: uppercase;">
-                            {{ __('Amount') }}
+                            {{ __('Amount (:currency)', ['currency' => MoneyHelper::currencyCode()]) }}
                         </p>
                     </th>
                 </tr>
@@ -135,22 +135,22 @@
                             </p>
                         </td>
                         <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
-                            <span style="font-size: 12px;">{{ MoneyHelper::print($quotationItem->unit_price) }}</span>
+                            <span style="font-size: 12px;">{{ MoneyHelper::format($quotationItem->unit_price) }}</span>
                         </td>
                         <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
                             <span style="font-size: 12px;">{{ $quotationItem->quantity }}</span>
                         </td>
                         <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
-                            <span style="font-size: 12px;">{{ MoneyHelper::print($quotationItem->amount) }}</span>
+                            <span style="font-size: 12px;">{{ MoneyHelper::format($quotationItem->amount) }}</span>
                         </td>
                     </tr>
                 @endforeach
                 <tr>
-                    <td colspan="4"
+                    <td colspan="2"
                         style="border: 1px solid #ddd; padding: 8px; font-size: 18px; font-weight: bold;">
                         {{ __('Total Amount') }}
                     </td>
-                    <td
+                    <td colspan="3"
                         style="border: 1px solid #ddd; padding: 8px; text-align: right; font-size: 18px; font-weight: bold;">
                         {{ $quotation->readableTotalPrice }}
                     </td>

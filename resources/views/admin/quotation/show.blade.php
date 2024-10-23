@@ -15,9 +15,9 @@
             </div>
 
             <x-form-metadata :model="$quotation">
-                <h4 class="form-label">{{ __('Invoice') }}</h4>
-
                 @if ($quotation->invoice)
+                    <h4 class="form-label">{{ __('Invoice') }}</h4>
+
                     <div class="mb-4">
                         <button type="button" class="btn btn-icon btn-success w-100" id="quotation_download"
                             data-url="{{ route(InvoiceRoutePath::SHOW, $quotation->invoice->id) }}">
@@ -25,9 +25,10 @@
                             <span class="ms-2">{{ __('View Converted Invoice') }}</span>
                         </button>
                     </div>
+
+                    <div class="separator separator-dashed mb-8"></div>
                 @endif
 
-                <div class="separator separator-dashed mb-8"></div>
 
                 <h4 class="form-label">{{ __('Quotation Tools') }}</h4>
 
@@ -35,24 +36,32 @@
                     <button type="button" class="btn btn-icon btn-primary w-100" id="quotation_download"
                         data-url="{{ route(QuotationRoutePath::DOWNLOAD, $quotation) }}">
                         <i class="fas fa-file-download"></i>
-                        <span class="ms-2">{{ __('Quotation PDF Download') }}</span>
+                        <span class="ms-2">{{ __('PDF Download') }}</span>
                     </button>
                 </div>
 
                 <div class="mb-4">
                     <button type="button" class="btn btn-icon btn-secondary w-100" onclick="quotationPrint()">
                         <i class="fas fa-print"></i>
-                        <span class="ms-2">{{ __('Print Quotation') }}</span>
+                        <span class="ms-2">{{ __('Print Document') }}</span>
                     </button>
                 </div>
 
-                <h4 class="form-label">{{ __('Quotation Actions') }}</h4>
-
                 <div class="mb-4">
-                    <a href="{{ $quotation->show_link }}" target="_blank" class="btn btn-icon btn-secondary w-100">
-                        <i class="fa-solid fa-eye"></i>
-                        <span class="ms-2">{{ __('Preview Quotation') }}</span>
-                    </a>
+                    <h4 class="form-label">{{ __('Quotation Preview') }}</h4>
+                    <div class="d-flex gap-4">
+                        <a href="{{ $quotation->show_link }}" target="_blank" class="btn btn-icon btn-secondary w-100">
+                            <i class="fa-solid fa-eye"></i>
+                            <span class="ms-2">{{ __('View') }}</span>
+                        </a>
+                        <div class="w-100">
+                            <input type="hidden" id="payment_link" name="payment_link"
+                                value="{{ old('payment_link', $quotation->show_link) }}" disabled />
+                            <button class="btn btn-secondary w-100" id="payment_link_btn" type="button">
+                                {!! getIcon('copy', 'text-dark') !!} {{ __('Link') }}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </x-form-metadata>
         </div>
