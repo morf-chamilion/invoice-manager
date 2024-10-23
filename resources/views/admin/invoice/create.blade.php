@@ -71,7 +71,7 @@
                                 <div class="col-sm-12 col-xl-6">
                                     <div class="mb-4 form-group">
                                         <div class="itinerary-type" id="customItem">
-                                            <x-input-label :value="__('Title')" />
+                                            <x-input-label :value="__('Item')" />
                                             <x-input-text type="text" name="title" id="title" />
                                         </div>
                                     </div>
