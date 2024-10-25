@@ -28,9 +28,9 @@
                             <img src="{{ isset($pdf) && $pdf ? $logo?->getPath() : $logo?->getFullUrl() }}"
                                 alt="Company Logo" style="max-width: 150px;" />
                         @endif
-                        @if ($content = $invoice->vendor->address)
+                        @if ($address = $invoice->vendor?->address)
                             <div style="margin-top: 20px; font-weight: 400; font-size: 14px; text-align: right;">
-                                {!! nl2br($content) !!}
+                                {!! nl2br($address) !!}
                             </div>
                         @endif
                     </td>
@@ -42,6 +42,14 @@
     <table
         style="width: 100%; border-collapse: collapse; margin: 0 auto 20px; font-weight: 600; font-family: sans-serif">
         <tbody>
+            <tr>
+                <td>
+                    <span
+                        style="margin-bottom: 10px; font-weight: bold; font-size: 13px; text-transform: uppercase; color: #817c7a">
+                        {{ __('Customer') }}
+                    </span>
+                </td>
+            </tr>
             <tr>
                 <td colspan="2" style="font-size: 18px;">
                     {{ $invoice->customer->name }}
