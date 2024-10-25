@@ -11,6 +11,14 @@
                         <span style="display: block; margin-top: 4px; font-size: 16px; font-weight: normal;">
                             {{ $quotation->number }}
                         </span>
+                        <span style="display: block; margin-top: 4px; font-size: 16px; font-weight: normal;">
+                            @isset($quotation->status)
+                                <span style="font-size: 16px; font-weight: 600;">
+                                    {{ $quotation->status->name }}
+                                </span>
+                            @endisset
+                        </span>
+
                     </td>
                     <td colspan="4" style="text-align: right;">
                         @if ($logo = $quotation->vendor->getFirstMedia('logo'))
