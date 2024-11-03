@@ -20,16 +20,13 @@ class CustomerStoreRequest extends BaseRequest
 	{
 		return [
 			'name' => [
-				'required', 'string', Rule::unique(Customer::class), 'min:3', 'max:255',
+				'required', 'string', 'min:3', 'max:255',
 			],
 			'status' => [
 				'integer', new Enum(CustomerStatus::class),
 			],
-			'name' => [
-				'required', 'string', 'min:3', 'max:255',
-			],
 			'email' => [
-				'email', 'max:255', Rule::unique(Customer::class),
+				'email', 'max:255',
 			],
 			'phone' => [
 				'required', 'string', 'min:3', 'max:255',

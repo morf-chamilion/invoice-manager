@@ -20,13 +20,13 @@ class CustomerUpdateRequest extends BaseRequest
 	{
 		return [
 			'name' => [
-				'required', 'string', Rule::unique(Customer::class)->ignore($this->customer), 'min:3', 'max:255',
+				'required', 'string', 'min:3', 'max:255',
 			],
 			'status' => [
 				'integer', new Enum(CustomerStatus::class),
 			],
 			'email' => [
-				'email', 'max:255', Rule::unique(Customer::class)->ignore($this->customer),
+				'email', 'max:255',
 			],
 			'phone' => [
 				'required', 'string', 'min:3', 'max:255',

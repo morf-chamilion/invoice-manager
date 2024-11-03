@@ -94,6 +94,13 @@ class CustomerController extends AdminBaseController
      */
     public function store(CustomerStoreRequest $request): RedirectResponse|RedirectResponseException
     {
+        $customer = $this->customerService->repository
+            ->getModel()::where('email', $request->validated('email'))
+            ->where('vendor_id', auth()->user()->vendor->id)
+            ->first();
+
+        throw_if($customer, RedirectResponseException::class, $this->customerMessage->createDuplicateError());
+
         $created = $this->customerService->createCustomer($request->getAttributes());
 
         throw_if(!$created, RedirectResponseException::class, $this->customerMessage->createFailed());
@@ -132,6 +139,14 @@ class CustomerController extends AdminBaseController
      */
     public function update(Customer $customer, CustomerUpdateRequest $request): RedirectResponse|RedirectResponseException
     {
+        $existingCustomer = $this->customerService->repository
+            ->getModel()::where('email', $request->validated('email'))
+            ->where('vendor_id', auth()->user()->vendor->id)
+            ->where('id', '!=', $customer->id)
+            ->first();
+
+        throw_if($existingCustomer, RedirectResponseException::class, $this->customerMessage->createDuplicateError());
+
         $updated = $this->customerService->updateCustomer($customer->id, $request->getAttributes());
 
         throw_if(!$updated, RedirectResponseException::class, $this->customerMessage->updateFailed());
