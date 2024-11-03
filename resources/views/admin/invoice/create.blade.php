@@ -132,7 +132,7 @@
                                         <th id="type" class="d-none">{{ __('Type') }}</th>
                                         <th id="item">{{ __('Item') }}</th>
                                         <th id="description">{{ __('Description') }}</th>
-                                        <th id="quantity" width="10%" class="text-end">{{ __('Quantity') }}</th>
+                                        <th id="quantity" width="10%" class="text-end">{{ __('Qty') }}</th>
                                         <th id="unit_price" width="15%" class="text-end">{{ __('Unit Price') }}</th>
                                         <th id="amount" width="15%" class="text-end">{{ __('Amount') }}</th>
                                         <th id="actions" width="150px" class="text-end">{{ __('Actions') }}</th>
