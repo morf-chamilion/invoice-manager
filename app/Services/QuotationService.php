@@ -320,6 +320,15 @@ class QuotationService extends BaseService
 	 */
 	public function storeCustomer(array $attributes): Customer
 	{
+		$customer = $this->customerService->repository
+			->getModel()::where('email', $attributes['email'])
+			->where('vendor_id', $this->getAdminAuthUser()->vendor->id)
+			->first();
+
+		if ($customer) {
+			return $customer;
+		}
+
 		return $this->customerService->createCustomer([
 			...$attributes,
 			'password' => Str::password(30),

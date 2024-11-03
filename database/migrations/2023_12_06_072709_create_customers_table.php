@@ -18,7 +18,7 @@ return new class extends Migration
             $table->tinyInteger('status')->default(CustomerStatus::INACTIVE);
 
             $table->string('name');
-            $table->string('email')->unique();
+            $table->string('email');
             $table->string('phone');
             $table->string('address');
             $table->string('company')->nullable();

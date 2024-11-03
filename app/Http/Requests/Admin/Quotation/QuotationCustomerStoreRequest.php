@@ -3,8 +3,6 @@
 namespace App\Http\Requests\Admin\Quotation;
 
 use App\Http\Requests\BaseRequest;
-use App\Models\Customer;
-use Illuminate\Validation\Rule;
 
 class QuotationCustomerStoreRequest extends BaseRequest
 {
@@ -19,14 +17,12 @@ class QuotationCustomerStoreRequest extends BaseRequest
 			'name' => [
 				'required',
 				'string',
-				Rule::unique(Customer::class),
 				'min:3',
 				'max:255',
 			],
 			'email' => [
 				'email',
 				'max:255',
-				Rule::unique(Customer::class),
 			],
 			'phone' => [
 				'required',
