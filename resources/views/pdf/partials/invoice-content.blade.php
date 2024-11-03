@@ -4,7 +4,13 @@
             <tbody>
                 <tr
                     style="vertical-align: top; @empty($pdf) display: flex; justify-content: space-between; @endempty">
-                    <td colspan="2">
+                    <td colspan="4" style="text-align: left;">
+                        @if ($logo = $invoice->vendor->getFirstMedia('logo'))
+                            <img src="{{ isset($pdf) && $pdf ? $logo?->getPath() : $logo?->getFullUrl() }}"
+                                alt="Company Logo" style="height: 100px;" />
+                        @endif
+                    </td>
+                    <td colspan="2" style="text-align: right;">
                         <h4 style="font-size: 32px; font-weight: bold; text-transform: uppercase; margin: 0;">
                             {{ __('Invoice') }}
                         </h4>
@@ -16,23 +22,9 @@
                                 <span style="font-size: 16px; font-weight: 600;">
                                     {{ $invoice->payment_status->getName() }}
                                 </span>
-                            @else
-                                <span style="font-size: 16px; font-weight: 600;">
-                                    {{ InvoicePaymentStatus::PENDING->name }}
-                                </span>
                             @endisset
                         </span>
-                    </td>
-                    <td colspan="4" style="text-align: right;">
-                        @if ($logo = $invoice->vendor->getFirstMedia('logo'))
-                            <img src="{{ isset($pdf) && $pdf ? $logo?->getPath() : $logo?->getFullUrl() }}"
-                                alt="Company Logo" style="max-width: 150px;" />
-                        @endif
-                        @if ($address = $invoice->vendor?->address)
-                            <div style="margin-top: 20px; font-weight: 400; font-size: 14px; text-align: right;">
-                                {!! nl2br($address) !!}
-                            </div>
-                        @endif
+
                     </td>
                 </tr>
             </tbody>
@@ -44,37 +36,44 @@
         <tbody>
             <tr>
                 <td>
-                    <span
-                        style="margin-bottom: 10px; font-weight: bold; font-size: 13px; text-transform: uppercase; color: #817c7a">
+                    @if ($address = $invoice->vendor?->address)
+                        <div style="margin-top: 20px; font-weight: 400; font-size: 14px; text-align: left;">
+                            <div
+                                style="margin-bottom: 2px; font-weight: bold; font-size: 13px; text-transform: uppercase; color: #817c7a">
+                                {{ __('Invoice By') }}
+                            </div>
+                            <div style="margin-bottom: 2px; font-size: 14px; font-weight: 600;">
+                                {!! $invoice->vendor->name !!}
+                            </div>
+                            <div style="font-size: 14px;">
+                                {!! nl2br($address) !!}
+                            </div>
+                        </div>
+                    @endif
+                </td>
+                <td style="text-align: right;">
+                    <div
+                        style="margin-bottom: 2px; font-weight: bold; font-size: 13px; text-transform: uppercase; color: #817c7a">
                         {{ __('Customer') }}
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2" style="font-size: 18px;">
-                    {{ $invoice->customer->name }}
-                </td>
-            </tr>
-            @if (optional($invoice->customer)->company)
-                <tr>
-                    <td colspan="2" style="font-size: 16px; font-weight: 400;">
-                        {{ $invoice->customer->company }}
-                    </td>
-                </tr>
-            @endif
-            <tr>
-                <td colspan="2">
-                    <a style="font-size: 16px; font-weight: 400; margin: 0px;">{{ $invoice->customer->email }}</a>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <p style="margin-top: 2px; font-size: 14px; font-weight: 400;">{!! nl2br($invoice->customer->address) !!}</p>
+                    </div>
+                    <div style="font-size: 14px;">
+                        {{ $invoice->customer->name }}
+                    </div>
+                    @if (optional($invoice->customer)->company)
+                        <div style="font-size: 14px; font-weight: 400;">
+                            {{ $invoice->customer->company }}
+                        </div>
+                    @endif
+                    <div>
+                        <a style="font-size: 14px; font-weight: 400; margin: 0px;">{{ $invoice->customer->email }}</a>
+                    </div>
+                    <div>
+                        <p style="margin-top: 2px; font-size: 14px; font-weight: 400;">{!! nl2br($invoice->customer->address) !!}</p>
+                    </div>
                 </td>
             </tr>
         </tbody>
     </table>
-
     <table style="width: 60%; border-collapse: collapse; margin-bottom: 35px; font-family: sans-serif">
         <thead>
             <tr>
