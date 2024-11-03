@@ -192,6 +192,8 @@ return [
         'FrontAuthRoutePath' => App\RoutePaths\Front\Auth\AuthRoutePath::class,
         'FrontCustomerRoutePath' => App\RoutePaths\Front\Customer\CustomerRoutePath::class,
         'FrontCheckoutRoutePath' => App\RoutePaths\Front\Checkout\CheckoutRoutePath::class,
+        'FrontInvoiceRoutePath' => App\RoutePaths\Front\Invoice\InvoiceRoutePath::class,
+        'FrontQuotationRoutePath' => App\RoutePaths\Front\Quotation\QuotationRoutePath::class,
 
         /** Admin Route Paths */
         'AdminRoutePath' => App\RoutePaths\Admin\AdminRoutePath::class,
@@ -202,7 +204,9 @@ return [
         'UserRoutePath' => App\RoutePaths\Admin\User\UserRoutePath::class,
         'UserRoleRoutePath' => App\RoutePaths\Admin\User\UserRoleRoutePath::class,
         'InvoiceRoutePath' => App\RoutePaths\Admin\Invoice\InvoiceRoutePath::class,
+        'QuotationRoutePath' => App\RoutePaths\Admin\Quotation\QuotationRoutePath::class,
         'CustomerRoutePath' => App\RoutePaths\Admin\Customer\CustomerRoutePath::class,
+        'VendorRoutePath' => App\RoutePaths\Admin\Vendor\VendorRoutePath::class,
 
         /** Common Route Paths */
         'CommonMediaRoutePath' => App\RoutePaths\Common\Media\MediaRoutePath::class,
@@ -223,10 +227,13 @@ return [
         'UserRoleStatus' => App\Enums\UserRoleStatus::class,
         'PageStatus' => App\Enums\PageStatus::class,
         'InvoiceStatus' => App\Enums\InvoiceStatus::class,
+        'QuotationStatus' => App\Enums\QuotationStatus::class,
+        'QuotationItemType' => App\Enums\QuotationItemType::class,
         'InvoicePaymentMethod' => App\Enums\InvoicePaymentMethod::class,
         'InvoicePaymentStatus' => App\Enums\InvoicePaymentStatus::class,
         'InvoiceItemType' => App\Enums\InvoiceItemType::class,
         'CustomerStatus' => App\Enums\CustomerStatus::class,
+        'VendorStatus' => App\Enums\VendorStatus::class,
 
         /** Helpers */
         'MoneyHelper' => App\Helpers\MoneyHelper::class,

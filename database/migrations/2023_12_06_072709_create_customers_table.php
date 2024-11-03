@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\CustomerStatus;
+use App\Models\Vendor;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -24,6 +25,8 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
+
+            $table->foreignIdFor(Vendor::class)->constrained()->cascadeOnDelete();
 
             $table->foreignId('created_by')->constrained('users')->onDelete('restrict')->onUpdate('cascade');
             $table->foreignId('updated_by')->nullable()->constrained('users')->onDelete('restrict')->onUpdate('cascade');

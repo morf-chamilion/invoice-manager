@@ -66,6 +66,28 @@ class SettingController extends BaseSettingController
 	/**
 	 * Show the form for updating the resource.
 	 */
+	public function quotation(): View
+	{
+		$module = SettingModule::QUOTATION;
+		$resourceTitle = $this->getActionTitle();
+
+		$this->registerBreadcrumb(routeTitle: $resourceTitle);
+
+		Session::put('module', $module);
+
+		$this->sharePageData([
+			'title' => $resourceTitle,
+		]);
+
+		return view($this->settingRoutePath::QUOTATION, [
+			'settings' => $this->settingService->module($module),
+			'action' => $this->settingStoreRoute(),
+		]);
+	}
+
+	/**
+	 * Show the form for updating the resource.
+	 */
 	public function invoice(): View
 	{
 		$module = SettingModule::INVOICE;

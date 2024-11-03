@@ -21,8 +21,8 @@ class InvoiceItem extends Model implements HasRelationsInterface
 	 */
 	protected $fillable = [
 		'invoice_id',
-		'type',
-		'content',
+		'custom',
+		'description',
 		'unit_price',
 		'quantity',
 		'amount',

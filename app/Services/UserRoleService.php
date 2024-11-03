@@ -72,7 +72,7 @@ class UserRoleService extends BaseService
 	{
 		$permissions = Arr::pull($newAttributes, 'permissions');
 
-		$this->getUserRole($userId)->syncPermissions($permissions ?? []);
+		$this->syncPermissions($userId, $permissions ?? []);
 
 		return $this->userRoleRepository->update($userId, [
 			...$newAttributes,
@@ -93,6 +93,8 @@ class UserRoleService extends BaseService
 	 */
 	public function syncPermissions(int $userRoleId, array|int|Permission|Collection $permissions): UserRole
 	{
+		$permissions = Collection::make($permissions)->map(fn($val) => (int)$val);
+
 		return $this->getUserRole($userRoleId)->syncPermissions($permissions);
 	}
 

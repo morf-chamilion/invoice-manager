@@ -17,6 +17,7 @@ class AppDateTime {
             const options = $(element).data();
             const type = $(element).data("type") ?? false;
             const format = $(element).data("locale-format");
+            const initEmpty = $(element).data("init-empty");
 
             if (format) {
                 Object.assign(options, {
@@ -30,7 +31,15 @@ class AppDateTime {
                 });
             }
 
-            $(element).daterangepicker(options);
+            let datePicker = $(element).daterangepicker(options);
+
+            if (initEmpty) {
+                datePicker.val('');
+            }
+
+            datePicker.on('cancel.daterangepicker', function () {
+                $(this).val('');
+            });
         });
     }
 }

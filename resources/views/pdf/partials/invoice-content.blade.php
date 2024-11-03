@@ -1,9 +1,16 @@
 <table style="margin: 0; width: 100%; border-collapse: collapse;">
     <header style="width: 100%;">
-        <table style="width: 100%; border-collapse: collapse; margin: 20px auto; font-family: Helvetica, sans-serif;">
+        <table style="width: 100%; border-collapse: collapse; margin: 20px auto; font-family: sans-serif;">
             <tbody>
-                <tr style="vertical-align: top;">
-                    <td colspan="2">
+                <tr
+                    style="vertical-align: top; @empty($pdf) display: flex; justify-content: space-between; @endempty">
+                    <td colspan="4" style="text-align: left;">
+                        @if ($logo = $invoice->vendor->getFirstMedia('logo'))
+                            <img src="{{ isset($pdf) && $pdf ? $logo?->getPath() : $logo?->getFullUrl() }}"
+                                alt="Company Logo" style="height: 100px;" />
+                        @endif
+                    </td>
+                    <td colspan="2" style="text-align: right;">
                         <h4 style="font-size: 32px; font-weight: bold; text-transform: uppercase; margin: 0;">
                             {{ __('Invoice') }}
                         </h4>
@@ -15,55 +22,59 @@
                                 <span style="font-size: 16px; font-weight: 600;">
                                     {{ $invoice->payment_status->getName() }}
                                 </span>
-                            @else
-                                <span style="font-size: 16px; font-weight: 600;">
-                                    {{ InvoicePaymentStatus::PENDING->name }}
-                                </span>
                             @endisset
                         </span>
-                    </td>
-                    <td colspan="4" style="text-align: right;">
-                        @if ($logo = settings(SettingModule::INVOICE)->getFirstMedia('logo'))
-                            <img src="{{ isset($pdf) && $pdf ? $logo?->getPath() : $logo?->getFullUrl() }}"
-                                alt="Company Logo" style="max-width: 200px;" />
-                        @endif
-                        <div style="margin-top: 20px; font-weight: 400; font-size: 14px; text-align: right;">
-                            {!! settings(SettingModule::INVOICE)->get('company_content') !!}
-                        </div>
+
                     </td>
                 </tr>
             </tbody>
         </table>
     </header>
 
-    <table style="width: 100%; border-collapse: collapse; margin: 0 auto 20px; font-weight: 600;">
+    <table
+        style="width: 100%; border-collapse: collapse; margin: 0 auto 20px; font-weight: 600; font-family: sans-serif">
         <tbody>
             <tr>
-                <td colspan="2" style="font-size: 18px;">
-                    {{ $invoice->customer->name }}
+                <td>
+                    @if ($address = $invoice->vendor?->address)
+                        <div style="margin-top: 20px; font-weight: 400; font-size: 14px; text-align: left;">
+                            <div
+                                style="margin-bottom: 2px; font-weight: bold; font-size: 13px; text-transform: uppercase; color: #817c7a">
+                                {{ __('Invoice By') }}
+                            </div>
+                            <div style="margin-bottom: 2px; font-size: 14px; font-weight: 600;">
+                                {!! $invoice->vendor->name !!}
+                            </div>
+                            <div style="font-size: 14px;">
+                                {!! nl2br($address) !!}
+                            </div>
+                        </div>
+                    @endif
                 </td>
-            </tr>
-            @if (optional($invoice->customer)->company)
-                <tr>
-                    <td colspan="2" style="font-size: 16px; font-weight: 400;">
-                        {{ $invoice->customer->company }}
-                    </td>
-                </tr>
-            @endif
-            <tr>
-                <td colspan="2">
-                    <a style="font-size: 16px; font-weight: 400; margin: 0px;">{{ $invoice->customer->email }}</a>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <p style="margin-top: 2px; font-size: 14px; font-weight: 400;">{!! nl2br($invoice->customer->address) !!}</p>
+                <td style="text-align: right;">
+                    <div
+                        style="margin-bottom: 2px; font-weight: bold; font-size: 13px; text-transform: uppercase; color: #817c7a">
+                        {{ __('Customer') }}
+                    </div>
+                    <div style="font-size: 14px;">
+                        {{ $invoice->customer->name }}
+                    </div>
+                    @if (optional($invoice->customer)->company)
+                        <div style="font-size: 14px; font-weight: 400;">
+                            {{ $invoice->customer->company }}
+                        </div>
+                    @endif
+                    <div>
+                        <a style="font-size: 14px; font-weight: 400; margin: 0px;">{{ $invoice->customer->email }}</a>
+                    </div>
+                    <div>
+                        <p style="margin-top: 2px; font-size: 14px; font-weight: 400;">{!! nl2br($invoice->customer->address) !!}</p>
+                    </div>
                 </td>
             </tr>
         </tbody>
     </table>
-
-    <table style="width: 60%; border-collapse: collapse; margin-bottom: 35px;">
+    <table style="width: 60%; border-collapse: collapse; margin-bottom: 35px; font-family: sans-serif">
         <thead>
             <tr>
                 <td>
@@ -93,90 +104,105 @@
             </tr>
         </tbody>
     </table>
-    <table style="width: 100%; border-collapse: collapse; margin: 0 auto 6px;">
-        <thead>
-            <tr>
-                <th align="left" style="border: 1px solid #ddd; padding: 8px; background-color: #f0f1f3;">
-                    <p
-                        style="margin: 0; font-size: 12px; font-weight: bold; text-transform: uppercase; color: #555250;">
-                        {{ __('Item') }}
-                    </p>
-                </th>
-                <th align="right"
-                    style="border: 1px solid #ddd; padding: 8px; background-color: #f0f1f3; color: #555250; text-align: end;">
-                    <p style="margin: 0; font-size: 12px; font-weight: bold; text-transform: uppercase;">
-                        {{ __('Unit Price') }}
-                    </p>
-                </th>
-                <th align="right"
-                    style="border: 1px solid #ddd; padding: 8px; background-color: #f0f1f3; color: #555250; text-align: end;">
-                    <p style="margin: 0; font-size: 12px; font-weight: bold; text-transform: uppercase;">
-                        {{ __('Quantity') }}
-                    </p>
-                </th>
-                <th align="right"
-                    style="border: 1px solid #ddd; padding: 8px; background-color: #f0f1f3; color: #555250; text-align: end;">
-                    <p style="margin: 0; font-size: 12px; font-weight: bold; text-transform: uppercase;">
-                        {{ __('Amount') }}
-                    </p>
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($invoice->invoiceItems as $invoiceItem)
-                @if ($invoiceItem->type === InvoiceItemType::HEADING)
+    <div class="table-wrapper">
+        <table style="width: 100%; border-collapse: collapse; margin: 0 auto 6px; font-family: sans-serif">
+            <thead>
+                <tr>
+                    <th align="left" style="border: 1px solid #ddd; padding: 8px; background-color: #f0f1f3;">
+                        <p
+                            style="margin: 0; font-size: 11px; font-weight: bold; text-transform: uppercase; color: #555250;">
+                            {{ __('Item') }}
+                        </p>
+                    </th>
+                    <th align="left" style="border: 1px solid #ddd; padding: 8px; background-color: #f0f1f3;">
+                        <p
+                            style="margin: 0; font-size: 11px; font-weight: bold; text-transform: uppercase; color: #555250;">
+                            {{ __('Description') }}
+                        </p>
+                    </th>
+                    <th align="right"
+                        style="border: 1px solid #ddd; padding: 8px; background-color: #f0f1f3; color: #555250; text-align: end;  @empty($pdf) width: 150px; @else width: 100px; @endempty">
+                        <p style="margin: 0; font-size: 11px; font-weight: bold; text-transform: uppercase;">
+                            {{ __('Unit Price (:currency)', ['currency' => $invoice->vendor->currency]) }}
+                        </p>
+                    </th>
+                    <th align="right"
+                        style="border: 1px solid #ddd; padding: 8px; background-color: #f0f1f3; color: #555250; text-align: end; @empty($pdf) width: 60px; @else width: 40px; @endempty">
+                        <p style="margin: 0; font-size: 11px; font-weight: bold; text-transform: uppercase;">
+                            {{ __('Qty') }}
+                        </p>
+                    </th>
+                    <th align="right"
+                        style="border: 1px solid #ddd; padding: 8px; background-color: #f0f1f3; color: #555250; text-align: end; @empty($pdf) width: 150px; @else width: 100px; @endempty">
+                        <p style="margin: 0; font-size: 11px; font-weight: bold; text-transform: uppercase;">
+                            {{ __('Amount (:currency)', ['currency' => $invoice->vendor->currency]) }}
+                        </p>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($invoice->formattedInvoiceItems as $invoiceItem)
                     <tr>
-                        <td colspan="4" style="border: 1px solid #ddd; padding: 8px;">
-                            <p style="margin: 3px 0 0; font-size: 14px; font-weight: 400;">
-                                {{ $invoiceItem->content }}
+                        <td style="border: 1px solid #ddd; padding: 8px;">
+                            <p style="margin: 3px 0 0; font-size: 12px;">
+                                {{ $invoiceItem->title }}
                             </p>
                         </td>
-                    </tr>
-                @else
-                    <tr>
-                        <td style="border: 1px solid #ddd; padding: 8px; min-width: 100px;">
-                            <p style="margin: 3px 0 0; font-size: 14px;">
-                                {{ $invoiceItem->content }}
+                        <td style="border: 1px solid #ddd; padding: 8px;">
+                            <p style="margin: 3px 0 0; font-size: 12px;">
+                                {{ $invoiceItem->description }}
                             </p>
                         </td>
                         <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
-                            <span>{{ $invoiceItem->readableUnitPrice }}</span>
+                            <span style="font-size: 12px;">{{ MoneyHelper::format($invoiceItem->unit_price) }}</span>
                         </td>
                         <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
-                            <span>{{ $invoiceItem->quantity }}</span>
+                            <span style="font-size: 12px;">{{ $invoiceItem->quantity }}</span>
                         </td>
                         <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
-                            <span>{{ $invoiceItem->readableAmount }}</span>
+                            <span style="font-size: 12px;">{{ MoneyHelper::format($invoiceItem->amount) }}</span>
                         </td>
                     </tr>
-                @endif
-            @endforeach
-            <tr>
-                <td colspan="3"
-                    style="border: 1px solid #ddd; padding: 8px; text-align: right; font-size: 18px; font-weight: bold;">
-                    {{ __('Total Amount') }}
-                </td>
-                <td
-                    style="border: 1px solid #ddd; padding: 8px; text-align: right; font-size: 18px; font-weight: bold;">
-                    {{ $invoice->readableTotalPrice }}
-                </td>
-            </tr>
-            @empty($pdf)
+                @endforeach
+                <tr>
+                    <td colspan="2"
+                        style="border: 1px solid #ddd; padding: 8px; font-size: 18px; font-weight: bold;">
+                        {{ __('Total Amount') }}
+                    </td>
+                    <td colspan="3"
+                        style="border: 1px solid #ddd; padding: 8px; text-align: right; font-size: 18px; font-weight: bold;">
+                        {{ $invoice->readableTotalPrice }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    @empty($pdf)
+        <table style="width: 100%; font-family: sans-serif">
+            <tbody>
                 <tr>
                     @if ($invoice->status !== InvoiceStatus::COMPLETED)
-                        <td colspan="4" style="padding-top: 15px; text-align: right;">
-                            <a href="{{ $invoice->checkout_link }}" target="_blank" class="btn btn-sm btn-primary">
-                                {{ __('Pay Now') }}
-                            </a>
-                        </td>
+                        @isset($checkoutGatewayUrl)
+                            <td colspan="6" style="padding-top: 15px; text-align: right;">
+                                <form action="{{ $checkoutGatewayUrl }}" method="POST">
+                                    @foreach ($checkoutFields as $checkoutField)
+                                        {!! $checkoutField !!}
+                                    @endforeach
+                                    <button class="btn btn-primary btn-sm theme-btn">
+                                        {{ __('Pay Now') }}
+                                    </button>
+                                </form>
+                            </td>
+                        @endisset
                     @endif
                 </tr>
-            @endempty
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    @endempty
 
     @if ($invoice->notes)
-        <table>
+        <table style="font-family: sans-serif; margin-bottom: 30px;">
             <tbody>
                 <tr>
                     <td style="padding-top: 25px;">
@@ -191,8 +217,28 @@
         </table>
     @endif
 
+    @if (
+        $invoice->status === InvoiceStatus::ACTIVE &&
+            $invoice->payment_status === InvoicePaymentStatus::PENDING &&
+            $invoice->vendor->bank_account_details)
+        <table style="font-family: sans-serif">
+            <tbody>
+                <tr>
+                    <td style="padding-top:
+                    25px;">
+                        <h6
+                            style="margin-bottom: 0; font-weight: bold; font-size: 13px; text-transform: uppercase; color: #817c7a">
+                            {{ __('Bank Account Details') }}
+                        </h6>
+                        <p style="margin-top: 6px; ">{{ $invoice->vendor->bank_account_details }}</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    @endif
+
     <footer
-        style="@empty($pdf) margin-top: 30px; @else position: absolute; bottom: 0;  @endif width: 100%; font-size: 14px;">
-        {!! settings(SettingModule::INVOICE)->get('footer_content') !!}
+        style="@empty($pdf) margin-top: 30px; @else position: absolute; bottom: 0;  @endif width: 100%; font-size: 14px; font-family: sans-serif">
+        {!! $invoice->vendor->invoice_footer_content !!}
     </footer>
 </table>

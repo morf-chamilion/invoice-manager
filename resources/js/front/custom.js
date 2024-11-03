@@ -65,11 +65,11 @@ jQuery(document).ready(function ($) {
 const PageBlocker = (function () {
     return {
         block: () => {
-            jQuery("body").addClass("maya-blocker");
+            jQuery("body").addClass("ui-blocker");
         },
 
         unblock: () => {
-            jQuery("body").removeClass("maya-blocker");
+            jQuery("body").removeClass("ui-blocker");
         },
     };
 })();

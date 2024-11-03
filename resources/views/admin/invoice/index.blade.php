@@ -1,6 +1,6 @@
 <x-default-layout>
     <div class="card mb-5">
-        <div class="card-body">
+        <div class="card-body pb-3">
             <form action="{{ url()->current() }}" method="POST" id="datatable_index">
                 @csrf
                 <div class="row">
@@ -49,14 +49,14 @@
 
                     <div class="col-sm-12 col-lg-3 mb-5">
                         <div class="form-group">
-                            <x-input-label for="number" :value="__('Number')" />
+                            <x-input-label for="number" :value="__('Invoice Number')" />
                             <x-input-text id="number" name="number" type="text" :value="old('number')" />
                             <x-input-error :messages="$errors->get('number')" />
                         </div>
                     </div>
 
                     @if ($customers->isNotEmpty())
-                        <div class="col-sm-12 col-lg-3">
+                        <div class="col-sm-12 col-lg-3 mb-5">
                             <div class="form-group">
                                 <x-input-label for="customer" :value="__('Customer')" />
                                 <x-input-select id="customer" name="customer" name="customer"
@@ -70,7 +70,7 @@
                         </div>
                     @endif
 
-                    <div class="col-sm-12 col-lg-3">
+                    <div class="col-sm-12 col-lg-3 mb-5">
                         <div class="form-group">
                             <x-input-label for="company" :value="__('Company')" />
                             <x-input-text id="company" name="company" type="text" :value="old('company')" />
@@ -78,12 +78,12 @@
                         </div>
                     </div>
 
-                    <div class="col-sm text-end">
+                    <div class="col-sm text-end mb-5">
                         <div class="d-flex justify-content-md-end align-items-end h-100 gap-5">
-                            <button type="reset" class="btn btn-light-danger">
+                            <button type="reset" class="btn btn-sm btn-light-danger">
                                 <i class="fas fa-minus-circle"></i> {{ __('Reset Filter') }}
                             </button>
-                            <button type="submit" class="btn btn-light-primary">
+                            <button type="submit" class="btn btn-sm btn-light-primary">
                                 <i class="fas fa-filter"></i> {{ __('Filter Records') }}
                             </button>
                         </div>

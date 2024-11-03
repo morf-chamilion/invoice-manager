@@ -9,12 +9,13 @@ class SettingRoutePath implements AdminRoutePathInterface
 {
 	public function __construct(
 		protected SettingService $settingService,
-	) {
-	}
+	) {}
 
 	public const GENERAL = 'admin.setting.general';
 
 	public const MAIL = 'admin.setting.mail';
+
+	public const QUOTATION = 'admin.setting.quotation';
 
 	public const INVOICE = 'admin.setting.invoice';
 
@@ -36,6 +37,7 @@ class SettingRoutePath implements AdminRoutePathInterface
 		return [
 			'Edit General' => [self::GENERAL],
 			'Edit Mail' => [self::MAIL],
+			'Edit Quotation' => [self::QUOTATION],
 			'Edit Invoice' => [self::INVOICE],
 		];
 	}

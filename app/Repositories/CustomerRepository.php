@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Enums\CustomerStatus;
 use App\Models\Customer;
+use App\Models\Vendor;
 use App\Services\MediaService;
 use App\Services\Traits\HandlesMedia;
 use Illuminate\Database\QueryException;
@@ -33,8 +34,15 @@ class CustomerRepository extends BaseRepository
 	/**
 	 * Get all active customers.
 	 */
-	public function getAllActive(): Collection
+	public function getAllActive(Vendor $vendor = null): Collection
 	{
+		if ($vendor) {
+			return $this->customer
+				->where('status', CustomerStatus::ACTIVE)
+				->where('vendor_id', $vendor->id)
+				->get();
+		}
+
 		return $this->customer
 			->where('status', CustomerStatus::ACTIVE)
 			->get();

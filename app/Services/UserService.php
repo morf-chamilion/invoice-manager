@@ -18,6 +18,7 @@ class UserService extends BaseService
 		private UserRepository $userRepository,
 		private UserRoleRepository $userRoleRepository,
 		private SettingService $settingService,
+		private VendorService $vendorService,
 	) {
 		parent::__construct($userRepository);
 	}
@@ -120,6 +121,8 @@ class UserService extends BaseService
 	 */
 	public function syncRoles(int $userId, string|array|int|Role|Collection $roles): User
 	{
+		$roles = Collection::make($roles)->map(fn($val) => (int)$val);
+
 		return $this->getUser($userId)->syncRoles($roles);
 	}
 
@@ -162,5 +165,13 @@ class UserService extends BaseService
 		}
 
 		return false;
+	}
+
+	/**
+	 * Get all vendors.
+	 */
+	public function getAllVendors(): Collection
+	{
+		return $this->vendorService->getAllVendors();
 	}
 }

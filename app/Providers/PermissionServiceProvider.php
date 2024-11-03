@@ -13,6 +13,7 @@ class PermissionServiceProvider extends ServiceProvider
      * Define resources to enforce permissions.
      */
     protected array $routePaths = [
+        \App\RoutePaths\Admin\AdminRoutePath::class,
         \App\RoutePaths\Admin\User\UserRoutePath::class,
         \App\RoutePaths\Admin\User\UserRoleRoutePath::class,
 
@@ -21,7 +22,9 @@ class PermissionServiceProvider extends ServiceProvider
         // \App\RoutePaths\Admin\Page\PageRoutePath::class,
 
         \App\RoutePaths\Admin\Invoice\InvoiceRoutePath::class,
+        \App\RoutePaths\Admin\Quotation\QuotationRoutePath::class,
         \App\RoutePaths\Admin\Customer\CustomerRoutePath::class,
+        \App\RoutePaths\Admin\Vendor\VendorRoutePath::class,
     ];
 
     /**

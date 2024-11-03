@@ -31,6 +31,10 @@ class CustomerController extends AdminBaseController
      */
     public function index(Request $request): CustomerIndexResource|Renderable
     {
+        if (!auth()->user()->vendor?->id) {
+            return abort(403);
+        }
+
         if ($request->ajax()) {
             $attributes = (object) $request->only(
                 ['draw', 'columns', 'order', 'start', 'length', 'search']
@@ -38,7 +42,7 @@ class CustomerController extends AdminBaseController
 
             $request->merge([
                 'recordsAll' => $this->customerService->getAllCustomers(),
-                'recordsFiltered' => $this->customerService->getAllWithFilter(
+                'recordsFiltered' => $this->customerService->getAllWithCustomFilter(
                     filterColumns: ['id', 'name', 'email', 'phone', 'status'],
                     filterQuery: $attributes,
                 ),
@@ -48,7 +52,8 @@ class CustomerController extends AdminBaseController
         }
 
         $columns = $this->tableColumns(
-            ['name', 'email', 'phone',]
+            prefixes: [],
+            columns: ['name', 'email', 'phone'],
         );
 
         $this->registerBreadcrumb();
@@ -69,6 +74,10 @@ class CustomerController extends AdminBaseController
      */
     public function create(): Renderable
     {
+        if (!auth()->user()->vendor?->id) {
+            return abort(403);
+        }
+
         $this->registerBreadcrumb(
             parentRouteName: $this->customerRoutePath::INDEX,
         );
@@ -100,6 +109,10 @@ class CustomerController extends AdminBaseController
      */
     public function edit(Customer $customer): Renderable
     {
+        if ($customer->vendor->id !== auth()->user()->vendor?->id) {
+            return abort(403);
+        }
+
         $this->registerBreadcrumb(
             parentRouteName: $this->customerRoutePath::INDEX,
             routeParameter: $customer->id,

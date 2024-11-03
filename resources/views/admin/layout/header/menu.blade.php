@@ -7,18 +7,7 @@
     data-kt-swapper-parent="{default: '#kt_app_body', lg: '#kt_app_header_wrapper'}">
     <!--begin::Menu-->
     <div class="menu menu-rounded menu-column menu-lg-row my-5 my-lg-0 align-items-stretch fw-semibold px-2 px-lg-0"
-        id="kt_app_header_menu" data-kt-menu="true">
-
-        <!--begin::Button-->
-        <div class="d-flex align-items-center">
-            <a href="{{ route(FrontPageRoutePath::HOME) }}" target="_blank"
-                class="btn btn-secondary text-dark d-flex align-items-center">
-                {{ __('View Website') }}
-            </a>
-        </div>
-        <!--end::Button-->
-
-    </div>
+        id="kt_app_header_menu" data-kt-menu="true"></div>
     <!--end::Menu-->
 </div>
 <!--end::Menu wrapper-->

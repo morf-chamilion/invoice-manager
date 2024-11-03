@@ -48,7 +48,7 @@ class UserController extends AdminBaseController
         }
 
         $columns = $this->tableColumns(
-            ['name', 'email', 'role']
+            ['name', 'email', 'vendor', 'role']
         );
 
         $this->registerBreadcrumb();
@@ -79,6 +79,7 @@ class UserController extends AdminBaseController
 
         return view($this->userRoutePath::CREATE, [
             'roles' => $this->userService->getAllRoles(),
+            'vendors' => $this->userService->getAllVendors(),
         ]);
     }
 
@@ -116,6 +117,7 @@ class UserController extends AdminBaseController
         return view($this->userRoutePath::EDIT, [
             'user' => $user,
             'roles' => $this->userService->getAllRoles(),
+            'vendors' => $this->userService->getAllVendors(),
         ]);
     }
 

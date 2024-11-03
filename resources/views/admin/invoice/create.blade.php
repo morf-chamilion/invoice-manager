@@ -14,9 +14,9 @@
                         </header>
                     </div>
                     <div class="card-body">
-                        <div class="mb-8 row">
+                        <div class="row">
                             <div class="col-lg-6">
-                                <div>
+                                <div class="mb-8">
                                     <x-input-label for="date" :value="__('Date')" required />
                                     <x-input-date id="date" name="date" :value="old('date')"
                                         data-locale-format="YYYY-MM-DD" required />
@@ -25,28 +25,35 @@
                             </div>
 
                             <div class="col-lg-6">
-                                <div>
+                                <div class="mb-8">
                                     <x-input-label for="due_date" :value="__('Due Date')" required />
                                     <x-input-date id="due_date" name="due_date" :value="old('due_date')"
                                         data-locale-format="YYYY-MM-DD" required />
                                     <x-input-error :messages="$errors->get('due_date')" />
                                 </div>
                             </div>
-                        </div>
 
-                        @if ($customers->isNotEmpty())
-                            <div>
+                            <div class="col-lg-8">
                                 <x-input-label for="customer_id" :value="__('Customer')" required />
                                 <x-input-select name="customer_id" data-placeholder="Select Customer" required>
-                                    @foreach ($customers as $customer)
-                                        <option value="{{ $customer->id }}" @selected($customer->id == old('customer_id'))>
-                                            {{ $customer->name }}
-                                        </option>
-                                    @endforeach
+                                    @if ($customers->isNotEmpty())
+                                        @foreach ($customers as $customer)
+                                            <option value="{{ $customer->id }}" @selected($customer->id == old('customer_id'))>
+                                                {{ $customer->name }}
+                                            </option>
+                                        @endforeach
+                                    @endif
                                 </x-input-select>
                                 <x-input-error :messages="$errors->get('customer_id')" />
                             </div>
-                        @endif
+
+                            <div class="col-lg-4">
+                                <button class="btn font-weight-bolder btn-light-primary w-100 mt-8" type="button"
+                                    data-bs-toggle="modal" data-bs-target="#customer_create">
+                                    <i class="fas fa-user-plus"></i> {{ __('Create New Customer') }}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -59,110 +66,142 @@
                         </header>
                     </div>
                     <div class="card-body">
-                        <table id="invoice"
-                            class="table table-rounded table-row-bordered table-responsive border gy-4 gs-4 mb-8">
-                            <thead class="border">
-                                <tr class="fw-bold fs-7 text-gray-500 text-uppercase">
-                                    <th style="width: 40%;">{{ __('Item') }}</th>
-                                    <th>{{ __('Quantity') }}</th>
-                                    <th>{{ __('Unit Price') }}</th>
-                                    <th>{{ __('Amount') }}</th>
-                                    <th class="text-end">{{ __('Actions') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody class="draggable-zone border" data-repeater-list="invoice_items"
-                                class="draggable-zone">
-                                @php
-                                    $defaultItem = [
-                                        'type' => InvoiceItemType::DESCRIPTION->value,
-                                        'content' => '',
-                                        'quantity' => '',
-                                        'unit_price' => '',
-                                        'amount' => '',
-                                    ];
+                        <div class="mb-8 rounded border p-8" id="invoiceItemForm">
+                            <div class="row">
+                                <div class="col-sm-12 col-xl-6">
+                                    <div class="mb-4 form-group">
+                                        <div class="itinerary-type" id="customItem">
+                                            <x-input-label :value="__('Item')" />
+                                            <x-input-text type="text" name="title" id="title" />
+                                        </div>
+                                    </div>
+                                </div>
 
-                                    $invoiceItems = old('invoice_items', [$defaultItem]);
-                                @endphp
-                                @foreach ($invoiceItems as $index => $item)
-                                    <tr class="draggable" data-repeater-item>
-                                        <input type="hidden" name="type" id="type"
-                                            value="{{ old('invoice_items.' . $index . '.' . 'type', isset($defaultItem['type']) ? $defaultItem['type'] : '') }}">
-                                        <td style="width: 40%;" @if ($item['type'] === InvoiceItemType::HEADING->value) colspan="4" @endif>
-                                            <input id="content" name="content" type="text" class="form-control"
-                                                style="height: 35px; border-radius: 4px;"
-                                                value="{{ old('invoice_items.' . $index . '.' . 'content') }}" />
-                                            <x-input-error :messages="$errors->get('invoice_items.' . $index . '.' . 'content')" />
-                                        </td>
-                                        <td class="@if ($item['type'] === InvoiceItemType::HEADING->value) d-none @endif">
-                                            <input id="quantity" name="quantity" type="number" class="form-control"
-                                                style="height: 35px; border-radius: 4px;"
-                                                value="{{ old('invoice_items.' . $index . '.' . 'quantity') }}"
-                                                min="0" />
-                                            <x-input-error :messages="$errors->get('invoice_items.' . $index . '.' . 'quantity')" />
-                                        </td>
-                                        <td class="@if ($item['type'] === InvoiceItemType::HEADING->value) d-none @endif">
-                                            <input id="unit_price" name="unit_price" type="number" class="form-control"
-                                                style="height: 35px; border-radius: 4px;"
-                                                value="{{ old('invoice_items.' . $index . '.' . 'unit_price') }}"
+                                <div class="col-sm-12 col-xl-6">
+                                    <div class="mb-4 form-group">
+                                        <x-input-label :value="__('Description')" />
+                                        <x-input-text type="text" name="description" id="description" />
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-12 col-xl-3">
+                                    <div class="mb-4 form-group">
+                                        <x-input-label :value="__('Quantity')" />
+                                        <x-input-text type="number" name="quantity" id="quantity" min="0" />
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-12 col-xl-5">
+                                    <div class="mb-4 form-group">
+                                        <x-input-label :value="__('Unit Price')" />
+                                        <div class="input-group">
+                                            <x-input-text type="number" name="unit_price" id="unit_price"
                                                 min="0" step="0.01" />
-                                            <x-input-error :messages="$errors->get('invoice_items.' . $index . '.' . 'unit_price')" />
+                                            <span class="input-group-text">{{ MoneyHelper::currencyCode() }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-12 col-xl-4">
+                                    <div class="form-group text-right">
+                                        <button class="btn font-weight-bolder btn-light-primary w-100 mt-8"
+                                            type="button" id="addInvoiceItemBtn">
+                                            <i class="la la-plus"></i> {{ __('Add Item') }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        @php
+                            $items = old('invoice_items');
+                            $totalPrice = 0;
+
+                            if (!empty($items)) {
+                                $totalPrice = \is_array($items)
+                                    ? array_sum(array_column($items, 'amount'))
+                                    : $items->sum('amount');
+                            }
+                        @endphp
+
+                        <div class="table-wrapper mb-8">
+                            <table id="invoiceData"
+                                class="table table-rounded table-row-bordered table-responsive border gy-4 gs-4 mb-8">
+                                <thead>
+                                    <tr class="fw-bold fs-7 text-gray-500 text-uppercase">
+                                        <th id="type" class="d-none">{{ __('Type') }}</th>
+                                        <th id="item">{{ __('Item') }}</th>
+                                        <th id="description">{{ __('Description') }}</th>
+                                        <th id="quantity" width="10%" class="text-end">{{ __('Qty') }}</th>
+                                        <th id="unit_price" width="15%" class="text-end">{{ __('Unit Price') }}</th>
+                                        <th id="amount" width="15%" class="text-end">{{ __('Amount') }}</th>
+                                        <th id="actions" width="150px" class="text-end">{{ __('Actions') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-repeater-list="invoice_items" class="draggable-zone">
+                                    <tr data-repeater-item class="draggable">
+                                        <td class="d-none">
+                                            <input type="hidden" name="type_id">
+                                            <x-input-text type="text" name="type" id="type"
+                                                class="bg-none bg-body p-0 border-0" readonly />
                                         </td>
-                                        <td class="@if ($item['type'] === InvoiceItemType::HEADING->value) d-none @endif">
-                                            <input id="amount" name="amount" type="number"
-                                                class="form-control form-control-solid"
-                                                style="height: 35px; border-radius: 4px;"
-                                                value="{{ old('invoice_items.' . $index . '.' . 'amount') }}" readonly
-                                                min="0" step="0.01" />
-                                            <x-input-error :messages="$errors->get('invoice_items.' . $index . '.' . 'amount')" />
+                                        <td>
+                                            <input type="hidden" name="item_id">
+                                            <x-input-text type="text" name="title" id="title"
+                                                class="bg-body p-0 border-0" readonly />
+                                        </td>
+                                        <td>
+                                            <x-input-text type="text" name="description" id="description"
+                                                class="bg-body p-0 border-0" readonly />
+                                        </td>
+                                        <td>
+                                            <x-input-text type="text" name="quantity" id="quantity"
+                                                class="text-end bg-body p-0 border-0" min="1" readonly />
+                                        </td>
+                                        <td>
+                                            <x-input-text type="text" name="unit_price" id="unit_price"
+                                                class="text-end bg-body p-0 border-0" min="0" readonly />
+                                        </td>
+                                        <td>
+                                            <x-input-text type="text" name="amount" id="amount"
+                                                class="text-end bg-body p-0 border-0" min="0" readonly />
                                         </td>
                                         <td class="text-end">
-                                            <div class="d-flex gap-3 justify-content-end">
-                                                <button class="btn btn-sm btn-icon btn-light-secondary draggable-handle"
-                                                    title="Move" type="button" style="cursor: grab;">
-                                                    <i class="fa-solid fa-arrows-alt text-dark"></i>
-                                                </button>
-                                                <button class="btn btn-sm btn-icon btn-light-danger" title="Delete"
-                                                    type="button" data-repeater-delete>
-                                                    <i class="fa-solid fa-trash"></i>
-                                                </button>
-                                            </div>
+                                            <button type="button"
+                                                class="btn btn-sm btn-icon btn-light-secondary draggable-handle"
+                                                title="Move">
+                                                <i class="fa-solid fa-arrows-alt text-dark"></i>
+                                            </button>
+
+                                            <button type="button" data-repeater-delete=""
+                                                class="btn btn-sm btn-icon btn-light-danger" title="Delete">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
                                         </td>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                            <tfoot class="border">
-                                <tr>
-                                    <td colspan="6" class="text-end">
-                                        <div class="d-flex flex-end gap-3">
-                                            <button class="btn btn-sm btn-light-secondary text-dark" type="button"
-                                                data-repeater-create-custom="heading">
-                                                <i class="fa-solid fa-plus text-dark"></i>
-                                                {{ __('Add Heading') }}
-                                            </button>
-                                            <button class="btn btn-sm btn-light-primary" type="button"
-                                                data-repeater-create-custom="description">
-                                                <i class="fa-solid fa-plus"></i>
-                                                {{ __('Add Item') }}
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr class="bg-gray-100">
-                                    <td colspan="3">
-                                        <h5>{{ __('Total Amount') }}</h5>
-                                    </td>
-                                    <td colspan="2">
-                                        <h5>
-                                            {{ MoneyHelper::currencyCode() }}
-                                            <span id="total_price_show">000</span>
-                                        </h5>
-                                        <input type="hidden" id="total_price" name="total_price" value="0" />
-                                    </td>
-                                </tr>
-                            </tfoot>
-                        </table>
+                                </tbody>
+                                <tfoot class="border">
+                                    <tr class="bg-gray-100">
+                                        <td colspan="5" class="text-right border-right-0 py-7"><span
+                                                class="font-weight-bolder h3">{{ __('Total Amount') }}</span></td>
+                                        <td colspan="2" class="border-right-0 py-7">
+                                            <span class="font-weight-bolder h3 d-block text-end">
+                                                <span>{{ MoneyHelper::currencyCode() }}</span>
+                                                <span id="totalPrice">{{ MoneyHelper::format($totalPrice) }}</span>
+                                            </span>
+                                            <input type="hidden" name="total_price" id="totalPriceInput"
+                                                value="{{ $totalPrice }}">
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
 
-                        <div class="mb-4">
+                        <script>
+                            let items = @json(!empty($items) ? $items : []);
+                        </script>
+
+                        <div>
                             <x-input-label for="notes" :value="__('Notes')" />
                             <x-input-textarea name="notes" id="notes">
                                 {{ old('notes') }}
@@ -186,7 +225,7 @@
                             <x-input-select name="payment_method" data-placeholder="Select Payment Method"
                                 data-hide-search="true" required>
                                 @foreach (InvoicePaymentMethod::toSelectOptions() as $option)
-                                    <option value="{{ $option->value }}" @selected($option->value == old('payment_method'))>
+                                    <option value="{{ $option->value }}" @selected($option->value == old('payment_method', InvoicePaymentMethod::CASH->value))>
                                         {{ $option->name }}
                                     </option>
                                 @endforeach
@@ -195,17 +234,24 @@
                         </div>
 
                         <div class="col-lg-12 mb-8">
-                            <x-input-label for="payment_date" :value="__('Payment Date')" required />
+                            <x-input-label for="payment_date" :value="__('Payment Date')" />
                             <x-input-date id="payment_date" name="payment_date" :value="old('payment_date')"
-                                data-locale-format="YYYY-MM-DD" required />
+                                data-locale-format="YYYY-MM-DD" data-init-empty="true" />
                             <x-input-error :messages="$errors->get('payment_date')" />
                         </div>
 
-                        <div class="col-lg-12 mb-8">
-                            <x-input-label for="payment_reference" :value="__('Payment Reference')" required />
-                            <x-input-textarea id="payment_reference" name="payment_reference"
-                                required>{{ old('payment_reference') }}</x-input-textarea>
+                        <div class="col-lg-12">
+                            <x-input-label for="payment_reference" :value="__('Payment Reference')" />
+                            <x-input-textarea id="payment_reference"
+                                name="payment_reference">{{ old('payment_reference') }}</x-input-textarea>
                             <x-input-error :messages="$errors->get('payment_reference')" />
+                        </div>
+
+                        <div class="col-lg-12 mt-8">
+                            <x-input-label for="payment_reference_receipt" :value="__('Payment Reference Receipt')" />
+                            <x-input-file id="payment_reference_receipt" name="payment_reference_receipt"
+                                :fileMaxSize="2" :value="null" />
+                            <x-input-error :messages="$errors->get('payment_reference_receipt')" />
                         </div>
                     </div>
                 </div>
@@ -226,22 +272,37 @@
                     </x-input-select>
                     <x-input-error :messages="$errors->get('status')" />
                 </div>
-
-                <div class="separator separator-dashed mb-8"></div>
-
-                <div class="mb-8">
-                    <div class="d-flex gap-4 align-items-center justify-content-between">
-                        <x-input-label for="notification" :value="__('Email Notifications')" />
-                        <x-input-checkbox id="notification" name="notification" :value="old('notification')" />
-                    </div>
-                    <p class="text-muted">{{ __('The customer will be notified via an email.') }}</p>
-                    <x-input-error :messages="$errors->get('notification')" />
-                </div>
             </x-form-metadata>
         </div>
     </form>
 
+    @include('admin.invoice.partials.customer-create', [
+        'fields' => [
+            'customer_name' => ['label' => 'Name', 'type' => 'text'],
+            'customer_email' => ['label' => 'Email', 'type' => 'email'],
+            'customer_phone' => ['label' => 'Phone', 'type' => 'text'],
+            'customer_address' => ['label' => 'Address', 'type' => 'textarea'],
+        ],
+    ])
+
+    @push('header')
+        <style>
+            .table-wrapper {
+                overflow-x: auto;
+            }
+
+            table th,
+            table td {
+                min-width: 150px;
+            }
+        </style>
+    @endpush
+
     @push('footer')
+        <script>
+            const ITEM_TYPE_CUSTOM = {{ InvoiceItemType::CUSTOM }};
+        </script>
+
         @env('local')
         <script>
             {!! file_get_contents(resource_path('js/admin/invoice.js')) !!}

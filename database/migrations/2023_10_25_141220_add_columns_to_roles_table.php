@@ -27,8 +27,8 @@ return new class extends Migration
 	{
 		Schema::table('roles', function (Blueprint $table) {
 			$table->dropColumn('status');
-			$table->dropColumn('created_by');
-			$table->dropColumn('updated_by');
+			$table->dropConstrainedForeignId('created_by');
+			$table->dropConstrainedForeignId('updated_by');
 		});
 	}
 };

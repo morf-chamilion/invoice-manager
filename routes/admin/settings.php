@@ -25,6 +25,10 @@ Route::middleware(['verified.admin'])->group(function () {
 				->middleware(Authorize::using(SettingRoutePath::MAIL))
 				->name(SettingRoutePath::MAIL);
 
+			Route::get('/quotation', 'quotation')
+				->middleware(Authorize::using(SettingRoutePath::QUOTATION))
+				->name(SettingRoutePath::QUOTATION);
+
 			Route::get('/invoice', 'invoice')
 				->middleware(Authorize::using(SettingRoutePath::INVOICE))
 				->name(SettingRoutePath::INVOICE);

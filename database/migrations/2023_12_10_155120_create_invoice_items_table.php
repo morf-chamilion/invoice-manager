@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\InvoiceItemType;
 use App\Models\Invoice;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -18,11 +17,12 @@ return new class extends Migration
 
 			$table->foreignIdFor(Invoice::class)->constrained()->cascadeOnDelete();
 
-			$table->tinyInteger('type')->default(InvoiceItemType::DESCRIPTION);
-			$table->string('content')->nullable();
+			$table->string('custom')->nullable();
+			$table->string('description')->nullable();
+
+			$table->decimal('unit_price', 10, 2)->nullable();
 			$table->integer('quantity')->nullable();
-			$table->unsignedDecimal('unit_price', 10, 2)->nullable();
-			$table->unsignedDecimal('amount', 10, 2)->nullable();
+			$table->decimal('amount', 10, 2)->nullable();
 		});
 	}
 

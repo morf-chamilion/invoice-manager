@@ -1,0 +1,30 @@
+---
+name: Deploy To Develop
+
+on:
+  push:
+    branches: [develop]
+
+concurrency: development_environment
+
+jobs:
+  Deploy:
+    name: Deploy To Remote Server
+    runs-on: ubuntu-latest
+    env:
+      GIT_ROOT: "${{ vars.APPLICATION_PATH }}"
+    steps:
+      - name: Setup Deploy Key
+        run: |
+          echo "${{ secrets.SERVER_SECRET_KEY }}" > deploy_key
+          chmod 600 ./deploy_key
+
+      - name: Pull Latest Source Code
+        run: |
+          ssh -i ./deploy_key -o StrictHostKeyChecking=no "${{ vars.SERVER_USERNAME }}@${{ vars.SERVER_HOSTNAME }}" \
+            "cd ${{ env.GIT_ROOT }} && git pull"
+
+      - name: Install Composer Packages
+        run: |
+          ssh -i ./deploy_key -o StrictHostKeyChecking=no "${{ vars.SERVER_USERNAME }}@${{ vars.SERVER_HOSTNAME }}" \
+            "cd ${{ env.GIT_ROOT }} && composer install --no-progress --no-suggest --no-interaction --no-scripts"

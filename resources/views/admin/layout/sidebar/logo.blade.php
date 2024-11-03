@@ -3,7 +3,11 @@
     <!--begin::Logo image-->
     <a href="{{ route(AdminRoutePath::DASHBOARD) }}">
         <h1 class="text-dark fw-medium fs-3 app-sidebar-logo-default">
-            {{ settings(SettingModule::GENERAL)->get('site_name') }}
+            @if (auth()->user()->vendor)
+                {{ auth()->user()->vendor->name }}
+            @else
+                {{ settings(SettingModule::GENERAL)->get('site_name') }}
+            @endif
         </h1>
     </a>
     <!--end::Logo image-->

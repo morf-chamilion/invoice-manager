@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Admin\Invoice;
 
+use App\Enums\InvoicePaymentStatus;
 use App\Enums\InvoiceStatus;
 use App\Http\Resources\HasDataTableInterface;
 use App\Http\Resources\HasDataTableTrait;
@@ -25,12 +26,12 @@ class InvoiceIndexResource extends JsonResource implements HasDataTableInterface
 	{
 		return collect($records)->map(function ($record) {
 			return [
-				$record->id,
 				$this->number($record),
 				$this->customer($record->customer),
 				$record->readableDate,
 				$this->dueDate($record),
 				$record->readableTotalPrice,
+				InvoicePaymentStatus::toBadge($record->payment_status),
 				InvoiceStatus::toBadge($record->status),
 				$this->actions($record),
 			];
