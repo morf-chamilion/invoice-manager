@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin\Vendor;
 
 use App\Exceptions\RedirectResponseException;
 use App\Http\Controllers\Admin\AdminBaseController;
-use App\Http\Requests\Admin\Vendor\VendorSettingUpdateRequest;
+use App\Http\Requests\Admin\Vendor\VendorSettingGeneralUpdateRequest;
+use App\Http\Requests\Admin\Vendor\VendorSettingInvoiceUpdateRequest;
+use App\Http\Requests\Admin\Vendor\VendorSettingQuotationUpdateRequest;
 use App\Http\Requests\Admin\Vendor\VendorStoreRequest;
 use App\Http\Requests\Admin\Vendor\VendorUpdateRequest;
 use App\Http\Resources\Admin\Vendor\VendorIndexResource;
@@ -170,9 +172,13 @@ class VendorController extends AdminBaseController
     /**
      * Update the specified resource in storage.
      */
-    public function updateGeneralSettings(Vendor $vendor, VendorSettingUpdateRequest $request): RedirectResponse|RedirectResponseException
+    public function updateGeneralSettings(Vendor $vendor, VendorSettingGeneralUpdateRequest $request): RedirectResponse|RedirectResponseException
     {
-        $updated = $this->vendorService->updateVendorSettings($vendor->id, $request->getAttributes());
+        $updated = $this->vendorService->updateVendorSettings(
+            $vendor->id,
+            $request->getAttributes(),
+            $this->vendorRoutePath::GENERAL_SETTING_UPDATE,
+        );
 
         throw_if(!$updated, RedirectResponseException::class, $this->vendorMessage->updateFailed());
 
@@ -207,7 +213,7 @@ class VendorController extends AdminBaseController
     /**
      * Update the specified resource in storage.
      */
-    public function updateQuotationSettings(Vendor $vendor, VendorSettingUpdateRequest $request): RedirectResponse|RedirectResponseException
+    public function updateQuotationSettings(Vendor $vendor, VendorSettingQuotationUpdateRequest $request): RedirectResponse|RedirectResponseException
     {
         $updated = $this->vendorService->updateVendorSettings($vendor->id, $request->getAttributes());
 
@@ -244,7 +250,7 @@ class VendorController extends AdminBaseController
     /**
      * Update the specified resource in storage.
      */
-    public function updateInvoiceSettings(Vendor $vendor, VendorSettingUpdateRequest $request): RedirectResponse|RedirectResponseException
+    public function updateInvoiceSettings(Vendor $vendor, VendorSettingInvoiceUpdateRequest $request): RedirectResponse|RedirectResponseException
     {
         $updated = $this->vendorService->updateVendorSettings($vendor->id, $request->getAttributes());
 
