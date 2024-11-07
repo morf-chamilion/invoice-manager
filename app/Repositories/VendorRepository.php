@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Vendor;
+use App\RoutePaths\Admin\Vendor\VendorRoutePath;
 use App\Services\MediaService;
 use App\Services\Traits\HandlesMedia;
 use Illuminate\Database\QueryException;
@@ -82,14 +83,16 @@ class VendorRepository extends BaseRepository
 	/**
 	 * Update an existing vendor settings.
 	 */
-	public function updateSettings(int $vendorId, array $newAttributes): bool
+	public function updateSettings(int $vendorId, array $newAttributes, ?string $action = null): bool
 	{
 		$logo = Arr::pull($newAttributes, 'logo');
 
 		$vendor = $this->vendor::findOrFail($vendorId)
 			->fill($newAttributes);
 
-		$this->syncMedia($vendor, 'logo', $logo);
+		if ($action === VendorRoutePath::GENERAL_SETTING_UPDATE) {
+			$this->syncMedia($vendor, 'logo', $logo);
+		}
 
 		return $vendor->save();
 	}

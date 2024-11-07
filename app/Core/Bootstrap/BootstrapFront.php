@@ -6,6 +6,6 @@ class BootstrapFront
 {
     public function init(): void
     {
-        addHtmlClass('body', 'app-blank');
+        addHtmlClass('body', '');
     }
 }

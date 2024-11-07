@@ -78,13 +78,13 @@ class VendorService extends BaseService
 	/**
 	 * Update an existing vendor.
 	 */
-	public function updateVendorSettings(int $vendorId, array $newAttributes): bool
+	public function updateVendorSettings(int $vendorId, array $newAttributes, ?string $action = null): bool
 	{
 		if ($this->getAdminAuthUser()) {
 			$newAttributes['updated_by'] = $this->getAdminAuthUser()->id;
 		}
 
-		$updated = $this->vendorRepository->updateSettings($vendorId, $newAttributes);
+		$updated = $this->vendorRepository->updateSettings($vendorId, $newAttributes, $action);
 
 		return $updated;
 	}

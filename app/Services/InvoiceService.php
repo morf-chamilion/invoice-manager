@@ -332,7 +332,6 @@ class InvoiceService extends BaseService
 
 		return $this->customerService->createCustomer([
 			...$attributes,
-			'password' => Str::password(30),
 			'status' => CustomerStatus::ACTIVE,
 		]);
 	}

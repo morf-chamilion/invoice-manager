@@ -39,26 +39,11 @@
                                 <x-input-error :messages="$errors->get('company')" />
                             </div>
 
-                            <div class="mb-8">
+                            <div>
                                 <x-input-label for="address" :value="__('Address')" required />
                                 <x-input-textarea id="address" name="address"
                                     required>{{ old('address') }}</x-input-textarea>
                                 <x-input-error :messages="$errors->get('address')" />
-                            </div>
-
-                            <div data-kt-password-meter="true">
-                                <x-input-label for="password" :value="__('Password')" required />
-                                <div class="position-relative mb-3">
-                                    <x-input-text id="password" name="password" type="password"
-                                        class="mt-1 block w-full" :value="old('password')" autocomplete="none" />
-                                    <span
-                                        class="btn btn-sm btn-icon position-absolute translate-middle top-50 end-0 me-n2"
-                                        data-kt-password-meter-control="visibility">
-                                        <i class="bi bi-eye-slash fs-2"></i>
-                                        <i class="bi bi-eye fs-2 d-none"></i>
-                                    </span>
-                                </div>
-                                <x-input-error :messages="$errors->get('password')" />
                             </div>
                         </div>
                     </div>
