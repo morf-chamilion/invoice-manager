@@ -11,9 +11,10 @@
                         @endif
                     </td>
                     <td colspan="2" style="text-align: right;">
-                        <h4 style="font-size: 32px; font-weight: bold; text-transform: uppercase; margin: 0;">
+                        <div
+                            style="line-height: 1.2; font-size: 32px; font-weight: bold; text-transform: uppercase; margin: 0;">
                             {{ __('Quotation') }}
-                        </h4>
+                        </div>
                         <span style="display: block; margin-top: 4px; font-size: 16px; font-weight: normal;">
                             {{ $quotation->number }}
                         </span>
