@@ -19,6 +19,11 @@ class VendorSettingInvoiceUpdateRequest extends BaseRequest
 				'string',
 				'max:5000',
 			],
+			'invoice_terms_of_service' => [
+				'nullable',
+				'string',
+				'max:25000',
+			],
 		];
 	}
 }
