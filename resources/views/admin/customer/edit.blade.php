@@ -49,46 +49,6 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="card mt-8">
-                    <div class="card-header">
-                        <header>
-                            <h2 class="text-lg mt-8 font-medium text-gray-900">
-                                {{ __('Update Password') }}
-                            </h2>
-                        </header>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="mb-8" data-kt-password-meter="true">
-                            <x-input-label for="password" :value="__('New Password')" />
-                            <div class="position-relative mb-3">
-                                <x-input-text id="password" name="password" type="password" class="mt-1 block w-full"
-                                    autocomplete="new-password" />
-                                <span class="btn btn-sm btn-icon position-absolute translate-middle top-50 end-0 me-n2"
-                                    data-kt-password-meter-control="visibility">
-                                    <i class="bi bi-eye-slash fs-2"></i>
-                                    <i class="bi bi-eye fs-2 d-none"></i>
-                                </span>
-                            </div>
-                            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-                        </div>
-
-                        <div data-kt-password-meter="true">
-                            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-                            <div class="position-relative mb-3">
-                                <x-input-text id="password_confirmation" name="password_confirmation" type="password"
-                                    autocomplete="new-password" />
-                                <span class="btn btn-sm btn-icon position-absolute translate-middle top-50 end-0 me-n2"
-                                    data-kt-password-meter-control="visibility">
-                                    <i class="bi bi-eye-slash fs-2"></i>
-                                    <i class="bi bi-eye fs-2 d-none"></i>
-                                </span>
-                            </div>
-                            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <x-form-metadata :model="$customer" type="Update">

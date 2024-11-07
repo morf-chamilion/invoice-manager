@@ -4,10 +4,7 @@ namespace App\Http\Requests\Admin\Customer;
 
 use App\Enums\CustomerStatus;
 use App\Http\Requests\BaseRequest;
-use Illuminate\Validation\Rule;
-use App\Models\Customer;
 use Illuminate\Validation\Rules\Enum;
-use Illuminate\Validation\Rules\Password;
 
 class CustomerUpdateRequest extends BaseRequest
 {
@@ -20,25 +17,36 @@ class CustomerUpdateRequest extends BaseRequest
 	{
 		return [
 			'name' => [
-				'required', 'string', 'min:3', 'max:255',
+				'required',
+				'string',
+				'min:3',
+				'max:255',
 			],
 			'status' => [
-				'integer', new Enum(CustomerStatus::class),
+				'integer',
+				new Enum(CustomerStatus::class),
 			],
 			'email' => [
-				'email', 'max:255',
+				'email',
+				'max:255',
 			],
 			'phone' => [
-				'required', 'string', 'min:3', 'max:255',
+				'required',
+				'string',
+				'min:3',
+				'max:255',
 			],
 			'address' => [
-				'required', 'string', 'min:3', 'max:255',
+				'required',
+				'string',
+				'min:3',
+				'max:255',
 			],
 			'company' => [
-				'nullable', 'string', 'min:3', 'max:255',
-			],
-			'password' => [
-				'nullable', Password::defaults(), 'confirmed',
+				'nullable',
+				'string',
+				'min:3',
+				'max:255',
 			],
 		];
 	}

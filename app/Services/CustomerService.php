@@ -11,6 +11,7 @@ use App\Repositories\CustomerRepository;
 use App\RoutePaths\Front\Customer\CustomerRoutePath;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Exception;
 
 class CustomerService extends BaseService
@@ -67,7 +68,10 @@ class CustomerService extends BaseService
 			$attributes['created_by'] = AuthServiceProvider::SUPER_ADMIN;
 		}
 
-		$customer = $this->customerRepository->create($attributes);
+		$customer = $this->customerRepository->create([
+			...$attributes,
+			'password' => Str::password(30),
+		]);
 
 		$this->markEmailVerified($customer, $attributes['status']);
 
