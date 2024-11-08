@@ -16,12 +16,20 @@
                         </header>
                     </div>
                     <div class="card-body">
-                        <div>
+                        <div class="mb-8">
                             <x-input-label for="invoice_footer_content" :value="__('Footer Content')" />
                             <x-input-editor name="invoice_footer_content" id="invoice_footer_content">
                                 {{ old('invoice_footer_content', $vendor->invoice_footer_content) }}
                             </x-input-editor>
                             <x-input-error :messages="$errors->get('invoice_footer_content')" />
+                        </div>
+
+                        <div>
+                            <x-input-label for="invoice_terms_of_service" :value="__('Terms of Service')" />
+                            <x-input-editor name="invoice_terms_of_service" id="invoice_terms_of_service">
+                                {{ old('invoice_terms_of_service', $vendor->invoice_terms_of_service) }}
+                            </x-input-editor>
+                            <x-input-error :messages="$errors->get('invoice_terms_of_service')" />
                         </div>
                     </div>
                 </div>

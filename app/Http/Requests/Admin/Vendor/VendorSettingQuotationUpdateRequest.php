@@ -19,6 +19,11 @@ class VendorSettingQuotationUpdateRequest extends BaseRequest
 				'string',
 				'max:5000',
 			],
+			'quotation_terms_of_service' => [
+				'nullable',
+				'string',
+				'max:25000',
+			],
 		];
 	}
 }

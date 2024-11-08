@@ -197,8 +197,21 @@
         </table>
     @endif
 
-    <footer
-        style="@empty($pdf) margin-top: 30px; @else position: absolute; bottom: 0;  @endif width: 100%; font-size: 14px; font-family: sans-serif">
+    <footer style="@empty($pdf) margin-top: 30px; @else position: absolute; bottom: 0;  @endif width: 100%; font-size: 14px; font-family: sans-serif">
         {!! $quotation->vendor->quotation_footer_content !!}
     </footer>
+
+    <div style="page-break-before: always;"></div>
+
+    @if ($quotation->vendor?->quotation_terms_of_service)
+        <table style="font-family: sans-serif; margin-bottom: 30px;">
+            <tbody>
+                <tr>
+                    <td style="padding-top: 25px;">
+                        <p style="margin-top: 6px;">{!! $quotation->vendor?->quotation_terms_of_service !!}</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    @endif
 </table>

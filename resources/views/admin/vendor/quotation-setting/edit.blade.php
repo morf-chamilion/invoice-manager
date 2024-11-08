@@ -16,12 +16,20 @@
                         </header>
                     </div>
                     <div class="card-body">
-                        <div>
+                        <div class="mb-8">
                             <x-input-label for="quotation_footer_content" :value="__('Footer Content')" />
                             <x-input-editor name="quotation_footer_content" id="quotation_footer_content">
                                 {{ old('quotation_footer_content', $vendor->quotation_footer_content) }}
                             </x-input-editor>
                             <x-input-error :messages="$errors->get('quotation_footer_content')" />
+                        </div>
+
+                        <div>
+                            <x-input-label for="quotation_terms_of_service" :value="__('Terms of Service')" />
+                            <x-input-editor name="quotation_terms_of_service" id="quotation_terms_of_service">
+                                {{ old('quotation_terms_of_service', $vendor->quotation_terms_of_service) }}
+                            </x-input-editor>
+                            <x-input-error :messages="$errors->get('quotation_terms_of_service')" />
                         </div>
                     </div>
                 </div>
