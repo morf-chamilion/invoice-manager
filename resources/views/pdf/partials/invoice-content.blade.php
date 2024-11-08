@@ -242,9 +242,9 @@
         {!! $invoice->vendor->invoice_footer_content !!}
     </footer>
 
-    <div style="page-break-before: always;"></div>
-
     @if ($invoice->vendor?->invoice_terms_of_service)
+        <div style="page-break-before: always;"></div>
+
         <table style="font-family: sans-serif; margin-bottom: 30px;">
             <tbody>
                 <tr>
