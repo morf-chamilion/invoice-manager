@@ -25,7 +25,6 @@
                                 </span>
                             @endisset
                         </span>
-
                     </td>
                 </tr>
             </tbody>

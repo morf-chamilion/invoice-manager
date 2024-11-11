@@ -264,7 +264,7 @@
                     <x-input-select name="status" data-placeholder="Select Status" data-hide-search="true" required>
                         @foreach (InvoiceStatus::toSelectOptions() as $option)
                             @if ($option->value !== InvoiceStatus::COMPLETED->value)
-                                <option value="{{ $option->value }}" @selected($option->value == old('status'))>
+                                <option value="{{ $option->value }}" @selected($option->value == old('status', InvoiceStatus::ACTIVE->value))>
                                     {{ $option->name }}
                                 </option>
                             @endif
