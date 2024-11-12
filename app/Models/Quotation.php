@@ -37,6 +37,8 @@ class Quotation extends Model implements HasMedia, HasRelationsInterface
 		'valid_until_date',
 		'number',
 		'customer_id',
+		'discount_type',
+		'discount_value',
 		'total_price',
 		'notes',
 		'vendor_id',
@@ -162,6 +164,34 @@ class Quotation extends Model implements HasMedia, HasRelationsInterface
 
 		return MoneyHelper::print($this->total_price);
 	}
+
+	/**
+	 * Get the formatted discount price attribute.
+	 */
+	public function getReadableDiscountPriceAttribute(): string
+	{
+		if ($this->vendor?->currency) {
+			return $this->vendor->currency . " " . MoneyHelper::format($this->discount_value);
+		}
+
+		return MoneyHelper::print($this->discount_value);
+	}
+
+	/**
+	 * Get the formatted sub total price attribute.
+	 */
+	public function getReadableSubTotalPriceAttribute(): string
+	{
+		$value = array_sum(array_column($this->quotationItems->toArray(), 'amount'));
+
+		if ($this->vendor?->currency) {
+			return $this->vendor->currency . " " . MoneyHelper::format($value);
+		}
+
+		return MoneyHelper::print($value);
+	}
+
+
 
 	/**
 	 * Model media collections.

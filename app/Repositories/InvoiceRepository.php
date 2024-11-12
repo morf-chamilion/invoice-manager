@@ -114,6 +114,8 @@ class InvoiceRepository extends BaseRepository
 		$lastInvoice = $this->getLastVendorInvoice($attributes['vendor_id']);
 		$invoice->vendor_invoice_number = $lastInvoice ? ++$lastInvoice->vendor_invoice_number : 1;
 		$invoice->number = $invoice->id;
+		$invoice->discount_type = $attributes['discount_type'];
+		$invoice->discount_value = $attributes['discount_value'];
 
 		if (
 			isset($attributes['payment_method']) &&
@@ -218,7 +220,7 @@ class InvoiceRepository extends BaseRepository
 			$totalPrice += $item->amount;
 		}
 
-		return $totalPrice;
+		return $this->applyDiscount($totalPrice, $invoice->discount_value ?? 0, $invoice->discount_type ?? 0);
 	}
 
 	/**
@@ -233,6 +235,18 @@ class InvoiceRepository extends BaseRepository
 		match ($itemType) {
 			InvoiceItemType::CUSTOM => $item->custom = $itemTitle,
 		};
+	}
+
+	/**
+	 * Apply discount to the total price.
+	 */
+	private function applyDiscount(float $total, float $discount, string $discountType): float
+	{
+		if ($discountType === 'percentage') {
+			return $total - ($total * $discount / 100);
+		}
+
+		return $total - $discount;
 	}
 
 	/**

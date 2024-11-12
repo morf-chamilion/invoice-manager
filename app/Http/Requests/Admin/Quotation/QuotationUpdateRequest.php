@@ -35,6 +35,20 @@ class QuotationUpdateRequest extends BaseRequest
 				'required',
 				Rule::exists(Customer::class, 'id'),
 			],
+			'discount_type' => [
+				'nullable',
+				'string',
+			],
+			'discount_value' => [
+				'nullable',
+				'numeric',
+				'min:0',
+				function ($attribute, $value, $fail) {
+					if (empty($this->input('invoice_items')) && $value != 0) {
+						$fail('The discount value must be 0 if there are no invoice items.');
+					}
+				},
+			],
 			'quotation_items' => [
 				'nullable',
 				'array',
