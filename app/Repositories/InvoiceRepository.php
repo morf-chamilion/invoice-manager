@@ -260,14 +260,14 @@ class InvoiceRepository extends BaseRepository
 			$paymentData['reference'] = $paymentReference;
 		}
 
-		if ($invoice->payment_date) {
+		if ($attributes['payment_date']) {
 			$paymentData['transaction_id'] = $invoice->number;
 			$paymentData['amount'] = $invoice->total_price;
 		}
 
 		$attributes['payment_data'] = $paymentData;
 
-		if ($invoice->payment_date) {
+		if ($attributes['payment_date']) {
 			$attributes['payment_date'] = $invoice->payment_date;
 			$attributes['payment_status'] = InvoicePaymentStatus::PAID;
 			$attributes['status'] = InvoiceStatus::COMPLETED;
@@ -287,14 +287,14 @@ class InvoiceRepository extends BaseRepository
 			$paymentData['reference'] = $paymentReference;
 		}
 
-		if ($invoice->payment_date) {
+		if ($attributes['payment_date']) {
 			$paymentData['transaction_id'] = $invoice->number;
 			$paymentData['amount'] = $invoice->total_price;
 		}
 
 		$attributes['payment_data'] = $paymentData;
 
-		if ($invoice->payment_date) {
+		if ($attributes['payment_date']) {
 			$attributes['payment_date'] = $invoice->payment_date;
 			$attributes['payment_status'] = InvoicePaymentStatus::PAID;
 			$attributes['status'] = InvoiceStatus::COMPLETED;
