@@ -11,6 +11,8 @@ use lessc;
 
 class FrontAssetServiceProvider extends ServiceProvider
 {
+    private int $directoryMode = 0775;
+
     /**
      * Register services.
      */
@@ -46,7 +48,7 @@ class FrontAssetServiceProvider extends ServiceProvider
         $masterFilePath = public_path('assets/css/front/master.min.css');
 
         if (!File::exists($masterFilePath)) {
-            File::makeDirectory(public_path('assets/css/front'), 0755, true);
+            File::makeDirectory(public_path('assets/css/front'), $this->directoryMode, true);
             File::put($masterFilePath, '');
         }
 
@@ -63,7 +65,7 @@ class FrontAssetServiceProvider extends ServiceProvider
         $masterFilePath = public_path('assets/js/front/custom-combined.min.js');
 
         if (!File::exists($masterFilePath)) {
-            File::makeDirectory(public_path('assets/js/front'), 0775, true);
+            File::makeDirectory(public_path('assets/js/front'), $this->directoryMode, true);
             File::put($masterFilePath, '');
         }
 
