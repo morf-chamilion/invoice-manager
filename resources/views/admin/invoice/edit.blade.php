@@ -113,12 +113,15 @@
 
                             if (!empty($items)) {
                                 $totalPrice = \is_array($items)
-                                    ? array_sum(array_column($items, 'amount'))
-                                    : $items->sum('amount');
+                                    ? array_sum(
+                                        array_column($items, 'amount') -
+                                            old('discount_value', $invoice->discount_value),
+                                    )
+                                    : $items->sum('amount') - old('discount_value', $invoice->discount_value);
                             }
                         @endphp
 
-                        <div class="table-wrapper mb-8">
+                        <div class="table-wrapper">
                             <table id="invoiceData"
                                 class="table table-rounded table-row-bordered table-responsive border gy-4 gs-4 mb-8">
                                 <thead>
@@ -175,6 +178,26 @@
                                     </tr>
                                 </tbody>
                                 <tfoot class="border">
+                                    <tr>
+                                        <td colspan="4" class="text-right border-right-0">
+                                            <span class="font-weight-bold h5">{{ __('Discount') }}</span>
+                                        </td>
+                                        <td colspan="1" class="border-right-0">
+                                            <input type="number" class="form-control text-end" name="discount_value"
+                                                id="discountValue" min="0" placeholder="0"
+                                                value="{{ old('discount_value', $invoice->discount_value) }}" />
+                                        </td>
+                                        <td colspan="1" class="border-right-0">
+                                            <select class="form-select" name="discount_type" id="discountType">
+                                                <option value="fixed" @selected(old('discount_type', $invoice->discount_type) === 'fixed')>
+                                                    {{ __('Fixed') }}
+                                                </option>
+                                                <option value="percentage" @selected(old('discount_type', $invoice->discount_type) === 'percentage')>
+                                                    {{ __('Percent') }}
+                                                </option>
+                                            </select>
+                                        </td>
+                                    </tr>
                                     <tr class="bg-gray-100">
                                         <td colspan="5" class="text-right border-right-0 py-7"><span
                                                 class="font-weight-bolder h3">{{ __('Total Amount') }}</span></td>

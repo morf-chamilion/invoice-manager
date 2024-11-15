@@ -72,7 +72,7 @@ var KTDatatablesServerSide = (function () {
                     render: (items) => {
                         let template = `<div class="d-flex gap-3 justify-content-end">`;
 
-                        if (items.overdue) {
+                        if (items.overdue && items.data?.overdueSentAt) {
                             template += `<button id="overdue" type="button" class="btn btn-sm btn-icon btn-danger" title="Overdue Notification" data-timestamp="${items.data.overdueSentAt}"><i class="fa-solid fa-bell"></i></button>`;
                         }
 
@@ -512,6 +512,8 @@ $('input[name="item_type"]').on('change', function (event) {
     $('#customItem').removeClass('d-none');
 });
 
+let initialTotalValue = parseFloat($('#totalPriceInput').val());
+
 $('#addInvoiceItemBtn').on('click', function (event) {
     event.preventDefault();
 
@@ -519,45 +521,34 @@ $('#addInvoiceItemBtn').on('click', function (event) {
     let itemTypeName = $('input[name="item_type"]:checked').parent().find('.form-check-label').text();
     let itemName = null;
     let itemID = null;
+    let description = $('#description').val();
+    let quantity = $('#quantity').val();
+    let unitPrice = parseFloat($('#unit_price').val()).toFixed(2);
 
     itemID = $('#title').val();
     itemName = $('#title').val();
     itemTypeName = 'Custom';
     itemType = 1;
 
-    let description = $('#description').val();
-    let quantity = $('#quantity').val();
-    let unitPrice = parseFloat($('#unit_price').val())
-        .toFixed(2)
-        .toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        });
+    if (itemType && itemTypeName && itemID && itemName && unitPrice && !isNaN(unitPrice) && !isNaN(quantity)) {
+        let currentInvoiceData = $('tr.draggable').length ? $('#invoiceData').repeaterVal()['invoice_items'] : [];
 
-    if (itemType && itemTypeName && itemID && itemName && unitPrice && !isNaN(unitPrice)) {
-        let currentInvoiceData = ($('tr.draggable').length) ? $('#invoiceData').repeaterVal()['invoice_items'] : [];
-
-        let updatedCurrentInvoiceData = [];
-
-        for (const [key, value] of Object.entries(currentInvoiceData)) {
-            updatedCurrentInvoiceData.push({
-                'type_id': value['type_id'],
-                'type': value['type'],
-                'item_id': value['item_id'],
-                'title': value['title'],
-                'description': value['description'],
-                'quantity': value['quantity'],
-                'unit_price': value['unit_price'],
-                'amount': value['amount'],
-            });
+        if (unitPrice <= 0 || quantity <= 0) {
+            return Swal.fire('Error', 'Fields contain invalid values.', 'error');
         }
 
-        let rowTotal = parseFloat(parseFloat(quantity) * parseFloat(unitPrice))
-            .toFixed(2)
-            .toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-            });
+        let updatedCurrentInvoiceData = currentInvoiceData.map(item => ({
+            'type_id': item['type_id'],
+            'type': item['type'],
+            'item_id': item['item_id'],
+            'title': item['title'],
+            'description': item['description'],
+            'quantity': item['quantity'],
+            'unit_price': item['unit_price'],
+            'amount': item['amount'],
+        }));
+
+        let rowTotal = (quantity * unitPrice).toFixed(2);
 
         updatedCurrentInvoiceData.push({
             'type_id': itemType,
@@ -572,20 +563,7 @@ $('#addInvoiceItemBtn').on('click', function (event) {
 
         invoiceItemsRepeater.setList(updatedCurrentInvoiceData);
 
-        let totalPrice = parseFloat($('#totalPriceInput').val());
-        if (isNaN(totalPrice)) {
-            totalPrice = 0;
-        }
-
-        let total = parseFloat(parseFloat(totalPrice) + parseFloat(rowTotal))
-            .toFixed(2)
-            .toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-            });
-
-        $('#totalPrice').text(total);
-        $('#totalPriceInput').val(total);
+        applyTotal();
 
         $('#invoiceItemForm input[type=text], #invoiceItemForm input[type=number]').val('');
         $('#invoiceItemForm select').val('');
@@ -594,6 +572,44 @@ $('#addInvoiceItemBtn').on('click', function (event) {
         Swal.fire('Error', 'Please fill out all required fields.', 'error');
     }
 });
+
+function applyTotal() {
+    let rowTotal = 0;
+
+    $('#invoiceData tbody tr').each(function () {
+        const amount = parseFloat($(this).find('#amount').val()) || 0;
+        rowTotal += amount;
+    });
+
+    let total = parseFloat(rowTotal);
+    let discountedTotal = parseFloat(applyDiscount(total)).toFixed(2)
+        .toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
+
+    $('#totalPrice').text(discountedTotal);
+    $('#totalPriceInput').val(discountedTotal);
+}
+
+function applyDiscount(total) {
+    const discount = parseFloat($('#discountValue').val()) || 0;
+    const discountType = $('#discountType').val();
+
+    if (discount < 0) {
+        Swal.fire('Error', 'Discount field contains an invalid value.', 'error');
+        return 0;
+    }
+
+    if (discountType === 'percentage') {
+        return total - (total * discount / 100);
+    } else {
+        return total -= discount;
+    }
+}
+
+$('#discountValue').on('input', () => applyTotal());
+$('#discountType').on('change', () => applyTotal());
 
 let swappable;
 let invoiceItemsRepeater;
@@ -659,8 +675,13 @@ let InvoiceRepeater = function () {
                                 maximumFractionDigits: 2,
                             });
 
-                        $('#totalPrice').text(total);
-                        $('#totalPriceInput').val(total);
+                        if (total < 0) {
+                            $('#totalPrice').text('0');
+                            $('#totalPriceInput').val('0');
+                        } else {
+                            $('#totalPrice').text(total);
+                            $('#totalPriceInput').val(total);
+                        }
 
                         $(this).slideUp(deleteElement);
                     }

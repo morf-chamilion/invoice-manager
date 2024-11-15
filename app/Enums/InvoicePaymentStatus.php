@@ -16,9 +16,9 @@ enum InvoicePaymentStatus: int
     public function getName(): string
     {
         return match ($this) {
-            self::PENDING => 'Pending',
+            self::PENDING => 'Payment Pending',
             self::PAID => 'Paid',
-            self::DECLINED => 'Declined',
+            self::DECLINED => 'Payment Declined',
             default => 'Not known',
         };
     }

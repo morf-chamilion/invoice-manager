@@ -166,6 +166,28 @@
                         </td>
                     </tr>
                 @endforeach
+                @if ($quotation->discount_value != 0)
+                    <tr>
+                        <td colspan="2"
+                            style="border: 1px solid #ddd; padding: 8px; font-size: 14px; font-weight: bold;">
+                            {{ __('Sub Total') }}
+                        </td>
+                        <td colspan="3"
+                            style="border: 1px solid #ddd; padding: 8px; text-align: right; font-size: 14px; font-weight: bold;">
+                            {{ $quotation->readableSubTotalPrice }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"
+                            style="border: 1px solid #ddd; padding: 8px; font-size: 14px; font-weight: bold;">
+                            {{ __('Discount') }}
+                        </td>
+                        <td colspan="3"
+                            style="border: 1px solid #ddd; padding: 8px; text-align: right; font-size: 14px; font-weight: bold;">
+                            {{ $quotation->readableDiscountPrice }}
+                        </td>
+                    </tr>
+                @endif
                 <tr>
                     <td colspan="2"
                         style="border: 1px solid #ddd; padding: 8px; font-size: 18px; font-weight: bold;">

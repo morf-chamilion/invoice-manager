@@ -108,6 +108,8 @@ class QuotationRepository extends BaseRepository
 		$lastQuotation = $this->getLastVendorQuotation($attributes['vendor_id']);
 		$quotation->vendor_quotation_number = $lastQuotation ? ++$lastQuotation->vendor_quotation_number : 1;
 		$quotation->number = $quotation->id;
+		$quotation->discount_type = $attributes['discount_type'];
+		$quotation->discount_value = $attributes['discount_value'];
 
 		$totalPrice = 0;
 
@@ -175,7 +177,19 @@ class QuotationRepository extends BaseRepository
 			$totalPrice += $item->amount;
 		}
 
-		return $totalPrice;
+		return $this->applyDiscount($totalPrice, $quotation->discount_value ?? 0, $quotation->discount_type ?? 0);
+	}
+
+	/**
+	 * Apply discount to the total price.
+	 */
+	private function applyDiscount(float $total, float $discount, string $discountType): float
+	{
+		if ($discountType === 'percentage') {
+			return $total - ($total * $discount / 100);
+		}
+
+		return $total - $discount;
 	}
 
 	/**

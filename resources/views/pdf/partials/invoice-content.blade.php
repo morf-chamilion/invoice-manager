@@ -25,7 +25,6 @@
                                 </span>
                             @endisset
                         </span>
-
                     </td>
                 </tr>
             </tbody>
@@ -165,6 +164,28 @@
                         </td>
                     </tr>
                 @endforeach
+                @if ($invoice->discount_value != 0)
+                    <tr>
+                        <td colspan="2"
+                            style="border: 1px solid #ddd; padding: 8px; font-size: 14px; font-weight: bold;">
+                            {{ __('Sub Total') }}
+                        </td>
+                        <td colspan="3"
+                            style="border: 1px solid #ddd; padding: 8px; text-align: right; font-size: 14px; font-weight: bold;">
+                            {{ $invoice->readableSubTotalPrice }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"
+                            style="border: 1px solid #ddd; padding: 8px; font-size: 14px; font-weight: bold;">
+                            {{ __('Discount') }}
+                        </td>
+                        <td colspan="3"
+                            style="border: 1px solid #ddd; padding: 8px; text-align: right; font-size: 14px; font-weight: bold;">
+                            {{ $invoice->readableDiscountPrice }}
+                        </td>
+                    </tr>
+                @endif
                 <tr>
                     <td colspan="2"
                         style="border: 1px solid #ddd; padding: 8px; font-size: 18px; font-weight: bold;">

@@ -66,7 +66,7 @@ var KTDatatablesServerSide = (function () {
                     render: (items) => {
                         let template = `<div class="d-flex gap-3 justify-content-end">`;
 
-                        if (items.overdue) {
+                        if (items.overdue && items.data?.overdueSentAt) {
                             template += `<button id="overdue" type="button" class="btn btn-sm btn-icon btn-danger" title="Overdue Notification" data-timestamp="${items.data.overdueSentAt}"><i class="fa-solid fa-bell"></i></button>`;
                         }
 
@@ -413,6 +413,8 @@ $('input[name="item_type"]').on('change', function (event) {
     $('#customItem').removeClass('d-none');
 });
 
+let initialTotalValue = parseFloat($('#totalPriceInput').val());
+
 $('#addQuotationItemBtn').on('click', function (event) {
     event.preventDefault();
 
@@ -438,6 +440,10 @@ $('#addQuotationItemBtn').on('click', function (event) {
     if (itemType && itemTypeName && itemID && itemName && unitPrice && !isNaN(unitPrice)) {
         let currentQuotationData = ($('tr.draggable').length) ? $('#quotationData').repeaterVal()['quotation_items'] : [];
 
+        if (unitPrice <= 0 || quantity <= 0) {
+            return Swal.fire('Error', 'Fields contain invalid values.', 'error');
+        }
+
         let updatedCurrentQuotationData = [];
 
         for (const [key, value] of Object.entries(currentQuotationData)) {
@@ -453,12 +459,7 @@ $('#addQuotationItemBtn').on('click', function (event) {
             });
         }
 
-        let rowTotal = parseFloat(parseFloat(quantity) * parseFloat(unitPrice))
-            .toFixed(2)
-            .toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-            });
+        let rowTotal = (quantity * unitPrice).toFixed(2);
 
         updatedCurrentQuotationData.push({
             'type_id': itemType,
@@ -473,20 +474,7 @@ $('#addQuotationItemBtn').on('click', function (event) {
 
         quotationItemsRepeater.setList(updatedCurrentQuotationData);
 
-        let totalPrice = parseFloat($('#totalPriceInput').val());
-        if (isNaN(totalPrice)) {
-            totalPrice = 0;
-        }
-
-        let total = parseFloat(parseFloat(totalPrice) + parseFloat(rowTotal))
-            .toFixed(2)
-            .toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-            });
-
-        $('#totalPrice').text(total);
-        $('#totalPriceInput').val(total);
+        applyTotal();
 
         $('#quotationItemForm input[type=text], #quotationItemForm input[type=number]').val('');
         $('#quotationItemForm select').val('');
@@ -495,6 +483,46 @@ $('#addQuotationItemBtn').on('click', function (event) {
         Swal.fire('Error', 'Please fill out all required fields.', 'error');
     }
 });
+
+function applyTotal() {
+    let rowTotal = 0;
+
+    $('#quotationData tbody tr').each(function () {
+        const amount = parseFloat($(this).find('#amount').val()) || 0;
+        rowTotal += amount;
+    });
+
+    let total = parseFloat(rowTotal);
+    let discountedTotal = parseFloat(applyDiscount(total)).toFixed(2)
+        .toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
+
+    $('#totalPrice').text(discountedTotal);
+    $('#totalPriceInput').val(discountedTotal);
+}
+
+function applyDiscount(total) {
+    const discount = parseFloat($('#discountValue').val()) || 0;
+    const discountType = $('#discountType').val();
+
+    if (discount < 0) {
+        Swal.fire('Error', 'Discount field contains an invalid value.', 'error');
+        return 0;
+    }
+
+    if (discountType === 'percentage') {
+        return total - (total * discount / 100);
+    } else {
+        return total -= discount;
+    }
+}
+
+$('#discountValue').on('input', () => applyTotal());
+$('#discountType').on('change', () => applyTotal());
+
+
 
 let swappable;
 let quotationItemsRepeater;
@@ -560,8 +588,13 @@ let QuotationRepeater = function () {
                                 maximumFractionDigits: 2,
                             });
 
-                        $('#totalPrice').text(total);
-                        $('#totalPriceInput').val(total);
+                        if (total < 0) {
+                            $('#totalPrice').text('0');
+                            $('#totalPriceInput').val('0');
+                        } else {
+                            $('#totalPrice').text(total);
+                            $('#totalPriceInput').val(total);
+                        }
 
                         $(this).slideUp(deleteElement);
                     }
