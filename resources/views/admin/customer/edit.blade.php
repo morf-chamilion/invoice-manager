@@ -29,8 +29,8 @@
                             </div>
 
                             <div class="mb-8 col-lg-6">
-                                <x-input-label for="phone" :value="__('Phone')" required />
-                                <x-input-text id="phone" name="phone" type="text" :value="old('phone', $customer->phone)" required />
+                                <x-input-label for="phone" :value="__('Phone')" />
+                                <x-input-text id="phone" name="phone" type="text" :value="old('phone', $customer->phone)" />
                                 <x-input-error :messages="$errors->get('phone')" />
                             </div>
 
@@ -41,9 +41,9 @@
                             </div>
 
                             <div>
-                                <x-input-label for="address" :value="__('Address')" required />
-                                <x-input-textarea id="address" name="address"
-                                    required>{{ old('address', $customer->address) }}</x-input-textarea>
+                                <x-input-label for="address" :value="__('Address')" />
+                                <x-input-textarea id="address"
+                                    name="address">{{ old('address', $customer->address) }}</x-input-textarea>
                                 <x-input-error :messages="$errors->get('address')" />
                             </div>
                         </div>

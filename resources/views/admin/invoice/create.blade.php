@@ -296,14 +296,7 @@
         </div>
     </form>
 
-    @include('admin.invoice.partials.customer-create', [
-        'fields' => [
-            'customer_name' => ['label' => 'Name', 'type' => 'text'],
-            'customer_email' => ['label' => 'Email', 'type' => 'email'],
-            'customer_phone' => ['label' => 'Phone', 'type' => 'text'],
-            'customer_address' => ['label' => 'Address', 'type' => 'textarea'],
-        ],
-    ])
+    @include('admin.invoice.partials.customer-create')
 
     @push('header')
         <style>

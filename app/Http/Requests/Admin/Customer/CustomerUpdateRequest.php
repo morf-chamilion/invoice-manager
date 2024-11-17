@@ -31,13 +31,13 @@ class CustomerUpdateRequest extends BaseRequest
 				'max:255',
 			],
 			'phone' => [
-				'required',
+				'nullable',
 				'string',
 				'min:3',
 				'max:255',
 			],
 			'address' => [
-				'required',
+				'nullable',
 				'string',
 				'min:3',
 				'max:255',
