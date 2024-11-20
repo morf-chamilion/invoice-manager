@@ -8,7 +8,7 @@
             @json(is_array($value) ? $value : ($value ? $value->toArray() : null)),
             {{ $fileMaxSize ?? 'undefined' }},
             {{ $fileMaxCount ?? 'undefined' }},
-            {{ $mimeType ?? 'undefined' }}
+            {!! isset($mimeTypes) ? $mimeTypes : 'undefined' !!}
         );
     </script>
 @endpush

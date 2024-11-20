@@ -32,7 +32,7 @@ class AppFilePond {
         files,
         fileMaxSize = 15,
         fileMaxCount = 1,
-        mimeType = null
+        mimeTypes = []
     ) {
         const inputElement = document.getElementById(id);
         const imageMimeTypes = [
@@ -46,6 +46,9 @@ class AppFilePond {
             "image/svg+xml",
             "image/x-icon",
         ];
+
+        console.log(mimeTypes.length);
+        console.log(mimeTypes);
 
         FilePond.create(inputElement, {
             server: {
@@ -78,7 +81,7 @@ class AppFilePond {
             filePosterMaxHeight: 400,
             maxFileSize: `${fileMaxSize}MB`,
             maxFiles: fileMaxCount,
-            acceptedFileTypes: mimeType ? [mimeType] : imageMimeTypes,
+            acceptedFileTypes: mimeTypes.length ? mimeTypes : imageMimeTypes,
             labelIdle: this.templateRenderer(fileMaxSize, fileMaxCount),
             credits: false,
         });
