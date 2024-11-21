@@ -223,7 +223,7 @@
         {!! $quotation->vendor->quotation_footer_content !!}
     </footer>
 
-    @if ($quotation->vendor?->quotation_terms_of_service)
+    @if ($quotation->vendor?->quotation_terms_of_service && !empty($pdf))
         <div style="page-break-before: always;"></div>
 
         <table style="font-family: sans-serif; margin-bottom: 30px;">

@@ -263,7 +263,7 @@
         {!! $invoice->vendor->invoice_footer_content !!}
     </footer>
 
-    @if ($invoice->vendor?->invoice_terms_of_service)
+    @if ($invoice->vendor?->invoice_terms_of_service && !empty($pdf))
         <div style="page-break-before: always;"></div>
 
         <table style="font-family: sans-serif; margin-bottom: 30px;">
