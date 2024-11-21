@@ -8,7 +8,7 @@
 
                 @if ($quotation->vendor?->quotation_terms_of_service)
                     <div class="invoice-wrapper mt-8">
-                        <p style="margin-top: 6px;">{!! $quotation->vendor?->invoice_terms_of_service !!}</p>
+                        <p style="margin-top: 6px;">{!! $quotation->vendor?->quotation_terms_of_service !!}</p>
                     </div>
                 @endif
             @else
