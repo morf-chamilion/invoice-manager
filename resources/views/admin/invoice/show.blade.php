@@ -14,6 +14,24 @@
                         @include('pdf.partials.invoice-content')
                     </div>
                 </div>
+
+                @if ($invoice->vendor?->invoice_terms_of_service)
+                    <div style="page-break-before: always;"></div>
+
+                    <div class="card mt-8">
+                        <div class="card-body print-section">
+                            <table style="font-family: sans-serif; margin-bottom: 30px;">
+                                <tbody>
+                                    <tr>
+                                        <td style="padding-top: 25px;">
+                                            <p style="margin-top: 6px;">{!! $invoice->vendor?->invoice_terms_of_service !!}</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                @endif
             </div>
 
             <x-form-metadata :model="$invoice">

@@ -267,7 +267,7 @@
                         <div class="col-lg-12 mt-8">
                             <x-input-label for="payment_reference_receipt" :value="__('Payment Reference Receipt')" />
                             <x-input-file id="payment_reference_receipt" name="payment_reference_receipt"
-                                :fileMaxSize="2" :value="$invoice->paymentReferenceReceipt" />
+                                :fileMaxSize="2" mimeTypes="['application/pdf', 'image/*']" :value="$invoice->paymentReferenceReceipt" />
                             <x-input-error :messages="$errors->get('payment_reference_receipt')" />
                         </div>
 

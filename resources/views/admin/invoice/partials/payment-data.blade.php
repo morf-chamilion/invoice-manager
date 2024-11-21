@@ -71,12 +71,15 @@
                     </div>
                 @endif
                 @if ($invoice->getFirstMedia('payment_reference_receipt'))
-                    <div class="col-sm-12 col-md-4 col-lg-4">
+                    <div class="col-sm-12 col-md-4 col-lg-3">
                         <label class="col-form-label font-weight-bold">
                             {{ __('Payment Reference Receipt') }}
                         </label>
-                        <img src="{{ $invoice->getFirstMedia('payment_reference_receipt')->getFullUrl() }}"
-                            class="d-block w-50" />
+                        <a href="{{ $invoice->getFirstMedia('payment_reference_receipt')->getFullUrl() }}"
+                            class="btn btn-icon btn-dark w-100" download>
+                            <i class="fas fa-file-download me-2"></i>
+                            {{ __('Download') }}
+                        </a>
                     </div>
                 @endif
             </div>

@@ -12,6 +12,24 @@
                         @include('pdf.partials.quotation-content')
                     </div>
                 </div>
+
+                @if ($quotation->vendor?->quotation_terms_of_service)
+                    <div style="page-break-before: always;"></div>
+
+                    <div class="card mt-8">
+                        <div class="card-body print-section">
+                            <table style="font-family: sans-serif; margin-bottom: 30px;">
+                                <tbody>
+                                    <tr>
+                                        <td style="padding-top: 25px;">
+                                            <p style="margin-top: 6px;">{!! $quotation->vendor?->quotation_terms_of_service !!}</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                @endif
             </div>
 
             <x-form-metadata :model="$quotation">
