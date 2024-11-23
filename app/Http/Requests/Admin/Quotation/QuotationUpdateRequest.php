@@ -44,8 +44,8 @@ class QuotationUpdateRequest extends BaseRequest
 				'numeric',
 				'min:0',
 				function ($attribute, $value, $fail) {
-					if (empty($this->input('invoice_items')) && $value != 0) {
-						$fail('The discount value must be 0 if there are no invoice items.');
+					if (empty($this->input('quotation_items')) && $value != 0) {
+						$fail('The discount value must be 0 if there are no quotation items.');
 					}
 				},
 			],
