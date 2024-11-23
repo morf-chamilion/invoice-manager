@@ -179,10 +179,13 @@
                         <td colspan="2"
                             style="border: 1px solid #ddd; padding: 8px; font-size: 14px; font-weight: bold;">
                             {{ __('Discount') }}
+                            @if ($invoice->discount_type === 'percentage')
+                                ({{ $invoice->discount_value }}%)
+                            @endif
                         </td>
                         <td colspan="3"
                             style="border: 1px solid #ddd; padding: 8px; text-align: right; font-size: 14px; font-weight: bold;">
-                            {{ $invoice->readableDiscountPrice }}
+                            - {{ $invoice->readableDiscountPrice }}
                         </td>
                     </tr>
                 @endif
