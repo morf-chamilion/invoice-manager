@@ -171,6 +171,13 @@ class Quotation extends Model implements HasMedia, HasRelationsInterface
 	public function getReadableDiscountPriceAttribute(): string
 	{
 		if ($this->vendor?->currency) {
+			if ($this->discount_type === 'percentage') {
+				$quotationItems = $this->getFormattedQuotationItemsAttribute();
+				$itemsTotal = $quotationItems->sum('amount');
+
+				return $this->vendor->currency . " " . MoneyHelper::format($itemsTotal - $this->total_price);
+			}
+
 			return $this->vendor->currency . " " . MoneyHelper::format($this->discount_value);
 		}
 
@@ -190,8 +197,6 @@ class Quotation extends Model implements HasMedia, HasRelationsInterface
 
 		return MoneyHelper::print($value);
 	}
-
-
 
 	/**
 	 * Model media collections.
