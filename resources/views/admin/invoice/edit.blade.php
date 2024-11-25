@@ -109,16 +109,14 @@
 
                         @php
                             $items = old('invoice_items', $invoice->formattedInvoiceItems);
-                            $totalPrice = 0;
+                            $discountValue = old('discount_value', $invoice->discount_value);
+                            $discountType = old('discount_type', $invoice->discount_type);
 
-                            if (!empty($items)) {
-                                $totalPrice = \is_array($items)
-                                    ? array_sum(
-                                        array_column($items, 'amount') -
-                                            old('discount_value', $invoice->discount_value),
-                                    )
-                                    : $items->sum('amount') - old('discount_value', $invoice->discount_value);
-                            }
+                            $totalPrice = \App\Services\InvoiceService::calculateTotal(
+                                $items,
+                                $discountValue,
+                                $discountType,
+                            );
                         @endphp
 
                         <div class="table-wrapper">

@@ -159,6 +159,22 @@ class InvoiceService extends BaseService
 	}
 
 	/**
+	 * Calculate total amount.
+	 */
+	public static function calculateTotal(array|Collection $items, $discountValue, $discountType = 'fixed'): float
+	{
+		$itemsTotal = is_array($items)
+			? array_sum(array_column($items, 'amount'))
+			: $items->sum('amount');
+
+		$discountAmount = $discountType === 'percentage'
+			? ($itemsTotal * $discountValue) / 100
+			: $discountValue;
+
+		return max($itemsTotal - $discountAmount, 0);
+	}
+
+	/**
 	 * Get invoice file name.
 	 */
 	public function invoiceFileName(Invoice $invoice): string

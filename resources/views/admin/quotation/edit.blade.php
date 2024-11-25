@@ -109,16 +109,14 @@
 
                         @php
                             $items = old('quotation_items', $quotation->formattedQuotationItems);
-                            $totalPrice = 0;
+                            $discountValue = old('discount_value', $quotation->discount_value);
+                            $discountType = old('discount_type', $quotation->discount_type);
 
-                            if (!empty($items)) {
-                                $totalPrice = \is_array($items)
-                                    ? array_sum(
-                                        array_column($items, 'amount') -
-                                            old('discount_value', $quotation->discount_value),
-                                    )
-                                    : $items->sum('amount') - old('discount_value', $quotation->discount_value);
-                            }
+                            $totalPrice = \App\Services\QuotationService::calculateTotal(
+                                $items,
+                                $discountValue,
+                                $discountType,
+                            );
                         @endphp
 
                         <div class="table-wrapper mb-8">
