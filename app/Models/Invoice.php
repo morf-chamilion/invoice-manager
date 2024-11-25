@@ -182,6 +182,13 @@ class Invoice extends Model implements HasMedia, HasRelationsInterface
 	public function getReadableDiscountPriceAttribute(): string
 	{
 		if ($this->vendor?->currency) {
+			if ($this->discount_type === 'percentage') {
+				$invoiceItems = $this->getFormattedInvoiceItemsAttribute();
+				$itemsTotal = $invoiceItems->sum('amount');
+
+				return $this->vendor->currency . " " . MoneyHelper::format($itemsTotal - $this->total_price);
+			}
+
 			return $this->vendor->currency . " " . MoneyHelper::format($this->discount_value);
 		}
 
