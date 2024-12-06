@@ -91,7 +91,7 @@
                                         <div class="input-group">
                                             <x-input-text type="number" name="unit_price" id="unit_price"
                                                 min="0" step="0.01" />
-                                            <span class="input-group-text">{{ MoneyHelper::currencyCode() }}</span>
+                                            <span class="input-group-text">{{ $invoice->vendor->currency }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -201,7 +201,7 @@
                                                 class="font-weight-bolder h3">{{ __('Total Amount') }}</span></td>
                                         <td colspan="2" class="border-right-0 py-7">
                                             <span class="font-weight-bolder h3 d-block text-end">
-                                                <span>{{ MoneyHelper::currencyCode() }}</span>
+                                                <span>{{ $invoice->vendor->currency }}</span>
                                                 <span id="totalPrice">{{ MoneyHelper::format($totalPrice) }}</span>
                                             </span>
                                             <input type="hidden" name="total_price" id="totalPriceInput"
