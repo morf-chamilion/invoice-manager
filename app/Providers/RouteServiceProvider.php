@@ -43,6 +43,7 @@ class RouteServiceProvider extends ServiceProvider
         'auth',
         'settings',
         'pages',
+        'payments',
         'invoices',
         'quotations',
         'customers',

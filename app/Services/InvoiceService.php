@@ -322,6 +322,11 @@ class InvoiceService extends BaseService
 		return $data;
 	}
 
+	public function getAllActiveInvoices(Vendor $vendor = null): Collection
+	{
+		return $this->invoiceRepository->getAllActive($vendor);
+	}
+
 	/**
 	 * Get all customers.
 	 */

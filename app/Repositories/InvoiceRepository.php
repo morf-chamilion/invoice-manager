@@ -8,6 +8,7 @@ use App\Enums\InvoicePaymentStatus;
 use App\Enums\InvoiceStatus;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
+use App\Models\Vendor;
 use App\Services\MediaService;
 use App\Services\Traits\HandlesMedia;
 use Illuminate\Database\QueryException;
@@ -32,6 +33,23 @@ class InvoiceRepository extends BaseRepository
 	public function getAll(): Collection
 	{
 		return $this->invoice::all();
+	}
+
+	/**
+	 * Get all active customers.
+	 */
+	public function getAllActive(Vendor $vendor = null): Collection
+	{
+		if ($vendor) {
+			return $this->invoice
+				->where('status', InvoiceStatus::ACTIVE)
+				->where('vendor_id', $vendor->id)
+				->get();
+		}
+
+		return $this->invoice
+			->where('status', InvoiceStatus::ACTIVE)
+			->get();
 	}
 
 	/**

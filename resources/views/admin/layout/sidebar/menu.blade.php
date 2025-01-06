@@ -83,6 +83,31 @@
                     </div>
                 @endcanany
 
+                @canany([PaymentRoutePath::INDEX, PaymentRoutePath::CREATE])
+                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+                        @include('admin.layout.sidebar.menu-item-group', [
+                            'content' => 'Payments',
+                            'icon' => 'credit-cart',
+                        ])
+
+                        <div class="menu-sub menu-sub-accordion">
+                            @can(PaymentRoutePath::INDEX)
+                                @include('admin.layout.sidebar.menu-item', [
+                                    'content' => 'View All Payments',
+                                    'route' => route(PaymentRoutePath::INDEX),
+                                ])
+                            @endcan
+
+                            @can(PaymentRoutePath::CREATE)
+                                @include('admin.layout.sidebar.menu-item', [
+                                    'content' => 'Create New Payment',
+                                    'route' => route(PaymentRoutePath::CREATE),
+                                ])
+                            @endcan
+                        </div>
+                    </div>
+                @endcanany
+
                 @canany([CustomerRoutePath::INDEX, CustomerRoutePath::CREATE])
                     <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
                         @include('admin.layout.sidebar.menu-item-group', [
