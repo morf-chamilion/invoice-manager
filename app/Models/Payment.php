@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\PaymentMethod;
 use App\Enums\PaymentStatus;
+use App\Helpers\MoneyHelper;
 use App\Models\Interfaces\HasRelationsInterface;
 use App\Models\Traits\HasCreatedBy;
 use App\Models\Traits\HasUpdatedBy;
@@ -74,11 +75,23 @@ class Payment extends Model implements HasMedia, HasRelationsInterface
 	}
 
 	/**
+	 * Get the formatted amount attribute.
+	 */
+	public function getReadableAmountAttribute(): string
+	{
+		if ($this->vendor?->currency) {
+			return $this->vendor->currency . " " . MoneyHelper::format($this->amount);
+		}
+
+		return MoneyHelper::print($this->amount);
+	}
+
+	/**
 	 * Model media collections.
 	 */
 	public function registerMediaCollections(): void
 	{
-		$this->addMediaCollection('payment_reference_receipt')
+		$this->addMediaCollection('reference_receipt')
 			->useDisk('media')
 			->singleFile();
 	}
@@ -86,10 +99,10 @@ class Payment extends Model implements HasMedia, HasRelationsInterface
 	/**
 	 * Interact with media.
 	 */
-	protected function paymentReferenceReceipt(): Attribute
+	protected function referenceReceipt(): Attribute
 	{
 		return Attribute::make(
-			get: fn() => $this->getMedia('payment_reference_receipt'),
+			get: fn() => $this->getMedia('reference_receipt'),
 		);
 	}
 

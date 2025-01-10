@@ -48,6 +48,10 @@ class PaymentStoreRequest extends BaseRequest
 				'string',
 				'max:255'
 			],
+			'reference_receipt' => [
+				'nullable',
+				'string',
+			],
 			'status' => [
 				'integer',
 				new Enum(PaymentStatus::class),

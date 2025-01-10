@@ -28,7 +28,7 @@ class PaymentIndexResource extends JsonResource implements HasDataTableInterface
 				$this->customer($record->customer),
 				$record->readableDate,
 				PaymentMethod::toBadge($record->method),
-				$record->amount,
+				$record->readableAmount,
 				PaymentStatus::toBadge($record->status),
 				$this->actions($record),
 			];
@@ -72,10 +72,16 @@ class PaymentIndexResource extends JsonResource implements HasDataTableInterface
 		$edit = PaymentRoutePath::EDIT,
 		$destroy = PaymentRoutePath::DESTROY
 	): array {
-		return [
+		$actions = [
 			'show' => Gate::check($show) ? route($show, $record) : '',
 			'edit' => Gate::check($edit) ? route($edit, $record) : '',
 			'destroy' => Gate::check($destroy) ? route($destroy, $record) : '',
 		];
+
+		if ($record->status === PaymentStatus::PAID) {
+			$actions['edit'] = null;
+		}
+
+		return $actions;
 	}
 }

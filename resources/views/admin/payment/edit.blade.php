@@ -76,12 +76,18 @@
                                 </div>
                             </div>
 
-                            <div>
+                            <div class="col-lg-6">
                                 <x-input-label for="notes" :value="__('Notes')" />
-                                <x-input-textarea name="notes" id="notes">
-                                    {{ old('notes', $payment->notes) }}
-                                </x-input-textarea>
+                                <x-input-textarea name="notes"
+                                    id="notes">{{ old('notes', $payment->notes) }}</x-input-textarea>
                                 <x-input-error :messages="$errors->get('notes')" />
+                            </div>
+
+                            <div class="col-lg-6">
+                                <x-input-label for="reference_receipt" :value="__('Reference Receipt')" />
+                                <x-input-file id="reference_receipt" name="reference_receipt" :fileMaxSize="2"
+                                    mimeTypes="['application/pdf', 'image/*']" :value="$payment->referenceReceipt" />
+                                <x-input-error :messages="$errors->get('reference_receipt')" />
                             </div>
                         </div>
 

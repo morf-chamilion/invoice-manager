@@ -6,6 +6,7 @@ use App\Models\Payment;
 use App\Services\MediaService;
 use App\Services\Traits\HandlesMedia;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
 class PaymentRepository extends BaseRepository
@@ -66,7 +67,11 @@ class PaymentRepository extends BaseRepository
 	 */
 	public function create(array $attributes): Payment
 	{
+		$referenceReceiptImage = Arr::pull($attributes, 'reference_receipt');
+
 		$payment = $this->payment::create($attributes);
+
+		$this->syncMedia($payment, 'reference_receipt', $referenceReceiptImage);
 
 		$payment->number = $payment->id;
 		$payment->save();
@@ -79,8 +84,15 @@ class PaymentRepository extends BaseRepository
 	 */
 	public function update(int $paymentId, array $newAttributes): bool
 	{
-		return $this->payment::whereId($paymentId)
-			->update($newAttributes);
+		$referenceReceiptImage = Arr::pull($newAttributes, 'reference_receipt');
+
+		$payment = $this->payment::whereId($paymentId);
+
+		$this->syncMedia($payment, 'reference_receipt', $referenceReceiptImage);
+
+		$payment->update($newAttributes);
+
+		return $payment;
 	}
 
 	/**

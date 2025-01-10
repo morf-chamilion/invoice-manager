@@ -66,7 +66,6 @@ class PaymentController extends AdminBaseController
         ]);
     }
 
-
     /**
      * Show the resource.
      */
@@ -82,7 +81,7 @@ class PaymentController extends AdminBaseController
         );
 
         $this->sharePageData([
-            'title' => $this->getActionTitle(),
+            'title' => 'Show Payment',
             'editPage' => $payment->status != PaymentStatus::PAID ? [
                 'url' => route($this->paymentRoutePath::EDIT, $payment->id),
                 'title' => 'Edit Payment',
@@ -135,8 +134,12 @@ class PaymentController extends AdminBaseController
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Payment $payment): Renderable
+    public function edit(Payment $payment): Renderable|RedirectResponse
     {
+        if ($payment->status === PaymentStatus::PAID) {
+            return redirect()->route($this->paymentRoutePath::SHOW, $payment);
+        }
+
         $this->registerBreadcrumb(
             parentRouteName: $this->paymentRoutePath::INDEX,
             routeParameter: $payment->id,
