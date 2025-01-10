@@ -64,6 +64,10 @@ var KTDatatablesServerSide = (function () {
                     render: (routes) => {
                         let template = `<div class="d-flex gap-3 justify-content-end">`;
 
+                        if (routes.show) {
+                            template += `<a href="${routes.show}" class="btn btn-sm btn-icon btn-light-dark" title="Show"><i class="fa-solid fa-eye"></i></a>`;
+                        }
+
                         if (routes.edit) {
                             template += `<a href="${routes.edit}" class="btn btn-sm btn-icon btn-light-primary" title="Edit"><i class="fa-solid fa-pen"></i></a>`;
                         }

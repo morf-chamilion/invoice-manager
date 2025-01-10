@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Payment;
 
+use App\Enums\PaymentStatus;
 use App\Exceptions\RedirectResponseException;
 use App\Http\Controllers\Admin\AdminBaseController;
 use App\Http\Requests\Admin\Payment\PaymentStoreRequest;
@@ -48,7 +49,7 @@ class PaymentController extends AdminBaseController
         }
 
         $columns = $this->tableColumns(
-            columns: ['number', 'customer', 'date'],
+            columns: ['number', 'customer', 'date', 'method', 'amount'],
             prefixes: [],
         );
 
@@ -62,6 +63,36 @@ class PaymentController extends AdminBaseController
         return view($this->paymentRoutePath::INDEX, [
             'create' => route($this->paymentRoutePath::CREATE),
             'columnNames' => $columns,
+        ]);
+    }
+
+
+    /**
+     * Show the resource.
+     */
+    public function show(Payment $payment): Renderable
+    {
+        if ($payment->vendor->id !== auth()->user()->vendor?->id) {
+            return abort(403);
+        }
+
+        $this->registerBreadcrumb(
+            parentRouteName: $this->paymentRoutePath::INDEX,
+            routeParameter: $payment->id,
+        );
+
+        $this->sharePageData([
+            'title' => $this->getActionTitle(),
+            'editPage' => $payment->status != PaymentStatus::PAID ? [
+                'url' => route($this->paymentRoutePath::EDIT, $payment->id),
+                'title' => 'Edit Payment',
+            ] : [],
+        ]);
+
+        return view($this->paymentRoutePath::SHOW, [
+            'customers' => $this->paymentService->getAllCustomers(),
+            'invoices' => $this->paymentService->getAllInvoices(),
+            'payment' => $payment,
         ]);
     }
 

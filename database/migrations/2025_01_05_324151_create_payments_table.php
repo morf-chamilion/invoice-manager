@@ -21,17 +21,14 @@ return new class extends Migration
 
 			$table->date('date');
 			$table->string('number')->unique()->nullable();
+			$table->decimal('amount', 10, 2);
+			$table->tinyInteger('method');
+			$table->json('data')->nullable();
+			$table->string('notes')->nullable();
 
 			$table->foreignIdFor(Vendor::class)->constrained()->cascadeOnDelete();
 			$table->foreignIdFor(Customer::class)->constrained();
-
 			$table->foreignIdFor(Invoice::class)->nullable()->constrained()->nullOnDelete();
-
-			$table->decimal('amount', 10, 2)->default(0);
-
-			$table->tinyInteger('method')->default(PaymentMethod::CASH);
-
-			$table->string('notes')->nullable();
 
 			$table->foreignId('created_by')->constrained('users')->onDelete('restrict')->onUpdate('cascade');
 			$table->foreignId('updated_by')->nullable()->constrained('users')->onDelete('restrict')->onUpdate('cascade');

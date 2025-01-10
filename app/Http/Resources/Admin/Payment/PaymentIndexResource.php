@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Admin\Payment;
 
+use App\Enums\PaymentMethod;
 use App\Enums\PaymentStatus;
 use App\Http\Resources\HasDataTableInterface;
 use App\Http\Resources\HasDataTableTrait;
@@ -26,6 +27,8 @@ class PaymentIndexResource extends JsonResource implements HasDataTableInterface
 				$this->number($record),
 				$this->customer($record->customer),
 				$record->readableDate,
+				PaymentMethod::toBadge($record->method),
+				$record->amount,
 				PaymentStatus::toBadge($record->status),
 				$this->actions($record),
 			];
@@ -65,10 +68,12 @@ class PaymentIndexResource extends JsonResource implements HasDataTableInterface
 	 */
 	private function actions(
 		Model $record,
+		$show = PaymentRoutePath::SHOW,
 		$edit = PaymentRoutePath::EDIT,
 		$destroy = PaymentRoutePath::DESTROY
 	): array {
 		return [
+			'show' => Gate::check($show) ? route($show, $record) : '',
 			'edit' => Gate::check($edit) ? route($edit, $record) : '',
 			'destroy' => Gate::check($destroy) ? route($destroy, $record) : '',
 		];

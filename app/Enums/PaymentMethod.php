@@ -37,7 +37,7 @@ enum PaymentMethod: int
     /**
      * Bootstrap badge HTML representation.
      */
-    public static function toBadge(Self $status): string
+    public static function toBadge(Self $method): string
     {
         $classes = [
             // self::CARD->value => 'badge badge-info',
@@ -45,9 +45,9 @@ enum PaymentMethod: int
             self::BANK_TRANSFER->value => 'badge badge-info',
         ];
 
-        return Blade::render('<span class="{{ $class }}">{{ $status->getName() }}</span>', [
-            'class' => $classes[$status->value],
-            'status' => $status
+        return Blade::render('<span class="{{ $class }}">{{ $method->getName() }}</span>', [
+            'class' => $classes[$method->value],
+            'method' => $method
         ]);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PaymentMethod;
 use App\Enums\PaymentStatus;
 use App\Models\Interfaces\HasRelationsInterface;
 use App\Models\Traits\HasCreatedBy;
@@ -45,6 +46,9 @@ class Payment extends Model implements HasMedia, HasRelationsInterface
 	 */
 	protected $casts = [
 		'status' => PaymentStatus::class,
+		'method' => PaymentMethod::class,
+		'date' => 'datetime',
+		'data' => 'array',
 	];
 
 	/**
