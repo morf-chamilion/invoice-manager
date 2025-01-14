@@ -7,8 +7,6 @@
         <div class="d-flex flex-column flex-lg-row">
             <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10" id="resource_form_fieldset">
 
-                @include('admin.invoice.partials.payment-data')
-
                 <div class="card">
                     <div class="card-body print-section">
                         @include('pdf.partials.invoice-content')

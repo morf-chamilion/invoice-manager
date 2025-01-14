@@ -7,6 +7,7 @@ use App\Enums\PaymentStatus;
 use App\Http\Requests\BaseRequest;
 use App\Models\Customer;
 use App\Models\Invoice;
+use App\Rules\AmountLessThanModelField;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 
@@ -42,6 +43,12 @@ class PaymentStoreRequest extends BaseRequest
 				'numeric',
 				'min:0',
 				'max:9999999.99',
+				new AmountLessThanModelField(
+					model: Invoice::class,
+					field: 'total_price',
+					identifier: 'id',
+					identifierValue: $this->invoice_id
+				),
 			],
 			'notes' =>	[
 				'nullable',

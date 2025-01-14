@@ -8,6 +8,7 @@ enum InvoicePaymentStatus: int
 {
     case PENDING = 0;
     case PAID = 1;
+    case PARTIALLY_PAID = 2;
     case DECLINED = 3;
 
     /**
@@ -18,6 +19,7 @@ enum InvoicePaymentStatus: int
         return match ($this) {
             self::PENDING => 'Payment Pending',
             self::PAID => 'Paid',
+            self::PARTIALLY_PAID => 'Partially Paid',
             self::DECLINED => 'Payment Declined',
             default => 'Not known',
         };
@@ -41,6 +43,7 @@ enum InvoicePaymentStatus: int
     {
         $classes = [
             self::PENDING->value => 'badge badge-warning',
+            self::PARTIALLY_PAID->value => 'badge badge-info',
             self::PAID->value => 'badge badge-success',
             self::DECLINED->value => 'badge badge-danger',
         ];

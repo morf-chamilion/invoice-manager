@@ -86,13 +86,11 @@ class PaymentRepository extends BaseRepository
 	{
 		$referenceReceiptImage = Arr::pull($newAttributes, 'reference_receipt');
 
-		$payment = $this->payment::whereId($paymentId);
+		$payment = $this->payment::findOrFail($paymentId);
 
 		$this->syncMedia($payment, 'reference_receipt', $referenceReceiptImage);
 
-		$payment->update($newAttributes);
-
-		return $payment;
+		return $payment->update($newAttributes);
 	}
 
 	/**

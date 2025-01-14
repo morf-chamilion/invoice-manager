@@ -234,7 +234,7 @@ class Invoice extends Model implements HasMedia, HasRelationsInterface
 	 */
 	public function defineHasRelationships(): array
 	{
-		return [];
+		return ['payments'];
 	}
 
 	/**
@@ -267,5 +267,13 @@ class Invoice extends Model implements HasMedia, HasRelationsInterface
 	public function invoiceItems(): HasMany
 	{
 		return $this->hasMany(InvoiceItem::class);
+	}
+
+	/**
+	 * Get the payments assocbiated with the invoice.
+	 */
+	public function payments(): HasMany
+	{
+		return $this->hasMany(Payment::class);
 	}
 }

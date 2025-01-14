@@ -43,7 +43,7 @@
                                     @if ($invoices->isNotEmpty())
                                         @foreach ($invoices as $invoice)
                                             <option value="{{ $invoice->id }}" @selected($invoice->id == old('invoice_id', $payment?->invoice?->id))>
-                                                {{ $invoice->number }}
+                                                {{ $invoice->number }} ({{ $invoice->readableTotalPrice }})
                                             </option>
                                         @endforeach
                                     @endif

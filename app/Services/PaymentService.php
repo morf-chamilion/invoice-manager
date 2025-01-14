@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use App\Enums\InvoicePaymentStatus;
+use App\Enums\PaymentStatus;
+use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Vendor;
 use App\Repositories\PaymentRepository;
@@ -49,6 +52,9 @@ class PaymentService extends BaseService
 		}
 
 		$payment = $this->paymentRepository->create($attributes);
+		$invoice = $payment->invoice;
+
+		$this->handleInvoiceStatus($invoice, $payment);
 
 		return $payment;
 	}
@@ -88,7 +94,30 @@ class PaymentService extends BaseService
 
 		$updated = $this->paymentRepository->update($paymentId, $newAttributes);
 
+		$payment = $this->getPayment($paymentId);
+		$invoice = $payment->invoice;
+
+		$this->handleInvoiceStatus($invoice, $payment);
+
 		return $updated;
+	}
+
+	/**
+	 * Handle invoice payment status update.
+	 */
+	protected function handleInvoiceStatus(?Invoice $invoice, ?Payment $payment): void
+	{
+		if (!$invoice || !$payment) return;
+
+		if ($payment->status != PaymentStatus::DECLINED) {
+			$totalPaid = $invoice->payments->sum('amount');
+			$paymentStatus = $totalPaid >= $invoice->total_price ?
+				InvoicePaymentStatus::PAID : InvoicePaymentStatus::PARTIALLY_PAID;
+
+			$invoice->update([
+				'payment_status' => $paymentStatus
+			]);
+		}
 	}
 
 	/**
