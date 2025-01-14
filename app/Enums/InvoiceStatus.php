@@ -8,6 +8,7 @@ enum InvoiceStatus: int
 {
     case DRAFT = 0;
     case ACTIVE = 1;
+    case SENT = 2;
     case COMPLETED = 3;
 
     /**
@@ -18,6 +19,7 @@ enum InvoiceStatus: int
         return match ($this) {
             self::DRAFT => 'Draft',
             self::ACTIVE => 'Active',
+            self::SENT => 'Sent',
             self::COMPLETED => 'Completed',
             default => 'Not known',
         };
@@ -28,7 +30,7 @@ enum InvoiceStatus: int
      */
     public static function toSelectOptions(): array
     {
-        return array_map(fn ($enum) => (object) [
+        return array_map(fn($enum) => (object) [
             'name' => $enum->getName(),
             'value' => $enum->value
         ], self::cases());
@@ -42,6 +44,7 @@ enum InvoiceStatus: int
         $classes = [
             self::DRAFT->value => 'badge badge-light',
             self::ACTIVE->value => 'badge badge-success',
+            self::SENT->value => 'badge badge-warning',
             self::COMPLETED->value => 'badge badge-info',
         ];
 
