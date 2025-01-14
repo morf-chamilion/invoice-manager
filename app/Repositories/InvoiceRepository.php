@@ -3,7 +3,6 @@
 namespace App\Repositories;
 
 use App\Enums\InvoiceItemType;
-use App\Enums\InvoicePaymentMethod;
 use App\Enums\InvoicePaymentStatus;
 use App\Enums\InvoiceStatus;
 use App\Models\Invoice;
@@ -123,8 +122,6 @@ class InvoiceRepository extends BaseRepository
 	public function create(array $attributes): Invoice
 	{
 		$invoiceItems = Arr::pull($attributes, 'invoice_items');
-		$paymentReference = Arr::pull($attributes, 'payment_reference');
-		$paymentReferenceReceiptImage = Arr::pull($attributes, 'payment_reference_receipt');
 
 		$invoice = $this->invoice::create($attributes);
 		$invoice->vendor()->associate($attributes['vendor_id']);
@@ -134,25 +131,6 @@ class InvoiceRepository extends BaseRepository
 		$invoice->number = $invoice->id;
 		$invoice->discount_type = $attributes['discount_type'];
 		$invoice->discount_value = $attributes['discount_value'];
-
-		if (
-			isset($attributes['payment_method']) &&
-			$attributes['payment_method'] == InvoicePaymentMethod::BANK_TRANSFER->value
-		) {
-			$attributes = $this->prepareBankTransferPaymentData($attributes, $invoice, $paymentReference);
-
-			$this->syncMedia($invoice, 'payment_reference_receipt', $paymentReferenceReceiptImage);
-
-			$invoice->fill($attributes);
-		}
-
-		if (
-			isset($attributes['payment_method']) &&
-			$attributes['payment_method'] == InvoicePaymentMethod::CASH->value
-		) {
-			$attributes = $this->prepareCashPaymentData($attributes, $invoice, $paymentReference);
-			$invoice->fill($attributes);
-		}
 
 		$totalPrice = 0;
 
@@ -176,26 +154,8 @@ class InvoiceRepository extends BaseRepository
 	public function update(int $invoiceId, array $newAttributes): bool
 	{
 		$invoiceItems = Arr::pull($newAttributes, 'invoice_items');
-		$paymentReference = Arr::pull($newAttributes, 'payment_reference');
-		$paymentReferenceReceiptImage = Arr::pull($newAttributes, 'payment_reference_receipt');
 
 		$invoice = $this->invoice::findOrFail($invoiceId);
-
-		if (
-			isset($newAttributes['payment_method']) &&
-			$newAttributes['payment_method'] == InvoicePaymentMethod::BANK_TRANSFER->value
-		) {
-			$newAttributes = $this->prepareBankTransferPaymentData($newAttributes, $invoice, $paymentReference);
-
-			$this->syncMedia($invoice, 'payment_reference_receipt', $paymentReferenceReceiptImage);
-		}
-
-		if (
-			isset($newAttributes['payment_method']) &&
-			$newAttributes['payment_method'] == InvoicePaymentMethod::CASH->value
-		) {
-			$newAttributes = $this->prepareCashPaymentData($newAttributes, $invoice, $paymentReference);
-		}
 
 		$updated = $invoice->update($newAttributes);
 

@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\InvoicePaymentMethod;
 use App\Enums\InvoicePaymentStatus;
 use App\Enums\InvoiceStatus;
 use App\Models\Customer;
@@ -29,11 +28,7 @@ return new class extends Migration
 			$table->longText('notes')->nullable();
 			$table->decimal('total_price', 10, 2)->default(0);
 
-			/** Payment */
-			$table->tinyInteger('payment_method')->default(InvoicePaymentMethod::CASH);
 			$table->tinyInteger('payment_status')->default(InvoicePaymentStatus::PENDING);
-			$table->json('payment_data')->nullable();
-			$table->timestamp('payment_date')->nullable();
 
 			$table->foreignIdFor(Vendor::class)->constrained()->cascadeOnDelete();
 			$table->foreignIdFor(Customer::class)->constrained();

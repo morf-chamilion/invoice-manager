@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Admin\Invoice;
 
 use App\Enums\InvoiceItemType;
-use App\Enums\InvoicePaymentMethod;
 use App\Enums\InvoiceStatus;
 use App\Http\Requests\BaseRequest;
 use App\Models\Customer;
@@ -35,24 +34,6 @@ class InvoiceStoreRequest extends BaseRequest
 			'customer_id' => [
 				'required',
 				Rule::exists(Customer::class, 'id'),
-			],
-			'payment_method' => [
-				'required',
-				'integer',
-				new Enum(InvoicePaymentMethod::class),
-			],
-			'payment_date' => [
-				'nullable',
-				'date',
-			],
-			'payment_reference' => [
-				'nullable',
-				'string',
-				'max:510',
-			],
-			'payment_reference_receipt' => [
-				'nullable',
-				'string',
 			],
 			'discount_type' => [
 				'nullable',

@@ -232,7 +232,6 @@ return [
         'InvoiceStatus' => App\Enums\InvoiceStatus::class,
         'QuotationStatus' => App\Enums\QuotationStatus::class,
         'QuotationItemType' => App\Enums\QuotationItemType::class,
-        'InvoicePaymentMethod' => App\Enums\InvoicePaymentMethod::class,
         'InvoicePaymentStatus' => App\Enums\InvoicePaymentStatus::class,
         'InvoiceItemType' => App\Enums\InvoiceItemType::class,
         'CustomerStatus' => App\Enums\CustomerStatus::class,
