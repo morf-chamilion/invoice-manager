@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\InvoicePaymentStatus;
+use App\Enums\InvoiceStatus;
 use App\Enums\PaymentStatus;
 use App\Models\Customer;
 use App\Models\Invoice;
@@ -111,12 +112,14 @@ class PaymentService extends BaseService
 		if (!$invoice || !$payment) return;
 
 		if ($payment->status != PaymentStatus::DECLINED) {
-			$totalPaid = $invoice->payments->sum('amount');
+			$totalPaid = $invoice->payments->where('status', PaymentStatus::PAID)->sum('amount');
+
 			$paymentStatus = $totalPaid >= $invoice->total_price ?
 				InvoicePaymentStatus::PAID : InvoicePaymentStatus::PARTIALLY_PAID;
 
 			$invoice->update([
-				'payment_status' => $paymentStatus
+				'payment_status' => $paymentStatus,
+				'status' => InvoiceStatus::COMPLETED
 			]);
 		}
 	}

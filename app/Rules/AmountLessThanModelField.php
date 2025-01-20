@@ -2,6 +2,7 @@
 
 namespace App\Rules;
 
+use App\Enums\PaymentStatus;
 use App\Helpers\MoneyHelper;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -48,7 +49,7 @@ class AmountLessThanModelField implements ValidationRule
             return;
         }
 
-        $existingPaymentsSum = $model->payments->sum('amount');
+        $existingPaymentsSum = $model->payments->where('status', PaymentStatus::PAID)->sum('amount');
         $newTotal = MoneyHelper::format((int) $existingPaymentsSum + (int) $formattedValue);
 
         if ($newTotal > $model->{$this->field}) {
