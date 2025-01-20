@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\InvoicePaymentStatus;
 use App\Enums\PaymentStatus;
+use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Vendor;
@@ -133,10 +134,13 @@ class PaymentService extends BaseService
 	/**
 	 * Get all invoices.
 	 */
-	public function getAllInvoices(): Collection
+	public function getAllInvoices(int|null $customerId = null): Collection
 	{
+		$customer = $customerId ? $this->customerService->getCustomer($customerId) : null;
+
 		return $this->invoiceService->getAllActiveInvoices(
 			$this->getAuthVendor(),
+			$customer
 		);
 	}
 }

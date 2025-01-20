@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Enums\InvoiceItemType;
 use App\Enums\InvoicePaymentStatus;
 use App\Enums\InvoiceStatus;
+use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Vendor;
@@ -37,18 +38,19 @@ class InvoiceRepository extends BaseRepository
 	/**
 	 * Get all active customers.
 	 */
-	public function getAllActive(Vendor $vendor = null): Collection
+	public function getAllActive(Vendor $vendor = null, Customer $customer = null): Collection
 	{
+		$query = $this->invoice->where('status', InvoiceStatus::ACTIVE);
+
 		if ($vendor) {
-			return $this->invoice
-				->where('status', InvoiceStatus::ACTIVE)
-				->where('vendor_id', $vendor->id)
-				->get();
+			$query->where('vendor_id', $vendor->id);
 		}
 
-		return $this->invoice
-			->where('status', InvoiceStatus::ACTIVE)
-			->get();
+		if ($customer) {
+			$query->where('customer_id', $customer->id);
+		}
+
+		return $query->get();
 	}
 
 	/**

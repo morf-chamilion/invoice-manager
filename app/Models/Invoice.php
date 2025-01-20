@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\InvoiceItemType;
 use App\Enums\InvoicePaymentStatus;
 use App\Enums\InvoiceStatus;
+use App\Enums\PaymentStatus;
 use App\Helpers\MoneyHelper;
 use App\Models\Interfaces\HasRelationsInterface;
 use App\Models\Traits\HasCreatedBy;
@@ -191,6 +192,22 @@ class Invoice extends Model implements HasMedia, HasRelationsInterface
 	public function getReadableSubTotalPriceAttribute(): string
 	{
 		$value = array_sum(array_column($this->invoiceItems->toArray(), 'amount'));
+
+		if ($this->vendor?->currency) {
+			return $this->vendor->currency . " " . MoneyHelper::format($value);
+		}
+
+		return MoneyHelper::print($value);
+	}
+
+	/**
+	 * Get the payment due amount attribute.
+	 */
+	public function getPaymentDueAmountAttribute(): string
+	{
+		$totalPaid = $this->payments->where('status', PaymentStatus::PAID)->sum('amount');
+
+		$value = $this->total_price - $totalPaid;
 
 		if ($this->vendor?->currency) {
 			return $this->vendor->currency . " " . MoneyHelper::format($value);

@@ -322,9 +322,9 @@ class InvoiceService extends BaseService
 		return $data;
 	}
 
-	public function getAllActiveInvoices(Vendor $vendor = null): Collection
+	public function getAllActiveInvoices(Vendor $vendor = null, Customer $customer = null): Collection
 	{
-		return $this->invoiceRepository->getAllActive($vendor);
+		return $this->invoiceRepository->getAllActive($vendor, $customer);
 	}
 
 	/**

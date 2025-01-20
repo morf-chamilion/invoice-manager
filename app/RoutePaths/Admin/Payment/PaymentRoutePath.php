@@ -25,6 +25,8 @@ class PaymentRoutePath implements AdminRoutePathInterface
 
 	public const DESTROY = 'admin.payment.destroy';
 
+	public const INVOICE_INDEX = 'admin.payment.invoice.index';
+
 	/**
 	 * Name of the resource.
 	 */
@@ -41,7 +43,7 @@ class PaymentRoutePath implements AdminRoutePathInterface
 		return [
 			'List' => self::INDEX,
 			'Show' => [self::SHOW],
-			'Create' => [self::CREATE, self::STORE],
+			'Create' => [self::CREATE, self::STORE, self::INVOICE_INDEX],
 			'Edit' => [self::EDIT, self::UPDATE],
 			'Delete' => self::DESTROY,
 		];

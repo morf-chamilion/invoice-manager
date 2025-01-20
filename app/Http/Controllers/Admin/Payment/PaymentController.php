@@ -10,6 +10,7 @@ use App\Http\Requests\Admin\Payment\PaymentUpdateRequest;
 use App\Http\Resources\Admin\Payment\PaymentIndexResource;
 use App\Messages\PaymentMessage;
 use App\Models\Payment;
+use App\Providers\AdminServiceProvider;
 use App\RoutePaths\Admin\Payment\PaymentRoutePath;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
@@ -111,6 +112,7 @@ class PaymentController extends AdminBaseController
         return view($this->paymentRoutePath::CREATE, [
             'customers' => $this->paymentService->getAllCustomers(),
             'invoices' => $this->paymentService->getAllInvoices(),
+            'vendor' => AdminServiceProvider::getAuthUser()?->vendor,
         ]);
     }
 
@@ -181,6 +183,32 @@ class PaymentController extends AdminBaseController
         throw_if(!$deleted, RedirectResponseException::class, $this->paymentMessage->deleteFailed());
 
         return $this->jsonResponse()->message($this->paymentMessage->deleteSuccess())
+            ->success();
+    }
+
+    /**
+     * Get all invoices.
+     */
+    public function invoiceIndex(Request $request): JsonResponse
+    {
+        $customerId = $request->input('customer_id');
+
+        $invoices = $customerId ? $this->paymentService->getAllInvoices($customerId) : null;
+
+        if (!$invoices) {
+            return $this->jsonResponse()
+                ->message($this->paymentMessage->getAllInvoicesFailed())
+                ->error();
+        }
+
+        $invoicesWithDue = $invoices->map(function ($invoice) {
+            $invoice['due_amount'] = $invoice->paymentDueAmount;
+            return $invoice;
+        });
+
+        return $this->jsonResponse()
+            ->message($this->paymentMessage->getAllInvoicesSuccess())
+            ->body($invoicesWithDue->toArray())
             ->success();
     }
 }

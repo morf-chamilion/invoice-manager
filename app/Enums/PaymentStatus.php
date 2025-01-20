@@ -6,8 +6,9 @@ use Illuminate\Support\Facades\Blade;
 
 enum PaymentStatus: int
 {
+    case PENDING = 0;
     case PAID = 1;
-    case DECLINED = 0;
+    case DECLINED = 3;
 
     /**
      * Get the human readable name.
@@ -15,6 +16,7 @@ enum PaymentStatus: int
     public function getName(): string
     {
         return match ($this) {
+            self::PENDING => 'Pending',
             self::PAID => 'Paid',
             self::DECLINED => 'Declined',
             default => 'Not known',
@@ -38,6 +40,7 @@ enum PaymentStatus: int
     public static function toBadge(self $status): string
     {
         $classes = [
+            self::PENDING->value => 'badge badge-warning',
             self::PAID->value => 'badge badge-success',
             self::DECLINED->value => 'badge badge-danger',
         ];

@@ -41,5 +41,9 @@ Route::middleware(['verified.admin'])->group(function () {
 					Route::get('/', 'index')->name(PaymentRoutePath::INDEX);
 					Route::post('/list', 'index');
 				});
+
+			Route::get('/invoices', 'invoiceIndex')
+				->middleware(Authorize::using(PaymentRoutePath::INVOICE_INDEX))
+				->name(PaymentRoutePath::INVOICE_INDEX);
 		});
 });

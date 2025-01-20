@@ -15,4 +15,20 @@ class PaymentMessage extends BaseMessage
 	{
 		return $this->paymentService->modelName();
 	}
+
+	/**
+	 * Get all invoices success message.
+	 */
+	public function getAllInvoicesSuccess(): string
+	{
+		return 'Sucessfully got all invoices.';
+	}
+
+	/**
+	 * Get all invoices failed message.
+	 */
+	public function getAllInvoicesFailed(): string
+	{
+		return 'An error occured while getting all the invoices.';
+	}
 }

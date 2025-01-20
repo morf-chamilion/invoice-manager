@@ -112,5 +112,41 @@ var KTDatatablesServerSide = (function () {
 
 // On document ready
 KTUtil.onDOMContentLoaded(function () {
-    KTDatatablesServerSide.init();
+    if (document.getElementById("kt_datatable")) {
+        KTDatatablesServerSide.init();
+    }
+
+    $('#invoice_id').select2({
+        ajax: {
+            url: `${INVOICE_INDEX_URL}`,
+            method: 'GET',
+            dataType: 'json',
+            data: function (params) {
+                return {
+                    customer_id: $('#customer_id').val(),
+                };
+            },
+            processResults: function ({ body }) {
+                return {
+                    results: body.map(function (invoice) {
+                        return {
+                            id: invoice.id,
+                            text: invoice.number,
+                            due_amount: invoice.due_amount
+                        };
+                    })
+                };
+            }
+        }
+    });
+
+    $('#invoice_id').on('select2:select', function (e) {
+        const selectedInvoice = e.params.data;
+        const dueAmount = selectedInvoice.due_amount || 0;
+
+        $('#due_amount')
+            .removeClass('d-none')
+            .addClass('d-block')
+            .html('Due Amount: ' + dueAmount);
+    });
 });
