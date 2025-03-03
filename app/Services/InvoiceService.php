@@ -109,6 +109,7 @@ class InvoiceService extends BaseService
 	public function dueInvoiceCount(): int
 	{
 		return $this->invoiceRepository->getModel()
+			->where('vendor_id', $this->getAuthVendor()?->id)
 			->whereDate('due_date', '<', now())
 			->where('status', '!=', InvoiceStatus::DRAFT)
 			->where('payment_status', '!=', InvoicePaymentStatus::PAID)
