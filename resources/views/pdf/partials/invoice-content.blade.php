@@ -67,6 +67,13 @@
                     <div>
                         <a style="font-size: 14px; font-weight: 400; margin: 0px;">{{ $invoice->customer->email }}</a>
                     </div>
+                    @if (optional($invoice->customer)->phone)
+                        <div>
+                            <p style="font-size: 14px; font-weight: 400; margin: 0px;">
+                                {{ $invoice->customer->phone }}
+                            </p>
+                        </div>
+                    @endif
                     <div>
                         <p style="margin-top: 2px; font-size: 14px; font-weight: 400;">{!! nl2br($invoice->customer->address) !!}</p>
                     </div>

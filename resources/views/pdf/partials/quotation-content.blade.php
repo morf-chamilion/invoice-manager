@@ -68,6 +68,13 @@
                     <div>
                         <a style="font-size: 14px; font-weight: 400; margin: 0px;">{{ $quotation->customer->email }}</a>
                     </div>
+                    @if (optional($quotation->customer)->phone)
+                        <div>
+                            <p style="font-size: 14px; font-weight: 400; margin: 0px;">
+                                {{ $quotation->customer->phone }}
+                            </p>
+                        </div>
+                    @endif
                     <div>
                         <p style="margin-top: 2px; font-size: 14px; font-weight: 400;">{!! nl2br($quotation->customer->address) !!}</p>
                     </div>
