@@ -50,7 +50,7 @@ class PaymentController extends AdminBaseController
         }
 
         $columns = $this->tableColumns(
-            columns: ['number', 'customer', 'date', 'method', 'amount'],
+            columns: ['number', 'customer', 'invoice', 'date', 'method', 'amount'],
             prefixes: [],
         );
 

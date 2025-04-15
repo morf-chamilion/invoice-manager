@@ -7,6 +7,7 @@ use App\Enums\PaymentStatus;
 use App\Http\Resources\HasDataTableInterface;
 use App\Http\Resources\HasDataTableTrait;
 use App\RoutePaths\Admin\Customer\CustomerRoutePath;
+use App\RoutePaths\Admin\Invoice\InvoiceRoutePath;
 use App\RoutePaths\Admin\Payment\PaymentRoutePath;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -26,6 +27,7 @@ class PaymentIndexResource extends JsonResource implements HasDataTableInterface
 			return [
 				$this->number($record),
 				$this->customer($record->customer),
+				$this->invoice($record->invoice),
 				$record->readableDate,
 				PaymentMethod::toBadge($record->method),
 				$record->readableAmount,
@@ -60,6 +62,23 @@ class PaymentIndexResource extends JsonResource implements HasDataTableInterface
 
 		return Blade::render('{{ $name }}', [
 			'name' => $customer->name,
+		]);
+	}
+
+	/**
+	 * Render invoice.
+	 */
+	protected static function invoice(Model $invoice): string
+	{
+		if (Gate::check(InvoiceRoutePath::SHOW)) {
+			return Blade::render('<a href="{{ $url }}" target="_blank">{{ $name }}</a>', [
+				'url' => route(InvoiceRoutePath::SHOW, $invoice->id),
+				'name' => $invoice->number,
+			]);
+		}
+
+		return Blade::render('{{ $name }}', [
+			'name' => $invoice->number,
 		]);
 	}
 

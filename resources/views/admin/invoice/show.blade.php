@@ -13,6 +13,98 @@
                     </div>
                 </div>
 
+                @if ($invoice->payments->isNotEmpty())
+                    <div class="card mt-8 payment-card">
+                        <div class="card-body">
+                            <div class="table-wrapper">
+                                <h5 class="mb-4">Payments</h5>
+                                <table
+                                    style="width: 100%; border-collapse: collapse; margin: 0 auto 6px; font-family: sans-serif">
+                                    <thead>
+                                        <tr>
+                                            <th align="left"
+                                                style="border: 1px solid #ddd; padding: 8px; background-color: #f0f1f3;">
+                                                <p
+                                                    style="margin: 0; font-size: 11px; font-weight: bold; text-transform: uppercase; color: #555250;">
+                                                    {{ __('Reference') }}
+                                                </p>
+                                            </th>
+                                            <th align="left"
+                                                style="border: 1px solid #ddd; padding: 8px; background-color: #f0f1f3;">
+                                                <p
+                                                    style="margin: 0; font-size: 11px; font-weight: bold; text-transform: uppercase; color: #555250;">
+                                                    {{ __('Date') }}
+                                                </p>
+                                            </th>
+                                            <th align="left"
+                                                style="border: 1px solid #ddd; padding: 8px; background-color: #f0f1f3;">
+                                                <p
+                                                    style="margin: 0; font-size: 11px; font-weight: bold; text-transform: uppercase; color: #555250;">
+                                                    {{ __('Method') }}
+                                                </p>
+                                            </th>
+                                            <th align="right"
+                                                style="border: 1px solid #ddd; padding: 8px; background-color: #f0f1f3; color: #555250; text-align: end;">
+                                                <p
+                                                    style="margin: 0; font-size: 11px; font-weight: bold; text-transform: uppercase;">
+                                                    {{ __('Amount (:currency)', ['currency' => $invoice->vendor->currency]) }}
+                                                </p>
+                                            </th>
+                                            <th align="right"
+                                                style="border: 1px solid #ddd; padding: 8px; background-color: #f0f1f3; color: #555250; text-align: end;">
+                                                <p
+                                                    style="margin: 0; font-size: 11px; font-weight: bold; text-transform: uppercase;">
+                                                    {{ __('Actions') }}
+                                                </p>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($invoice->payments as $payment)
+                                            <tr>
+                                                <td style="border: 1px solid #ddd; padding: 8px;">
+                                                    <p style="margin: 3px 0 0; font-size: 12px;">
+                                                        {{ $payment->number }}
+                                                    </p>
+                                                </td>
+                                                <td style="border: 1px solid #ddd; padding: 8px;">
+                                                    <p style="margin: 3px 0 0; font-size: 12px;">
+                                                        {{ $payment->readableDate }}
+                                                    </p>
+                                                </td>
+                                                <td style="border: 1px solid #ddd; padding: 8px;">
+                                                    <span
+                                                        style="font-size: 12px;">{{ $payment->method->getName() }}</span>
+                                                </td>
+                                                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                                                    <span style="font-size: 12px;">{{ $payment->readableAmount }}</span>
+                                                </td>
+                                                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                                                    <span
+                                                        style="font-size: 12px; display: flex; gap: 6px; justify-content: flex-end;">
+                                                        <button type="button"
+                                                            class="btn btn-sm btn-icon btn-secondary view-payment"
+                                                            data-bs-toggle="modal" data-bs-target="#payment_show"
+                                                            data-payment-number="{{ $payment->number }}"
+                                                            data-payment-date="{{ $payment->readableDate }}"
+                                                            data-payment-amount="{{ $payment->readableAmount }}"
+                                                            data-payment-notes="{{ $payment->notes }}"
+                                                            data-payment-method="{{ PaymentMethod::toBadge($payment->method) }}"
+                                                            data-payment-status="{{ PaymentStatus::toBadge($payment->status) }}"
+                                                            data-payment-image="{{ $payment->getFirstMedia('reference_receipt')?->getFullUrl() }}">
+                                                            <i class="fa fa-eye"></i>
+                                                        </button>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 @if ($invoice->vendor?->invoice_terms_of_service)
                     <div style="page-break-before: always;"></div>
 
@@ -21,7 +113,7 @@
                             <table style="font-family: sans-serif; margin-bottom: 30px;">
                                 <tbody>
                                     <tr>
-                                        <td style="padding-top: 25px;">
+                                        <td>
                                             <p style="margin-top: 6px;">{!! $invoice->vendor?->invoice_terms_of_service !!}</p>
                                         </td>
                                     </tr>
@@ -69,6 +161,8 @@
             </x-form-metadata>
         </div>
     </form>
+
+    @include('admin.invoice.partials.payment-view')
 
     @push('header')
         <style>

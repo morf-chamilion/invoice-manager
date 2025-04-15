@@ -34,7 +34,7 @@
                             <div class="col-lg-3 mb-8">
                                 <x-input-label for="invoice_id" :value="__('Invoice')" />
                                 <div>
-                                    <a href="{{ route(InvoiceRoutePath::EDIT, $payment->invoice->id) }}"
+                                    <a href="{{ route(InvoiceRoutePath::SHOW, $payment->invoice->id) }}"
                                         target="_blank">
                                         {{ $payment->invoice->number }}
                                     </a>
@@ -46,15 +46,24 @@
                                 <p>{!! PaymentMethod::toBadge($payment->method) !!}</p>
                             </div>
 
+                            @if ($payment->status)
+                                <div class="col-lg-3">
+                                    <x-input-label for="status" :value="__('Status')" />
+                                    <p>{!! PaymentStatus::toBadge($payment->status) !!}</p>
+                                </div>
+                            @endif
+
                             <div class="col-lg-3">
                                 <x-input-label for="amount" :value="__('Amount')" />
                                 <p>{{ $payment->readableAmount }}</p>
                             </div>
 
-                            <div class="col-lg-3">
-                                <x-input-label for="notes" :value="__('Notes')" />
-                                <p>{{ old('notes', $payment->notes) }}</p>
-                            </div>
+                            @if ($payment->notes)
+                                <div class="col-lg-3">
+                                    <x-input-label for="notes" :value="__('Notes')" />
+                                    <p>{{ old('notes', $payment->notes) }}</p>
+                                </div>
+                            @endif
 
                             @if ($payment->getFirstMedia('reference_receipt'))
                                 <div class="col-lg-3">

@@ -117,9 +117,12 @@ class PaymentService extends BaseService
 			$paymentStatus = $totalPaid >= $invoice->total_price ?
 				InvoicePaymentStatus::PAID : InvoicePaymentStatus::PARTIALLY_PAID;
 
+			$invoiceStatus = $totalPaid >= $invoice->total_price ?
+				InvoiceStatus::COMPLETED : InvoiceStatus::ACTIVE;
+
 			$invoice->update([
 				'payment_status' => $paymentStatus,
-				'status' => InvoiceStatus::COMPLETED
+				'status' => $invoiceStatus,
 			]);
 		}
 	}
