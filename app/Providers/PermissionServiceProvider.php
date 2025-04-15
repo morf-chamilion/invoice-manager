@@ -18,6 +18,7 @@ class PermissionServiceProvider extends ServiceProvider
         \App\RoutePaths\Admin\User\UserRoleRoutePath::class,
 
         \App\RoutePaths\Admin\Setting\SettingRoutePath::class,
+        \App\RoutePaths\Admin\Payment\PaymentRoutePath::class,
         // \App\RoutePaths\Admin\Setting\PageSettingRoutePath::class,
         // \App\RoutePaths\Admin\Page\PageRoutePath::class,
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Front\Checkout;
 
 use App\Enums\InvoicePaymentStatus;
 use App\Enums\InvoiceStatus;
+use App\Enums\PaymentStatus;
 use App\Enums\SettingModule;
 use App\Logs\CheckoutLogger;
 use App\Messages\CheckoutMessage;
@@ -96,9 +97,9 @@ class CheckoutController extends FrontBaseController
 		) {
 			$invoice = $this->checkoutService->updateCardPaymentData(
 				transactionId: $attributes['transaction_id'],
-				invoiceId: $sessionId,
+				paymentId: $sessionId,
 				amount: $attributes['auth_amount'],
-				paymentStatus: InvoicePaymentStatus::DECLINED,
+				paymentStatus: PaymentStatus::DECLINED,
 			);
 
 			CheckoutLogger::error($this->checkoutMessage->paymentGatewayTransactionFailure(), [
@@ -112,10 +113,9 @@ class CheckoutController extends FrontBaseController
 
 		$invoice = $this->checkoutService->updateCardPaymentData(
 			transactionId: $attributes['transaction_id'],
-			invoiceId: $sessionId,
+			paymentId: $sessionId,
 			amount: $attributes['auth_amount'],
-			paymentStatus: InvoicePaymentStatus::PAID,
-			invoiceStatus: InvoiceStatus::COMPLETED,
+			paymentStatus: PaymentStatus::PAID,
 		);
 
 		if (!$invoice) {

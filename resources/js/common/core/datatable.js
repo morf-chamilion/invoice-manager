@@ -40,8 +40,9 @@ class DataTable {
      * Handle resource deletion base on user interactions.
      *
      * @param {jQuery} datatable Datable element
+     * @param {number} columnIndex Column index
      */
-    handleRowActionDelete(datatable) {
+    handleRowActionDelete(datatable, columnIndex = 1) {
         // Select all delete buttons
         const deleteButtons = document.querySelectorAll(
             '[data-kt-docs-table-filter="delete_row"]'
@@ -53,7 +54,7 @@ class DataTable {
                 e.preventDefault();
 
                 const parent = e.target.closest("tr");
-                const resourceName = parent.querySelectorAll("td")[1].innerText;
+                const resourceName = parent.querySelectorAll("td")[columnIndex].innerText;
                 const url = e.target.href;
 
                 Swal.fire({

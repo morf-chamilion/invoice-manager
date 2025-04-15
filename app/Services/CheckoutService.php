@@ -2,9 +2,8 @@
 
 namespace App\Services;
 
-use App\Enums\InvoicePaymentStatus;
-use App\Enums\InvoiceStatus;
-use App\Models\Invoice;
+use App\Enums\PaymentStatus;
+use App\Models\Payment;
 use App\Notifications\Checkout\CheckoutSuccessAdminNotification;
 use App\Notifications\Checkout\CheckoutSuccessCustomerNotification;
 use App\Services\PaymentGateways\CyberSourcePaymentGateway;
@@ -15,7 +14,7 @@ class CheckoutService extends CyberSourcePaymentGateway
 {
 	public function __construct(
 		private SettingService $settingService,
-		private InvoiceService $invoiceService,
+		private PaymentService $paymentService,
 	) {}
 
 	/**
@@ -23,39 +22,38 @@ class CheckoutService extends CyberSourcePaymentGateway
 	 */
 	public function updateCardPaymentData(
 		string $transactionId,
-		int $invoiceId,
+		int $paymentId,
 		float $amount,
-		InvoicePaymentStatus $paymentStatus,
-		?InvoiceStatus $invoiceStatus = null,
-	): ?Invoice {
+		PaymentStatus $paymentStatus,
+	): ?Payment {
 		$attributes = [
-			'payment_data->transaction_id' => $transactionId,
-			'payment_data->amount' => $amount,
-			'payment_status' => $paymentStatus,
-			'payment_date' => Carbon::now(),
+			'data->transaction_id' => $transactionId,
+			'data->amount' => $amount,
+			'status' => $paymentStatus,
+			'date' => Carbon::now(),
 		];
 
-		if ($invoiceStatus) {
-			$attributes['status'] = $invoiceStatus;
+		if ($paymentStatus) {
+			$attributes['status'] = $paymentStatus;
 		}
 
-		$updated = $this->invoiceService->updateInvoice($invoiceId, $attributes);
+		$updated = $this->paymentService->updatePayment($paymentId, $attributes);
 
 		if (!$updated) {
 			return null;
 		}
 
-		return $this->invoiceService->getInvoice($invoiceId);
+		return $this->paymentService->getPayment($paymentId);
 	}
 
 	/**
 	 * Handle payment success mail notfications.
 	 */
-	public function paymentSuccessMailNotification(Invoice $invoice): bool|Exception
+	public function paymentSuccessMailNotification(Payment $payment): bool|Exception
 	{
 		try {
-			$invoice->notify(new CheckoutSuccessAdminNotification($invoice));
-			$invoice->notify(new CheckoutSuccessCustomerNotification($invoice));
+			$payment->notify(new CheckoutSuccessAdminNotification($payment));
+			$payment->notify(new CheckoutSuccessCustomerNotification($payment));
 
 			return true;
 		} catch (Exception $e) {

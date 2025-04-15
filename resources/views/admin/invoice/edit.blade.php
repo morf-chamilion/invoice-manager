@@ -226,63 +226,6 @@
                     </div>
                 </div>
 
-                <div class="card mt-8">
-                    <div class="card-header">
-                        <header>
-                            <h2 class="text-lg mt-8 font-medium text-gray-800">
-                                {{ __('Payment') }}
-                            </h2>
-                        </header>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-8">
-                            <x-input-label for="payment_method" :value="__('Payment Method')" required />
-                            <x-input-select name="payment_method" data-placeholder="Select Payment Method"
-                                data-hide-search="true" required>
-                                @foreach (InvoicePaymentMethod::toSelectOptions() as $option)
-                                    <option value="{{ $option->value }}" @selected($option->value == old('payment_method', $invoice->payment_method->value))>
-                                        {{ $option->name }}
-                                    </option>
-                                @endforeach
-                            </x-input-select>
-                            <x-input-error :messages="$errors->get('payment_method')" />
-                        </div>
-
-                        <div class="col-lg-12 mb-8">
-                            <x-input-label for="payment_date" :value="__('Payment Date')" />
-                            <x-input-date id="payment_date" name="payment_date" :value="old('payment_date', $invoice->payment_date?->format('Y-m-d'))"
-                                data-locale-format="YYYY-MM-DD" data-init-empty="true" />
-                            <x-input-error :messages="$errors->get('payment_date')" />
-                        </div>
-
-                        <div class="col-lg-12">
-                            <x-input-label for="payment_reference" :value="__('Payment Reference')" />
-                            <x-input-textarea id="payment_reference"
-                                name="payment_reference">{{ old('payment_reference', optional($invoice->payment_data)['payment_reference']) }}</x-input-textarea>
-                            <x-input-error :messages="$errors->get('payment_reference')" />
-                        </div>
-
-                        <div class="col-lg-12 mt-8">
-                            <x-input-label for="payment_reference_receipt" :value="__('Payment Reference Receipt')" />
-                            <x-input-file id="payment_reference_receipt" name="payment_reference_receipt"
-                                :fileMaxSize="2" mimeTypes="['application/pdf', 'image/*']" :value="$invoice->paymentReferenceReceipt" />
-                            <x-input-error :messages="$errors->get('payment_reference_receipt')" />
-                        </div>
-
-                        <div class="col-lg-12">
-                            <x-input-label for="payment_link" :value="__('Payment Link')" required />
-                            <div class="input-group">
-                                <x-input-text id="payment_link" name="payment_link" :value="old('payment_link', $invoice->checkout_link)" required
-                                    disabled />
-                                <button id="payment_link_btn" class="btn btn-secondary"
-                                    type="button">{!! getIcon('copy', 'text-dark') !!}</button>
-                            </div>
-
-                            <x-input-error :messages="$errors->get('payment_link')" />
-                        </div>
-                    </div>
-                </div>
-
             </div>
 
             <x-form-metadata :model="$invoice" type="Update">

@@ -315,7 +315,7 @@
 
             <!--Begin::Header-->
             <thead>
-                <tr style="background-color: #000;">
+                <tr style="background-color: #f5f8fa; color: #000;">
                     <th colspan="100%">
                         <div style="text-align: center; padding: 35px 0px;">
                             <img src="{{ settings(SettingModule::MAIL)->getFirstMedia('logo')?->getFullUrl() }}"
@@ -338,7 +338,7 @@
 
             <!--Begin::Footer-->
             <tfoot>
-                <tr style="background-color: #000; color: #FFF;">
+                <tr style="background-color: #f5f8fa; color: #000;">
                     <th colspan="100%">
                         <div style="text-align: center; padding: 35px 0px;">
                             {!! settings(SettingModule::MAIL)->get('footer_content') !!}

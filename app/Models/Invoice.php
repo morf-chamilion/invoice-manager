@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use App\Enums\InvoiceItemType;
-use App\Enums\InvoicePaymentMethod;
 use App\Enums\InvoicePaymentStatus;
 use App\Enums\InvoiceStatus;
+use App\Enums\PaymentStatus;
 use App\Helpers\MoneyHelper;
 use App\Models\Interfaces\HasRelationsInterface;
 use App\Models\Traits\HasCreatedBy;
@@ -44,13 +44,7 @@ class Invoice extends Model implements HasMedia, HasRelationsInterface
 		'discount_value',
 		'total_price',
 		'notes',
-		'payment_method',
 		'payment_status',
-		'payment_data',
-		'payment_data->amount',
-		'payment_data->transaction_id',
-		'payment_data->reference',
-		'payment_date',
 		'vendor_id',
 		'vendor_invoice_number',
 		'updated_by',
@@ -65,9 +59,6 @@ class Invoice extends Model implements HasMedia, HasRelationsInterface
 	protected $casts = [
 		'status' => InvoiceStatus::class,
 		'payment_status' => InvoicePaymentStatus::class,
-		'payment_method' => InvoicePaymentMethod::class,
-		'payment_date' => 'datetime',
-		'payment_data' => 'array',
 	];
 
 	/**
@@ -210,23 +201,27 @@ class Invoice extends Model implements HasMedia, HasRelationsInterface
 	}
 
 	/**
+	 * Get the payment due amount attribute.
+	 */
+	public function getPaymentDueAmountAttribute(): string
+	{
+		$totalPaid = $this->payments->where('status', PaymentStatus::PAID)->sum('amount');
+
+		$value = $this->total_price - $totalPaid;
+
+		if ($this->vendor?->currency) {
+			return $this->vendor->currency . " " . MoneyHelper::format($value);
+		}
+
+		return MoneyHelper::print($value);
+	}
+
+	/**
 	 * Model media collections.
 	 */
 	public function registerMediaCollections(): void
 	{
-		$this->addMediaCollection('payment_reference_receipt')
-			->useDisk('media')
-			->singleFile();
-	}
-
-	/**
-	 * Interact with media.
-	 */
-	protected function paymentReferenceReceipt(): Attribute
-	{
-		return Attribute::make(
-			get: fn() => $this->getMedia('payment_reference_receipt'),
-		);
+		//
 	}
 
 	/**
@@ -234,7 +229,7 @@ class Invoice extends Model implements HasMedia, HasRelationsInterface
 	 */
 	public function defineHasRelationships(): array
 	{
-		return [];
+		return ['payments'];
 	}
 
 	/**
@@ -267,5 +262,13 @@ class Invoice extends Model implements HasMedia, HasRelationsInterface
 	public function invoiceItems(): HasMany
 	{
 		return $this->hasMany(InvoiceItem::class);
+	}
+
+	/**
+	 * Get the payments assocbiated with the invoice.
+	 */
+	public function payments(): HasMany
+	{
+		return $this->hasMany(Payment::class);
 	}
 }

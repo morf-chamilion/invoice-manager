@@ -4,11 +4,12 @@ namespace App\Enums;
 
 use Illuminate\Support\Facades\Blade;
 
-enum InvoicePaymentMethod: int
+enum PaymentMethod: int
 {
-        // case CARD = 0;
+    case CARD = 0;
     case CASH = 1;
     case BANK_TRANSFER = 2;
+    case CHECK = 3;
 
     /**
      * Get the human readable name.
@@ -16,9 +17,10 @@ enum InvoicePaymentMethod: int
     public function getName(): string
     {
         return match ($this) {
-            // self::CARD => 'Card',
+            self::CARD => 'Card',
             self::CASH => 'Cash',
             self::BANK_TRANSFER => 'Bank Transfer',
+            self::CHECK => 'Check',
             default => 'Not known',
         };
     }
@@ -37,17 +39,18 @@ enum InvoicePaymentMethod: int
     /**
      * Bootstrap badge HTML representation.
      */
-    public static function toBadge(Self $status): string
+    public static function toBadge(Self $method): string
     {
         $classes = [
-            // self::CARD->value => 'badge badge-info',
+            self::CARD->value => 'badge badge-info',
             self::CASH->value => 'badge badge-success',
             self::BANK_TRANSFER->value => 'badge badge-info',
+            self::CHECK->value => 'badge badge-dark',
         ];
 
-        return Blade::render('<span class="{{ $class }}">{{ $status->getName() }}</span>', [
-            'class' => $classes[$status->value],
-            'status' => $status
+        return Blade::render('<span class="{{ $class }}">{{ $method->getName() }}</span>', [
+            'class' => $classes[$method->value],
+            'method' => $method
         ]);
     }
 }

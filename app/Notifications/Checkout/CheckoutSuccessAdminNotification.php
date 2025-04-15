@@ -4,7 +4,7 @@ namespace App\Notifications\Checkout;
 
 use App\Enums\SettingModule;
 use App\Mail\PaymentReceivedMail;
-use App\Models\Invoice;
+use App\Models\Payment;
 use App\Notifications\BaseNotification;
 use App\Services\SettingService;
 use Illuminate\Bus\Queueable;
@@ -16,9 +16,8 @@ class CheckoutSuccessAdminNotification extends BaseNotification
 	use Queueable;
 
 	public function __construct(
-		protected Invoice $invoice,
-	) {
-	}
+		protected Payment $payment,
+	) {}
 
 	/**
 	 * Get mail settings.
@@ -51,7 +50,7 @@ class CheckoutSuccessAdminNotification extends BaseNotification
 		return (new PaymentReceivedMail(
 			mailSubject: $this->mailSubject(),
 			mailBody: [
-				'invoice' => $this->invoice,
+				'payment' => $this->payment,
 			],
 		))->to($notificationMails);
 	}
@@ -61,6 +60,6 @@ class CheckoutSuccessAdminNotification extends BaseNotification
 	 */
 	protected function mailSubject(): ?string
 	{
-		return "Payment Received by {$this->invoice->customer->name}";
+		return "Payment Received by {$this->payment->customer->name}";
 	}
 }

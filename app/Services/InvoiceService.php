@@ -109,6 +109,7 @@ class InvoiceService extends BaseService
 	public function dueInvoiceCount(): int
 	{
 		return $this->invoiceRepository->getModel()
+			->where('vendor_id', $this->getAuthVendor()?->id)
 			->whereDate('due_date', '<', now())
 			->where('status', '!=', InvoiceStatus::DRAFT)
 			->where('payment_status', '!=', InvoicePaymentStatus::PAID)
@@ -320,6 +321,11 @@ class InvoiceService extends BaseService
 		}
 
 		return $data;
+	}
+
+	public function getAllActiveInvoices(Vendor $vendor = null, Customer $customer = null): Collection
+	{
+		return $this->invoiceRepository->getAllActive($vendor, $customer);
 	}
 
 	/**
