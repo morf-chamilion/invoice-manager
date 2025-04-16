@@ -50,9 +50,15 @@ class AmountLessThanModelField implements ValidationRule
         }
 
         $existingPaymentsSum = $model->payments->where('status', PaymentStatus::PAID)->sum('amount');
-        $newTotal = MoneyHelper::format((int) $existingPaymentsSum + (int) $formattedValue);
+        $rawNewTotal = (int) $existingPaymentsSum + (int) $formattedValue;
+        $rawModelValue = (int) $model->{$this->field};
 
-        if ($newTotal > $model->{$this->field}) {
+        if (!is_numeric($rawModelValue)) {
+            $fail("The {$this->field} field must be a valid numeric value.");
+            return;
+        }
+
+        if ($rawNewTotal > $rawModelValue) {
             $modelName = class_basename($this->model);
             $fail("The total payments, including this payment, cannot exceed the {$modelName} total.");
         }
