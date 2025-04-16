@@ -28,10 +28,12 @@ enum PaymentStatus: int
      */
     public static function toSelectOptions(): array
     {
-        return array_map(fn($enum) => (object) [
-            'name' => $enum->getName(),
-            'value' => $enum->value
-        ], self::cases());
+        return [
+            (object) [
+                'name' => self::PAID->getName(),
+                'value' => self::PAID->value,
+            ]
+        ];
     }
 
     /**
