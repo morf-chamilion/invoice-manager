@@ -40,7 +40,7 @@ class PaymentController extends AdminBaseController
 
             $request->merge([
                 'recordsAll' => $this->paymentService->getAllPayments(),
-                'recordsFiltered' => $this->paymentService->getAllWithFilter(
+                'recordsFiltered' => $this->paymentService->getAllWithCustomFilter(
                     filterColumns: ['id', 'status'],
                     filterQuery: $attributes,
                 ),

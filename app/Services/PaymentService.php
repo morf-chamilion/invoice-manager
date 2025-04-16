@@ -149,4 +149,67 @@ class PaymentService extends BaseService
 			$customer
 		);
 	}
+
+	/**
+	 * return the custom filtered result as a page.
+	 *
+	 * @return integer 	$data[count]		Results Count
+	 * @return array 	$data[data]			Results
+	 */
+	public function getAllWithCustomFilter($filterQuery, $filterColumns)
+	{
+		$query = $this->paymentRepository->getModel()->select('*');
+
+		$query->where(function ($subQuery) use ($filterQuery) {
+			if ($this->getAdminAuthUser()->vendor) {
+				$subQuery->whereHas('vendor', function ($subQuery) {
+					$subQuery->where('id', $this->getAuthVendor()->id);
+				});
+			}
+
+			if (isset($filterQuery->status)) {
+				$subQuery->where('status', $filterQuery->status);
+			}
+
+			if (isset($filterQuery->number)) {
+				$subQuery->where('number', 'like', '%' . $filterQuery->number . '%');
+			}
+
+			if (isset($filterQuery->date) && isset($filterQuery->date)) {
+				$subQuery->whereBetween('date', [$filterQuery->date . ' 00:00:00', $filterQuery->date . ' 23:59:59']);
+			}
+
+			if (isset($filterQuery->customer)) {
+				$subQuery->whereHas('customer', function ($subQuery) use ($filterQuery) {
+					$subQuery->where('id', $filterQuery->customer);
+				});
+			}
+		});
+
+		$query->where(function ($query) use ($filterColumns, $filterQuery) {
+			foreach ($filterColumns as $column) {
+				if ($column) {
+					$query->orWhere($column, 'like', '%' . $filterQuery->search['value'] . '%');
+				}
+			}
+		});
+
+		$data['count'] = $query->count();
+		$data['data'] = [];
+
+		$orderByColumn = $filterColumns[$filterQuery->order[0]['column']] ?? $filterColumns[count($filterColumns) - 1];
+		$orderByDirection = $filterQuery->order[0]['dir'];
+
+		$query->orderBy($orderByColumn, $orderByDirection);
+
+		if ($filterQuery->length != -1) {
+			$query->skip($filterQuery->start)->take($filterQuery->length);
+		}
+
+		if ($this->getAdminAuthUser()->vendor) {
+			$data['data'] = $query->get();
+		}
+
+		return $data;
+	}
 }
