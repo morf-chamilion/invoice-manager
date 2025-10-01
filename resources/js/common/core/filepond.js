@@ -47,9 +47,6 @@ class AppFilePond {
             "image/x-icon",
         ];
 
-        console.log(mimeTypes.length);
-        console.log(mimeTypes);
-
         FilePond.create(inputElement, {
             server: {
                 process: window.GLOBAL_STATE.COMMON_MEDIA_STORE,
