@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Enums\InvoicePaymentStatus;
 use App\Enums\InvoiceStatus;
 use App\Enums\PaymentStatus;
-use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Vendor;
@@ -82,7 +81,15 @@ class PaymentService extends BaseService
 	 */
 	public function deletePayment(int $paymentId): int
 	{
-		return $this->paymentRepository->delete($paymentId);
+		$payment = $this->getPayment($paymentId);
+
+		$deleted = $this->paymentRepository->delete($paymentId);
+
+		if ($payment) {
+			$this->handleInvoiceStatus($payment->invoice, null);
+		}
+
+		return $deleted;
 	}
 
 	/**
@@ -109,11 +116,28 @@ class PaymentService extends BaseService
 	 */
 	protected function handleInvoiceStatus(?Invoice $invoice, ?Payment $payment): void
 	{
-		if (!$invoice || !$payment) return;
+		if (! $invoice) {
+			return;
+		}
+
+		$totalPaid = $invoice->payments->where('status', PaymentStatus::PAID)->sum('amount');
+
+		if (! $payment) {
+			$paymentStatus = InvoicePaymentStatus::PENDING;
+
+			if ($totalPaid > 0) {
+				$paymentStatus = InvoicePaymentStatus::PARTIALLY_PAID;
+			}
+
+			$invoice->update([
+				'payment_status' => $paymentStatus,
+				'status' => InvoiceStatus::ACTIVE,
+			]);
+
+			return;
+		}
 
 		if ($payment->status != PaymentStatus::DECLINED) {
-			$totalPaid = $invoice->payments->where('status', PaymentStatus::PAID)->sum('amount');
-
 			$paymentStatus = $totalPaid >= $invoice->total_price ?
 				InvoicePaymentStatus::PAID : InvoicePaymentStatus::PARTIALLY_PAID;
 
