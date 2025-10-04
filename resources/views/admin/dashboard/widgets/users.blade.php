@@ -2,11 +2,7 @@
     <div class="card-header pt-5">
         <div class="card-title d-flex flex-column">
             <span class="fs-2x fw-bold me-2 lh-1 ls-n2">
-                @if (auth()->user()->vendor)
-                    {{ auth()->user()->vendor->users()->active()->count() }}
-                @else
-                    {{ $users->count() }}
-                @endif
+                {{ $users->count() }}
             </span>
             <span class="fw-bold fs-6 py-1 mt-2">
                 Active Users
