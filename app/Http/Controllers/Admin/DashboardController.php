@@ -37,7 +37,7 @@ class DashboardController extends AdminBaseController
             'isSuperAdmin' => AdminServiceProvider::isSuperAdmin(),
             'users' => $this->userService->getAllUsers(),
             'totalAmountDue' => $this->invoiceService->getTotalAmountDue(),
-            'totalRevenueCollected' => $this->paymentService->getTotalRevenueCollected(),
+            'totalCustomers' => $this->customerService->getTotalCustomerCount(),
             'invoicesThisMonth' => $this->invoiceService->getInvoicesSentThisMonth(),
             'conversionRate' => $this->quotationService->getConversionRate(),
             'revenueChartData' => $this->invoiceService->getRevenueChartData(),

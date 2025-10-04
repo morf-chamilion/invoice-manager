@@ -1,7 +1,7 @@
 <div class="card mb-5">
     <div class="card-header">
         <h3 class="card-title fw-bold text-gray-800">
-            {{ __('Revenue Chart') }}
+            {{ __('Revenue Over Time') }}
         </h3>
     </div>
     <div class="card-body d-flex justify-content-between flex-column px-2 pb-0 pt-5">
@@ -27,6 +27,16 @@
                         </span>
                     </div>
                 </div>
+                <div class="me-md-2">
+                    <div class="d-flex mb-2">
+                        <span class="fs-2x fw-bold text-success me-2 lh-1 ls-n2">
+                            {{ MoneyHelper::print(array_sum($revenueChartData['paid'])) }}
+                        </span>
+                        <span class="fs-6 fw-semibold text-gray-500 align-self-end mb-1">
+                            {{ __('Total Paid') }}
+                        </span>
+                    </div>
+                </div>
             </div>
             <div class="d-flex align-items-center gap-10">
                 <span class="d-flex align-items-center">
@@ -37,6 +47,10 @@
                     <span class="bullet bullet-dot bg-danger h-8px w-8px me-2"></span>
                     <span class="fw-semibold text-gray-600">{{ __('Due') }}</span>
                 </span>
+                <span class="d-flex align-items-center">
+                    <span class="bullet bullet-dot bg-success h-8px w-8px me-2"></span>
+                    <span class="fw-semibold text-gray-600">{{ __('Paid') }}</span>
+                </span>
             </div>
         </div>
         <div id="kt_revenue_chart" style="height: 350px;"></div>
@@ -45,7 +59,7 @@
 
 @push('footer')
     <script>
-        function initRevenueChart(labels, invoicedData, dueData) {
+        function initRevenueChart(labels, invoicedData, dueData, paidData) {
             let element = document.getElementById('kt_revenue_chart');
 
             let height = parseInt(KTUtil.css(element, 'height'));
@@ -53,8 +67,10 @@
             let borderColor = KTUtil.getCssVariableValue('--bs-gray-200');
             let primaryColor = KTUtil.getCssVariableValue('--bs-primary');
             let warningColor = KTUtil.getCssVariableValue('--bs-warning');
+            let successColor = KTUtil.getCssVariableValue('--bs-success');
             let primaryLightColor = KTUtil.getCssVariableValue('--bs-primary-light');
             let warningLightColor = KTUtil.getCssVariableValue('--bs-warning-light');
+            let successLightColor = KTUtil.getCssVariableValue('--bs-success-light');
             let dangerColor = KTUtil.getCssVariableValue('--bs-danger');
             let dangerLightColor = KTUtil.getCssVariableValue('--bs-danger-light');
 
@@ -66,6 +82,10 @@
                     {
                         name: 'Due',
                         data: dueData,
+                    },
+                    {
+                        name: 'Paid',
+                        data: paidData,
                     }
                 ],
                 chart: {
@@ -89,7 +109,7 @@
                         shade: 'light',
                         type: 'vertical',
                         shadeIntensity: 0.3,
-                        gradientToColors: [primaryLightColor, dangerLightColor],
+                        gradientToColors: [primaryLightColor, dangerLightColor, successLightColor],
                         inverseColors: false,
                         opacityFrom: 0.8,
                         opacityTo: 0.1,
@@ -100,7 +120,7 @@
                     curve: 'smooth',
                     show: true,
                     width: 3,
-                    colors: [primaryColor, dangerColor]
+                    colors: [primaryColor, dangerColor, successColor]
                 },
                 xaxis: {
                     categories: labels,
@@ -170,12 +190,12 @@
                         formatter: function(value, {
                             seriesIndex
                         }) {
-                            let label = seriesIndex === 0 ? 'invoiced' : 'due';
-                            return Number(value).toFixed(2) + ' ' + label;
+                            let labels = ['invoiced', 'due', 'paid'];
+                            return Number(value).toFixed(2) + ' ' + labels[seriesIndex];
                         }
                     }
                 },
-                colors: [primaryColor, dangerColor],
+                colors: [primaryColor, dangerColor, successColor],
                 grid: {
                     borderColor: borderColor,
                     strokeDashArray: 4,
@@ -187,8 +207,8 @@
                 },
                 markers: {
                     strokeWidth: 3,
-                    strokeColors: [primaryColor, dangerColor],
-                    fillColors: [primaryColor, dangerColor],
+                    strokeColors: [primaryColor, dangerColor, successColor],
+                    fillColors: [primaryColor, dangerColor, successColor],
                     size: 4
                 }
             };
@@ -202,7 +222,8 @@
         initRevenueChart(
             @json($revenueChartData['labels']),
             @json($revenueChartData['invoiced']),
-            @json($revenueChartData['due'])
+            @json($revenueChartData['due']),
+            @json($revenueChartData['paid'])
         );
     </script>
 @endpush

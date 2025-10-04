@@ -9,7 +9,7 @@
             </span>
             <div class="d-flex align-items-center mt-3">
                 <span class="fw-bold fs-7 text-gray-500">
-                    {{ __('Outstanding invoices') }}
+                    {{ __('Outstanding Invoices') }}
                 </span>
             </div>
         </div>

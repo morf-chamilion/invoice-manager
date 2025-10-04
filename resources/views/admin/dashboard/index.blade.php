@@ -25,8 +25,8 @@
             </div>
 
             <div class="col-lg-3 mb-8">
-                @include('admin/dashboard/widgets/total-revenue-collected', [
-                    'totalRevenueCollected' => $totalRevenueCollected,
+                @include('admin/dashboard/widgets/customers', [
+                    'total' => $totalCustomers,
                 ])
             </div>
 
