@@ -390,11 +390,13 @@ class InvoiceService extends BaseService
     {
         return $this->invoiceRepository->getModel()
             ->where('vendor_id', $this->getAuthVendor()?->id)
+            ->where('status', '!=', InvoiceStatus::DRAFT)
             ->selectRaw('status, COUNT(*) as count')
             ->groupBy('status')
             ->get()
             ->map(function ($item) {
                 return [
+                    'status' => $item->status->value,
                     'status_name' => $item->status->getName(),
                     'count' => $item->count,
                 ];
@@ -402,7 +404,7 @@ class InvoiceService extends BaseService
     }
 
     /**
-     * Get revenue chart data showing invoiced vs due amounts over time.
+     * Get revenue chart data showing invoiced, due, and paid amounts over time.
      */
     public function getRevenueChartData(): array
     {
@@ -412,6 +414,7 @@ class InvoiceService extends BaseService
         $labels = [];
         $invoicedData = [];
         $dueData = [];
+        $paidData = [];
 
         for ($date = $startDate->copy(); $date->lte($endDate); $date->addMonth()) {
             $labels[] = $date->format('M Y');
@@ -431,14 +434,24 @@ class InvoiceService extends BaseService
                 ->whereYear('created_at', $date->year)
                 ->sum('total_price');
 
+            $paidAmount = $this->invoiceRepository->getModel()
+                ->where('vendor_id', $this->getAuthVendor()?->id)
+                ->where('status', '!=', InvoiceStatus::DRAFT)
+                ->where('payment_status', InvoicePaymentStatus::PAID)
+                ->whereMonth('created_at', $date->month)
+                ->whereYear('created_at', $date->year)
+                ->sum('total_price');
+
             $invoicedData[] = (float) $invoicedAmount;
             $dueData[] = (float) $dueAmount;
+            $paidData[] = (float) $paidAmount;
         }
 
         return [
             'labels' => $labels,
             'invoiced' => $invoicedData,
             'due' => $dueData,
+            'paid' => $paidData,
         ];
     }
 }

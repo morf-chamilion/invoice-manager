@@ -1,7 +1,7 @@
 <div class="card mb-5">
     <div class="card-header">
         <h3 class="card-title fw-bold text-gray-800">
-            {{ __('Invoice Status Distribution') }}
+            {{ __('Invoice Stages') }}
         </h3>
     </div>
     <div class="card-body d-flex justify-content-between flex-column pb-0 px-2 pt-5">

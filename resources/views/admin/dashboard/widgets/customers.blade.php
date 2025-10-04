@@ -8,8 +8,8 @@
                 {{ number_format($total) }}
             </span>
             <div class="d-flex align-items-center mt-3">
-                <span class="fw-bold fs-7 text-warning">
-                    {{ __(':count Customers unassigned', ['count' => abs($unassigned)]) }}
+                <span class="fw-bold fs-7 text-gray-500">
+                    {{ __('Active Customers') }}
                 </span>
             </div>
         </div>
