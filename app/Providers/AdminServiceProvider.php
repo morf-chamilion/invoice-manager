@@ -54,4 +54,18 @@ class AdminServiceProvider extends ServiceProvider
 
         return Auth::guard(self::GUARD)->user();
     }
+
+    /**
+     * Check if the user is a super admin.
+     */
+    public static function isSuperAdmin(): bool
+    {
+        $user = self::getAuthUser();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->hasRole(AuthServiceProvider::SUPER_ADMIN);
+    }
 }

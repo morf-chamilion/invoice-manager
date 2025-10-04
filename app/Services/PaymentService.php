@@ -236,4 +236,15 @@ class PaymentService extends BaseService
 
 		return $data;
 	}
+
+	/**
+	 * Get total revenue collected from all successful payments.
+	 */
+	public function getTotalRevenueCollected(): float
+	{
+		return $this->paymentRepository->getModel()
+			->where('vendor_id', $this->getAuthVendor()?->id)
+			->where('status', PaymentStatus::PAID)
+			->sum('amount');
+	}
 }
