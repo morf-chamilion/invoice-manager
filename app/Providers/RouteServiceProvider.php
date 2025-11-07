@@ -48,6 +48,7 @@ class RouteServiceProvider extends ServiceProvider
         'quotations',
         'customers',
         'vendors',
+        'recurring-invoices',
     ];
 
     /**

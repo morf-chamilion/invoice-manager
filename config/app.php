@@ -208,6 +208,7 @@ return [
         'QuotationRoutePath' => App\RoutePaths\Admin\Quotation\QuotationRoutePath::class,
         'CustomerRoutePath' => App\RoutePaths\Admin\Customer\CustomerRoutePath::class,
         'VendorRoutePath' => App\RoutePaths\Admin\Vendor\VendorRoutePath::class,
+        'RecurringInvoiceRoutePath' => App\RoutePaths\Admin\RecurringInvoice\RecurringInvoiceRoutePath::class,
 
         /** Common Route Paths */
         'CommonMediaRoutePath' => App\RoutePaths\Common\Media\MediaRoutePath::class,
@@ -236,6 +237,8 @@ return [
         'InvoiceItemType' => App\Enums\InvoiceItemType::class,
         'CustomerStatus' => App\Enums\CustomerStatus::class,
         'VendorStatus' => App\Enums\VendorStatus::class,
+        'RecurringInvoiceStatus' => App\Enums\RecurringInvoiceStatus::class,
+        'RecurringInvoiceItemType' => App\Enums\RecurringInvoiceItemType::class,
 
         /** Helpers */
         'MoneyHelper' => App\Helpers\MoneyHelper::class,

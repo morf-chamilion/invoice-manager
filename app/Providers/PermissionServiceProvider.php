@@ -9,7 +9,7 @@ use Illuminate\Support\ServiceProvider;
 
 class PermissionServiceProvider extends ServiceProvider
 {
-    /** 
+    /**
      * Define resources to enforce permissions.
      */
     protected array $routePaths = [
@@ -26,6 +26,8 @@ class PermissionServiceProvider extends ServiceProvider
         \App\RoutePaths\Admin\Quotation\QuotationRoutePath::class,
         \App\RoutePaths\Admin\Customer\CustomerRoutePath::class,
         \App\RoutePaths\Admin\Vendor\VendorRoutePath::class,
+
+        \App\RoutePaths\Admin\RecurringInvoice\RecurringInvoiceRoutePath::class,
     ];
 
     /**
