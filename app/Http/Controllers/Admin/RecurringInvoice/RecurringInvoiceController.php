@@ -40,21 +40,7 @@ class RecurringInvoiceController extends AdminBaseController
 
         if ($request->ajax()) {
             $attributes = (object) $request->only(
-                [
-                    'draw',
-                    'columns',
-                    'order',
-                    'start',
-                    'length',
-                    'search',
-                    'date_start',
-                    'date_end',
-                    'status',
-                    'payment_status',
-                    'number',
-                    'customer',
-                    'company',
-                ]
+                ['draw', 'columns', 'order', 'start', 'length', 'search']
             );
 
             $request->merge([
@@ -70,7 +56,7 @@ class RecurringInvoiceController extends AdminBaseController
 
         $columns = $this->tableColumns(
             prefixes: [],
-            columns: ['number', 'customer', 'date', 'due_date', 'total_price', 'payment_status']
+            columns: ['customer', 'start_date', 'frequency', 'end_date', 'total_price']
         );
 
         $this->registerBreadcrumb();
@@ -131,8 +117,11 @@ class RecurringInvoiceController extends AdminBaseController
             ] : [],
         ]);
 
+        $scheduledInvoices = $this->recurringInvoiceService->calculateScheduledInvoices($recurringInvoice);
+
         return view($this->recurringInvoiceRoutePath::SHOW, [
             'recurringInvoice' => $recurringInvoice,
+            'scheduledInvoices' => $scheduledInvoices,
         ]);
     }
 
@@ -171,7 +160,7 @@ class RecurringInvoiceController extends AdminBaseController
             'title' => $this->getActionTitle(),
             'showPage' => [
                 'url' => route($this->recurringInvoiceRoutePath::SHOW, $recurringInvoice->id),
-                'title' => 'Show Invoice',
+                'title' => 'Show Recurring Invoice',
             ],
         ]);
 

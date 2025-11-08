@@ -104,6 +104,14 @@ class InvoiceService extends BaseService
     }
 
     /**
+     * Get invoices that belong to a recurring invoice.
+     */
+    public function getInvoicesByRecurringInvoice(int $recurringInvoiceId): Collection
+    {
+        return $this->invoiceRepository->getByRecurringInvoiceId($recurringInvoiceId);
+    }
+
+    /**
      * Get the count of invoices that are past the due date.
      */
     public function dueInvoiceCount(): int

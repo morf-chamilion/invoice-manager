@@ -1,6 +1,6 @@
-<x-default-layout :model="$invoice">
+<x-default-layout :model="$recurringInvoice">
 
-    <form method="POST" action="{{ route(RecurringInvoiceRoutePath::UPDATE, $invoice) }}" autocomplete="off"
+    <form method="POST" action="{{ route(RecurringInvoiceRoutePath::UPDATE, $recurringInvoice) }}" autocomplete="off"
         id="resource_form">
         @method('put')
         @csrf
@@ -11,43 +11,82 @@
                     <div class="card-header align-items-center">
                         <header>
                             <h2 class="m-0 text-lg font-medium text-gray-900">
-                                {{ __($pageData['title']) }}: <code class="fs-3">{{ $invoice->number }}</code>
+                                {{ __($pageData['title']) }}
                             </h2>
                         </header>
                     </div>
                     <div class="card-body">
-                        <div class="mb-8 row">
-                            <div class="col-lg-6">
-                                <div>
-                                    <x-input-label for="date" :value="__('Date')" required />
-                                    <x-input-date id="date" name="date" :value="old('date', $invoice->date)"
-                                        data-locale-format="YYYY-MM-DD" required />
-                                    <x-input-error :messages="$errors->get('date')" />
-                                </div>
+                        <div class="row">
+                            <div class="mb-8 col-lg-6">
+                                <x-input-label for="start_date" :value="__('Start Date')" required />
+                                <x-input-date id="start_date" name="start_date" :value="old('start_date', $recurringInvoice->start_date)"
+                                    data-locale-format="YYYY-MM-DD" required />
+                                <x-input-error :messages="$errors->get('start_date')" />
                             </div>
 
-                            <div class="col-lg-6">
-                                <div>
-                                    <x-input-label for="due_date" :value="__('Due Date')" required />
-                                    <x-input-date id="due_date" name="due_date" :value="old('due_date', $invoice->due_date)"
-                                        data-locale-format="YYYY-MM-DD" required />
-                                    <x-input-error :messages="$errors->get('due_date')" />
-                                </div>
+                            <div class="mb-8 col-lg-6">
+                                <x-input-label for="due_after_days" :value="__('Due After (Days)')" required />
+                                <x-input-text type="number" id="due_after_days" name="due_after_days" min="0"
+                                    step="1"
+                                    value="{{ old('due_after_days', $recurringInvoice->due_after_days ?? 30) }}"
+                                    required />
+                                <x-input-error :messages="$errors->get('due_after_days')" />
                             </div>
-                        </div>
 
-                        <div>
-                            <x-input-label for="customer_id" :value="__('Customer')" required />
-                            <x-input-select name="customer_id" data-placeholder="Select Customer" required>
-                                @if ($customers->isNotEmpty())
-                                    @foreach ($customers as $customer)
-                                        <option value="{{ $customer->id }}" @selected($customer->id == old('customer_id', $invoice->customer_id))>
-                                            {{ $customer->name }}
+                            <div class="mb-8 col-lg-12">
+                                <x-input-label for="customer_id" :value="__('Customer')" required />
+                                <x-input-select name="customer_id" data-placeholder="Select Customer" required>
+                                    @if ($customers->isNotEmpty())
+                                        @foreach ($customers as $customer)
+                                            <option value="{{ $customer->id }}" @selected($customer->id == old('customer_id', $recurringInvoice->customer_id))>
+                                                {{ $customer->name }}
+                                            </option>
+                                        @endforeach
+                                    @endif
+                                </x-input-select>
+                                <x-input-error :messages="$errors->get('customer_id')" />
+                            </div>
+
+                            <div class="mb-8 col-lg-4">
+                                <x-input-label for="frequency" :value="__('Frequency')" required />
+                                <x-input-select id="frequency" name="frequency" data-hide-search="true"
+                                    data-placeholder="{{ __('Select Frequency') }}" required>
+                                    <option></option>
+                                    @foreach (RecurringInvoiceFrequency::toSelectOptions() as $option)
+                                        <option value="{{ $option->value }}" @selected(old('frequency', $recurringInvoice->frequency ?? '') === $option->value)>
+                                            {{ __($option->name) }}
                                         </option>
                                     @endforeach
-                                @endif
-                            </x-input-select>
-                            <x-input-error :messages="$errors->get('customer_id')" />
+                                </x-input-select>
+                                <x-input-error :messages="$errors->get('frequency')" />
+                            </div>
+
+                            <div class="mb-8 col-lg-4">
+                                <x-input-label for="end_condition_type" :value="__('End Condition Type')" />
+                                <x-input-select id="end_condition_type" name="end_condition_type"
+                                    data-placeholder="{{ __('Select End Condition Type') }}" data-hide-search="true">
+                                    @foreach (RecurringInvoiceEndType::toSelectOptions() as $option)
+                                        <option value="{{ $option->value }}" @selected(old('end_condition_type', $recurringInvoice->end_condition_type) === $option->value)>
+                                            {{ __($option->name) }}
+                                        </option>
+                                    @endforeach
+                                </x-input-select>
+                                <x-input-error :messages="$errors->get('end_condition_type')" />
+                            </div>
+
+                            <div class="mb-8 col-lg-4 d-none" id="endDateGroup">
+                                <x-input-label for="end_date" :value="__('End Date')" />
+                                <x-input-date id="end_date" name="end_date" :value="old('end_date', $recurringInvoice->end_date)"
+                                    data-locale-format="YYYY-MM-DD" />
+                                <x-input-error :messages="$errors->get('end_date')" />
+                            </div>
+
+                            <div class="mb-8 col-lg-4" id="endCountGroup">
+                                <x-input-label for="end_count" :value="__('End Count')" />
+                                <x-input-text type="number" id="end_count" name="end_count" min="1"
+                                    step="1" value="{{ old('end_count', $recurringInvoice->end_count) }}" />
+                                <x-input-error :messages="$errors->get('end_count')" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -56,7 +95,34 @@
                     <div class="card-header align-items-center">
                         <header>
                             <h2 class="m-0 text-lg font-medium text-gray-900">
-                                {{ __('RecurringInvoice') }}
+                                {{ __('Schedule') }}
+                            </h2>
+                        </header>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="mb-8 form-group">
+                                    <x-input-label :value="__('Next Run Date')" />
+                                    <div class="form-control form-control-solid" id="next_run_date_display">—</div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="mb-8 form-group">
+                                    <x-input-label :value="__('Last Run Date')" />
+                                    <div class="form-control form-control-solid" id="last_run_date_display">—</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mt-8">
+                    <div class="card-header align-items-center">
+                        <header>
+                            <h2 class="m-0 text-lg font-medium text-gray-900">
+                                {{ __('Invoice') }}
                             </h2>
                         </header>
                     </div>
@@ -92,7 +158,8 @@
                                         <div class="input-group">
                                             <x-input-text type="number" name="unit_price" id="unit_price"
                                                 min="0" step="0.01" />
-                                            <span class="input-group-text">{{ $invoice->vendor->currency }}</span>
+                                            <span
+                                                class="input-group-text">{{ $recurringInvoice->vendor->currency }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -109,15 +176,20 @@
                         </div>
 
                         @php
-                            $items = old('invoice_items', $invoice->formattedRecurringInvoiceItems);
-                            $discountValue = old('discount_value', $invoice->discount_value);
-                            $discountType = old('discount_type', $invoice->discount_type);
+                            $items = old('invoice_items', $recurringInvoice->formattedInvoiceItems ?? []);
+                            $discountValue = old('discount_value', $recurringInvoice->discount_value ?? 0);
+                            $discountType = old('discount_type', $recurringInvoice->discount_type ?? 'fixed');
 
-                            $totalPrice = \App\Services\RecurringInvoiceService::calculateTotal(
-                                $items,
-                                $discountValue,
-                                $discountType,
-                            );
+                            $totalPrice = 0;
+                            if (!empty($items)) {
+                                $itemsTotal = is_array($items)
+                                    ? array_sum(array_column($items, 'amount'))
+                                    : $items->sum('amount');
+                                $totalPrice =
+                                    $discountType === 'percentage'
+                                        ? $itemsTotal - ($itemsTotal * $discountValue) / 100
+                                        : $itemsTotal - $discountValue;
+                            }
                         @endphp
 
                         <div class="table-wrapper">
@@ -129,7 +201,8 @@
                                         <th id="item">{{ __('Item') }}</th>
                                         <th id="description">{{ __('Description') }}</th>
                                         <th id="quantity" width="10%" class="text-end">{{ __('Qty') }}</th>
-                                        <th id="unit_price" width="15%" class="text-end">{{ __('Unit Price') }}</th>
+                                        <th id="unit_price" width="15%" class="text-end">{{ __('Unit Price') }}
+                                        </th>
                                         <th id="amount" width="15%" class="text-end">{{ __('Amount') }}</th>
                                         <th id="actions" width="150px" class="text-end">{{ __('Actions') }}</th>
                                     </tr>
@@ -184,14 +257,14 @@
                                         <td colspan="1" class="border-right-0">
                                             <input type="number" class="form-control text-end" name="discount_value"
                                                 id="discountValue" min="0" placeholder="0"
-                                                value="{{ old('discount_value', $invoice->discount_value) }}" />
+                                                value="{{ old('discount_value', $recurringInvoice->discount_value ?? 0) }}" />
                                         </td>
                                         <td colspan="1" class="border-right-0">
                                             <select class="form-select" name="discount_type" id="discountType">
-                                                <option value="fixed" @selected(old('discount_type', $invoice->discount_type) === 'fixed')>
+                                                <option value="fixed" @selected(old('discount_type', $recurringInvoice->discount_type ?? 'fixed') === 'fixed')>
                                                     {{ __('Fixed') }}
                                                 </option>
-                                                <option value="percentage" @selected(old('discount_type', $invoice->discount_type) === 'percentage')>
+                                                <option value="percentage" @selected(old('discount_type', $recurringInvoice->discount_type ?? 'fixed') === 'percentage')>
                                                     {{ __('Percent') }}
                                                 </option>
                                             </select>
@@ -202,7 +275,7 @@
                                                 class="font-weight-bolder h3">{{ __('Total Amount') }}</span></td>
                                         <td colspan="2" class="border-right-0 py-7">
                                             <span class="font-weight-bolder h3 d-block text-end">
-                                                <span>{{ $invoice->vendor->currency }}</span>
+                                                <span>{{ $recurringInvoice->vendor->currency }}</span>
                                                 <span id="totalPrice">{{ MoneyHelper::format($totalPrice) }}</span>
                                             </span>
                                             <input type="hidden" name="total_price" id="totalPriceInput"
@@ -220,7 +293,7 @@
                         <div>
                             <x-input-label for="notes" :value="__('Notes')" />
                             <x-input-textarea name="notes" id="notes">
-                                {{ old('notes', $invoice->notes) }}
+                                {{ old('notes', $recurringInvoice->notes) }}
                             </x-input-textarea>
                             <x-input-error :messages="$errors->get('notes')" />
                         </div>
@@ -229,21 +302,36 @@
 
             </div>
 
-            <x-form-metadata :model="$invoice" type="Update">
+            <x-form-metadata :model="$recurringInvoice" type="Update">
                 <div class="mb-8">
                     <x-input-label for="status" required>Status</x-input-label>
                     <x-input-select name="status" data-placeholder="Select Status" data-hide-search="true" required>
                         @foreach (RecurringInvoiceStatus::toSelectOptions() as $option)
-                            <option value="{{ $option->value }}" @selected($option->value == old('status', $invoice->status->value))>
+                            <option value="{{ $option->value }}" @selected($option->value == old('status', $recurringInvoice->status->value))>
                                 {{ $option->name }}
                             </option>
                         @endforeach
                     </x-input-select>
                     <x-input-error :messages="$errors->get('status')" />
                 </div>
+
+                <div class="separator separator-dashed mb-8"></div>
+
+                <div class="mb-8">
+                    <div class="d-flex gap-4 align-items-center justify-content-between">
+                        <x-input-label for="send_automatically" :value="__('Send Automatically')" />
+                        <x-input-checkbox id="send_automatically" name="send_automatically" :value="old('send_automatically', $recurringInvoice->send_automatically)" />
+                    </div>
+                    <p class="text-muted">
+                        {{ __('The recurring invoice will be sent automatically.') }}
+                    </p>
+                    <x-input-error :messages="$errors->get('send_automatically')" />
+                </div>
             </x-form-metadata>
         </div>
     </form>
+
+    @include('admin.invoice.partials.customer-create')
 
     @push('header')
         <style>

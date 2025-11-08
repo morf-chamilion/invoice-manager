@@ -95,14 +95,14 @@
                         <div class="menu-sub menu-sub-accordion">
                             @can(RecurringInvoiceRoutePath::INDEX)
                                 @include('admin.layout.sidebar.menu-item', [
-                                    'content' => 'View All Recurring Invoices',
+                                    'content' => 'View Recurring Invoices',
                                     'route' => route(RecurringInvoiceRoutePath::INDEX),
                                 ])
                             @endcan
 
                             @can(RecurringInvoiceRoutePath::CREATE)
                                 @include('admin.layout.sidebar.menu-item', [
-                                    'content' => 'Create New Recurring Invoice',
+                                    'content' => 'Create Recurring Invoice',
                                     'route' => route(RecurringInvoiceRoutePath::CREATE),
                                 ])
                             @endcan

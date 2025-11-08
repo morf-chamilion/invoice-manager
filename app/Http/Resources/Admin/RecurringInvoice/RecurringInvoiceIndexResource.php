@@ -2,15 +2,14 @@
 
 namespace App\Http\Resources\Admin\RecurringInvoice;
 
-use App\Enums\InvoiceStatus;
+use App\Enums\RecurringInvoiceFrequency;
+use App\Enums\RecurringInvoiceStatus;
 use App\Http\Resources\HasDataTableInterface;
 use App\Http\Resources\HasDataTableTrait;
 use App\RoutePaths\Admin\Customer\CustomerRoutePath;
-use App\RoutePaths\Admin\Invoice\InvoiceRoutePath;
-use App\Services\InvoiceService;
+use App\RoutePaths\Admin\RecurringInvoice\RecurringInvoiceRoutePath;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
 
@@ -25,11 +24,12 @@ class RecurringInvoiceIndexResource extends JsonResource implements HasDataTable
     {
         return collect($records)->map(function ($record) {
             return [
-                $this->id,
                 $this->customer($record->customer),
-                $record->readableDate,
+                $record->readableStartDate,
+                RecurringInvoiceFrequency::from($record->frequency)->getName(),
+                $record->readableEndDate,
                 $record->readableTotalPrice,
-                InvoiceStatus::toBadge($record->status),
+                RecurringInvoiceStatus::toBadge($record->status),
                 $this->actions($record),
             ];
         })->all();
@@ -40,48 +40,15 @@ class RecurringInvoiceIndexResource extends JsonResource implements HasDataTable
      */
     private function actions(
         Model $record,
-        $show = InvoiceRoutePath::SHOW,
-        $edit = InvoiceRoutePath::EDIT,
-        $destroy = InvoiceRoutePath::DESTROY,
-        $overdue = InvoiceRoutePath::OVERDUE
+        $show = RecurringInvoiceRoutePath::SHOW,
+        $edit = RecurringInvoiceRoutePath::EDIT,
+        $destroy = RecurringInvoiceRoutePath::DESTROY,
     ): array {
-        /** @var InvoiceService $invoiceService */
-        $invoiceService = App::make(InvoiceService::class);
-
-        $isDueInvoice = $invoiceService->isDueInvoice($record);
-
-        $actions = [
+        return [
             'show' => Gate::check($show) ? route($show, $record) : '',
             'edit' => Gate::check($edit) ? route($edit, $record) : '',
             'destroy' => Gate::check($destroy) ? route($destroy, $record) : '',
         ];
-
-        if ($isDueInvoice) {
-            $actions['overdue'] = Gate::check($show) ? route($overdue, $record) : '';
-        }
-
-        if ($record->status === InvoiceStatus::COMPLETED) {
-            $actions['edit'] = null;
-        }
-
-        return $actions;
-    }
-
-    /**
-     * Render number.
-     */
-    private function number(Model $resource): string
-    {
-        /** @var InvoiceService $invoiceService */
-        $invoiceService = App::make(InvoiceService::class);
-
-        $isDueInvoice = $invoiceService->isDueInvoice($resource);
-
-        return Blade::render('<a href="{{ $link }}" class="@if ($isDueInvoice) text-danger @endif">{{ $number }}</a>', [
-            'link' => route(InvoiceRoutePath::EDIT, $resource),
-            'number' => $resource->number,
-            'isDueInvoice' => $isDueInvoice,
-        ]);
     }
 
     /**
@@ -98,22 +65,6 @@ class RecurringInvoiceIndexResource extends JsonResource implements HasDataTable
 
         return Blade::render('{{ $name }}', [
             'name' => $customer->name,
-        ]);
-    }
-
-    /**
-     * Render due date.
-     */
-    private function dueDate(Model $resource): string
-    {
-        /** @var InvoiceService $invoiceService */
-        $invoiceService = App::make(InvoiceService::class);
-
-        $isDueInvoice = $invoiceService->isDueInvoice($resource);
-
-        return Blade::render('<div class="d-flex justify-content-between @if ($isDueInvoice) text-danger @endif">{{ $date }}</div>', [
-            'date' => $resource->readableDueDate,
-            'isDueInvoice' => $isDueInvoice,
         ]);
     }
 }

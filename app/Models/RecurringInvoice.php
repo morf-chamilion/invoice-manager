@@ -32,7 +32,23 @@ class RecurringInvoice extends Model implements HasMedia, HasRelationsInterface
      */
     protected $fillable = [
         'status',
-        'name',
+        'number',
+        'vendor_invoice_number',
+        'start_date',
+        'due_after_days',
+        'frequency',
+        'end_condition_type',
+        'end_date',
+        'end_count',
+        'send_automatically',
+        'next_run_date',
+        'last_run_date',
+        'notes',
+        'discount_type',
+        'discount_value',
+        'total_price',
+        'customer_id',
+        'vendor_id',
         'updated_by',
         'created_by',
     ];
@@ -44,6 +60,13 @@ class RecurringInvoice extends Model implements HasMedia, HasRelationsInterface
      */
     protected $casts = [
         'status' => RecurringInvoiceStatus::class,
+        'send_automatically' => 'boolean',
+        'due_after_days' => 'integer',
+        'end_count' => 'integer',
+        'start_date' => 'date',
+        'end_date' => 'date',
+        'next_run_date' => 'date',
+        'last_run_date' => 'date',
     ];
 
     /**
@@ -107,19 +130,31 @@ class RecurringInvoice extends Model implements HasMedia, HasRelationsInterface
     }
 
     /**
-     * Get the formatted date attribute.
+     * Get the formatted start date attribute.
      */
-    public function getReadableDateAttribute(): string
+    public function getReadableStartDateAttribute(): string
     {
-        return Carbon::parse($this->date)->format('d M Y');
+        return $this->start_date ? Carbon::parse($this->start_date)->format('d M Y') : '';
     }
 
     /**
-     * Get the formatted due date attribute.
+     * Get the formatted end date attribute.
      */
-    public function getReadableDueDateAttribute(): string
+    public function getReadableEndDateAttribute(): string
     {
-        return Carbon::parse($this->due_date)->format('d M Y');
+        return $this->end_date ? Carbon::parse($this->end_date)->format('d M Y') : '';
+    }
+
+    /**
+     * Get the calculated due date attribute.
+     */
+    public function getCalculatedDueDateAttribute(): ?Carbon
+    {
+        if (! $this->start_date || ! $this->due_after_days) {
+            return null;
+        }
+
+        return Carbon::parse($this->start_date)->addDays($this->due_after_days);
     }
 
     /**
@@ -224,11 +259,19 @@ class RecurringInvoice extends Model implements HasMedia, HasRelationsInterface
     }
 
     /**
-     * Get the invoice items assocbiated with the invoice.
+     * Get the invoice items associated with the recurring invoice.
      */
     public function invoiceItems(): HasMany
     {
-        return $this->hasMany(InvoiceItem::class);
+        return $this->hasMany(RecurringInvoiceItem::class);
+    }
+
+    /**
+     * Get the invoices generated from this recurring invoice.
+     */
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
     }
 
     /**

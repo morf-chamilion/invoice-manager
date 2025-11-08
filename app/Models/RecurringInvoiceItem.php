@@ -20,7 +20,7 @@ class RecurringInvoiceItem extends Model implements HasRelationsInterface
      * @var array<int, string>
      */
     protected $fillable = [
-        'invoice_id',
+        'recurring_invoice_id',
         'custom',
         'description',
         'unit_price',
@@ -75,10 +75,10 @@ class RecurringInvoiceItem extends Model implements HasRelationsInterface
     }
 
     /**
-     * Get the invoice that owns the invoice.
+     * Get the recurring invoice that owns the item.
      */
-    public function invoice(): BelongsTo
+    public function recurringInvoice(): BelongsTo
     {
-        return $this->belongsTo(Invoice::class);
+        return $this->belongsTo(RecurringInvoice::class, 'recurring_invoice_id');
     }
 }

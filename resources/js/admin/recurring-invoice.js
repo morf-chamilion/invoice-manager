@@ -9,15 +9,6 @@ if (window.GLOBAL_STATE?.ADMIN_DATATABLE_DEFAULTS) {
     );
 }
 
-// Filter input states.
-let dateStart = "",
-    dateEnd = "",
-    status = "",
-    paymentStatus = "",
-    number = "",
-    customer = "",
-    company = "";
-
 let datatable;
 
 // Class definition
@@ -99,13 +90,6 @@ var KTDatatablesServerSide = (function () {
                 type: "POST",
                 data: function (data) {
                     data._token = $('meta[name="csrf-token"]').attr("content");
-                    data.date_start = dateStart;
-                    data.date_end = dateEnd;
-                    data.status = status;
-                    data.payment_status = paymentStatus;
-                    data.number = number;
-                    data.customer = customer;
-                    data.company = company;
                 },
             },
         });
@@ -143,34 +127,6 @@ KTUtil.onDOMContentLoaded(function () {
 
     if (document.getElementById("kt_datatable")) {
         KTDatatablesServerSide.init();
-
-        $("#date_range").on("apply.daterangepicker", function (ev, picker) {
-            dateStart = picker.startDate.format("YYYY-MM-DD");
-            dateEnd = picker.endDate.format("YYYY-MM-DD");
-            $(this).val(dateStart + " - " + dateEnd);
-        });
-
-        $("#datatable_index").on("submit", function (event) {
-            event.preventDefault();
-            status = $("#status").val();
-            paymentStatus = $("#payment_status").val();
-            number = $("#number").val();
-            customer = $("#customer").val();
-            datatable.draw();
-        });
-
-        $("#datatable_index").on("reset", function (event) {
-            dateStart = "";
-            dateEnd = "";
-            status = "";
-            paymentStatus = "";
-            number = "";
-            customer = "";
-            setTimeout(() => {
-                $(this).find("select").trigger("change");
-            }, 200);
-            datatable.draw();
-        });
     }
 
     if ($('.draggable-zone').length) {
@@ -442,135 +398,256 @@ KTUtil.onDOMContentLoaded(function () {
         });
     }
 
-    if ($("button#invoice_notification").length) {
-        $("button#invoice_notification").on("click", function (event) {
-            event.preventDefault();
-            const lastSentTimestamp = $(this).data('timestamp');
+    const scheduleFieldsWrapper = document.getElementById('resource_form_fieldset');
 
-            Swal.fire({
-                title: "Send invoice to client?",
-                text: lastSentTimestamp && 'Last Sent: ' + lastSentTimestamp,
-                icon: "info",
-                showCancelButton: true,
-                reverseButtons: true,
-                confirmButtonText: "Send Mail",
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        type: "POST",
-                        url: `${window.location.href}/notification`,
-                        beforeSend: function (xhr, options) {
-                            Swal.fire({
-                                text: "Sending..",
-                                icon: "info",
-                                showConfirmButton: false,
-                            });
+    if (scheduleFieldsWrapper) {
+        const startDateInput = document.getElementById('start_date');
+        const frequencySelect = $('#frequency');
+        const endConditionSelect = $('#end_condition_type');
+        const endDateGroup = document.getElementById('endDateGroup');
+        const endCountGroup = document.getElementById('endCountGroup');
+        const nextRunDateDisplay = document.getElementById('next_run_date_display');
+        const lastRunDateDisplay = document.getElementById('last_run_date_display');
 
-                            setTimeout(function () {
-                                $.ajax(
-                                    $.extend(options, {
-                                        beforeSend: $.noop,
-                                    })
-                                );
-                            }, 1000);
+        const toggleGroupVisibility = (groupElement, shouldShow) => {
+            if (!groupElement) {
+                return;
+            }
 
-                            return false;
-                        },
-                        success: function (response) {
-                            if (response["status"]) {
-                                Swal.fire(
-                                    "Success",
-                                    response["message"],
-                                    "success"
-                                );
-                            } else {
-                                Swal.fire(
-                                    "Error",
-                                    response["message"],
-                                    "error"
-                                );
-                            }
-                        },
-                        error: function ({ responseJSON }) {
-                            Swal.fire(
-                                "Failed to process the request",
-                                responseJSON["message"],
-                                "error"
-                            );
-                        },
-                    });
+            if (shouldShow) {
+                $(groupElement).removeClass('d-none');
+            } else {
+                $(groupElement).addClass('d-none');
+            }
+
+            groupElement.querySelectorAll('input, select, textarea').forEach((element) => {
+                element.disabled = !shouldShow;
+                if (!shouldShow) {
+                    $(element).val('');
                 }
             });
-        });
-    }
-});
+        };
 
-$('input[name="item_type"]').on('change', function (event) {
-    let value = parseInt($('input[name="item_type"]:checked').val());
-    $('.itinerary-type').addClass('d-none');
+        const toggleEndCondition = () => {
+            const selected = endConditionSelect.val();
 
-    $('#customItem').removeClass('d-none');
-});
+            toggleGroupVisibility(endDateGroup, selected === 'date');
+            toggleGroupVisibility(endCountGroup, selected === 'count');
+        };
 
-let initialTotalValue = parseFloat($('#totalPriceInput').val());
+        const parseDateInput = (value) => {
+            if (!value) {
+                return null;
+            }
 
-$('#addInvoiceItemBtn').on('click', function (event) {
-    event.preventDefault();
+            const parts = value.split('-').map(Number);
 
-    let itemType = parseInt($('input[name="item_type"]:checked').val());
-    let itemTypeName = $('input[name="item_type"]:checked').parent().find('.form-check-label').text();
-    let itemName = null;
-    let itemID = null;
-    let description = $('#description').val();
-    let quantity = $('#quantity').val();
-    let unitPrice = parseFloat($('#unit_price').val()).toFixed(2);
+            if (parts.length !== 3 || parts.some((part) => Number.isNaN(part))) {
+                return null;
+            }
 
-    itemID = $('#title').val();
-    itemName = $('#title').val();
-    itemTypeName = 'Custom';
-    itemType = 1;
+            const [year, month, day] = parts;
+            const date = new Date(Date.UTC(year, month - 1, day));
 
-    if (itemType && itemTypeName && itemID && itemName && unitPrice && !isNaN(unitPrice) && !isNaN(quantity)) {
-        let currentInvoiceData = $('tr.draggable').length ? $('#invoiceData').repeaterVal()['invoice_items'] : [];
+            return Number.isNaN(date.getTime()) ? null : date;
+        };
 
-        if (unitPrice <= 0 || quantity <= 0) {
-            return Swal.fire('Error', 'Fields contain invalid values.', 'error');
+        const addDays = (date, days) => {
+            const result = new Date(date.getTime());
+            result.setUTCDate(result.getUTCDate() + days);
+            return result;
+        };
+
+        const addMonths = (date, months) => {
+            const result = new Date(date.getTime());
+            const day = result.getUTCDate();
+            result.setUTCDate(1);
+            result.setUTCMonth(result.getUTCMonth() + months);
+
+            const lastDay = new Date(Date.UTC(result.getUTCFullYear(), result.getUTCMonth() + 1, 0)).getUTCDate();
+            result.setUTCDate(Math.min(day, lastDay));
+
+            return result;
+        };
+
+        const addYears = (date, years) => {
+            const result = new Date(date.getTime());
+            result.setUTCFullYear(result.getUTCFullYear() + years);
+            return result;
+        };
+
+        const formatDate = (date) => {
+            const year = date.getUTCFullYear();
+            const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+            const day = String(date.getUTCDate()).padStart(2, '0');
+
+            return `${year}-${month}-${day}`;
+        };
+
+        const calculateLastRunDate = () => {
+            if (!lastRunDateDisplay) {
+                return;
+            }
+
+            const startDate = parseDateInput(startDateInput?.value);
+
+            if (!startDate) {
+                lastRunDateDisplay.textContent = '—';
+                return;
+            }
+
+            // For a create form, the last run date is the start date initially
+            // (since that's when the recurring invoice would start)
+            lastRunDateDisplay.textContent = formatDate(startDate);
+        };
+
+        const calculateNextRunDate = () => {
+            if (!nextRunDateDisplay) {
+                return;
+            }
+
+            const startDate = parseDateInput(startDateInput?.value);
+            const frequency = frequencySelect.val();
+
+            if (!startDate || !frequency) {
+                nextRunDateDisplay.textContent = '—';
+                return;
+            }
+
+            let nextDate = new Date(startDate.getTime());
+
+            switch (frequency) {
+                case 'weekly':
+                    nextDate = addDays(startDate, 7);
+                    break;
+                case 'monthly':
+                    nextDate = addMonths(startDate, 1);
+                    break;
+                case 'quarterly':
+                    nextDate = addMonths(startDate, 3);
+                    break;
+                case 'yearly':
+                    nextDate = addYears(startDate, 1);
+                    break;
+                default:
+                    nextRunDateDisplay.textContent = '—';
+                    return;
+            }
+
+            nextRunDateDisplay.textContent = formatDate(nextDate);
+        };
+
+        // Initialize on page load
+        toggleEndCondition();
+
+        // Check if we have existing values from edit mode
+        const existingLastRunDate = lastRunDateDisplay?.textContent?.trim();
+        const existingNextRunDate = nextRunDateDisplay?.textContent?.trim();
+
+        // Only calculate if fields are empty or show placeholder
+        if (!existingLastRunDate || existingLastRunDate === '—') {
+            calculateLastRunDate();
         }
 
-        let updatedCurrentInvoiceData = currentInvoiceData.map(item => ({
-            'type_id': item['type_id'],
-            'type': item['type'],
-            'item_id': item['item_id'],
-            'title': item['title'],
-            'description': item['description'],
-            'quantity': item['quantity'],
-            'unit_price': item['unit_price'],
-            'amount': item['amount'],
-        }));
+        if (!existingNextRunDate || existingNextRunDate === '—') {
+            calculateNextRunDate();
+        } else {
+            // If we have an existing next run date, still allow recalculation on changes
+            // The calculateNextRunDate will update it when start date or frequency changes
+        }
 
-        let rowTotal = (quantity * unitPrice).toFixed(2);
-
-        updatedCurrentInvoiceData.push({
-            'type_id': itemType,
-            'type': itemTypeName.trim(),
-            'item_id': itemID,
-            'title': itemName.trim(),
-            'description': description,
-            'quantity': quantity,
-            'unit_price': unitPrice,
-            'amount': rowTotal,
+        // Handle select2 change events
+        frequencySelect.on('change', function () {
+            calculateNextRunDate();
         });
 
-        invoiceItemsRepeater.setList(updatedCurrentInvoiceData);
+        endConditionSelect.on('change', function () {
+            toggleEndCondition();
+        });
 
-        applyTotal();
-
-        $('#invoiceItemForm input[type=text], #invoiceItemForm input[type=number]').val('');
-        $('#invoiceItemForm select').val('');
-        $('#invoiceItemForm select').trigger('change');
-    } else {
-        Swal.fire('Error', 'Please fill out all required fields.', 'error');
+        // Handle date input change (daterangepicker events)
+        if (startDateInput) {
+            $(startDateInput).on('apply.daterangepicker', function () {
+                calculateLastRunDate();
+                calculateNextRunDate();
+            });
+            $(startDateInput).on('change', function () {
+                calculateLastRunDate();
+                calculateNextRunDate();
+            });
+        }
     }
+
+    $('input[name="item_type"]').on('change', function (event) {
+        let value = parseInt($('input[name="item_type"]:checked').val());
+        $('.itinerary-type').addClass('d-none');
+
+        $('#customItem').removeClass('d-none');
+    });
+
+    let initialTotalValue = parseFloat($('#totalPriceInput').val()) || 0;
+
+    $('#addRecurringInvoiceItemBtn').on('click', function (event) {
+        event.preventDefault();
+
+        let itemType = parseInt($('input[name="item_type"]:checked').val());
+        let itemTypeName = $('input[name="item_type"]:checked').parent().find('.form-check-label').text();
+        let itemName = null;
+        let itemID = null;
+        let description = $('#description').val();
+        let quantity = $('#quantity').val();
+        let unitPrice = parseFloat($('#unit_price').val()).toFixed(2);
+
+        itemID = $('#title').val();
+        itemName = $('#title').val();
+        itemTypeName = 'Custom';
+        itemType = 1;
+
+        if (itemType && itemTypeName && itemID && itemName && unitPrice && !isNaN(unitPrice) && !isNaN(quantity)) {
+            let currentInvoiceData = $('tr.draggable').length ? $('#invoiceData').repeaterVal()['invoice_items'] : [];
+
+            if (unitPrice <= 0 || quantity <= 0) {
+                return Swal.fire('Error', 'Fields contain invalid values.', 'error');
+            }
+
+            let updatedCurrentInvoiceData = currentInvoiceData.map(item => ({
+                'type_id': item['type_id'],
+                'type': item['type'],
+                'item_id': item['item_id'],
+                'title': item['title'],
+                'description': item['description'],
+                'quantity': item['quantity'],
+                'unit_price': item['unit_price'],
+                'amount': item['amount'],
+            }));
+
+            let rowTotal = (quantity * unitPrice).toFixed(2);
+
+            updatedCurrentInvoiceData.push({
+                'type_id': itemType,
+                'type': itemTypeName.trim(),
+                'item_id': itemID,
+                'title': itemName.trim(),
+                'description': description,
+                'quantity': quantity,
+                'unit_price': unitPrice,
+                'amount': rowTotal,
+            });
+
+            invoiceItemsRepeater.setList(updatedCurrentInvoiceData);
+
+            applyTotal();
+
+            $('#invoiceItemForm input[type=text], #invoiceItemForm input[type=number]').val('');
+            $('#invoiceItemForm select').val('');
+            $('#invoiceItemForm select').trigger('change');
+        } else {
+            Swal.fire('Error', 'Please fill out all required fields.', 'error');
+        }
+    });
+
+    $('#discountValue').on('input', () => applyTotal());
+    $('#discountType').on('change', () => applyTotal());
 });
 
 function applyTotal() {
@@ -607,9 +684,6 @@ function applyDiscount(total) {
         return total -= discount;
     }
 }
-
-$('#discountValue').on('input', () => applyTotal());
-$('#discountType').on('change', () => applyTotal());
 
 let swappable;
 let invoiceItemsRepeater;

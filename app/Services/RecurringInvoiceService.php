@@ -3,11 +3,15 @@
 namespace App\Services;
 
 use App\Enums\CustomerStatus;
+use App\Enums\RecurringInvoiceEndType;
+use App\Enums\RecurringInvoiceFrequency;
+use App\Enums\RecurringInvoiceStatus;
 use App\Models\Customer;
 use App\Models\RecurringInvoice;
 use App\Models\Vendor;
 use App\Repositories\RecurringInvoiceRepository;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 class RecurringInvoiceService extends BaseService
@@ -154,5 +158,104 @@ class RecurringInvoiceService extends BaseService
             ...$attributes,
             'status' => CustomerStatus::ACTIVE,
         ]);
+    }
+
+    /**
+     * Calculate scheduled invoices based on recurring invoice settings.
+     */
+    public function calculateScheduledInvoices(RecurringInvoice $recurringInvoice): Collection
+    {
+        $scheduledInvoices = collect();
+
+        if ($recurringInvoice->status !== RecurringInvoiceStatus::ACTIVE) {
+            return $scheduledInvoices;
+        }
+
+        $frequency = RecurringInvoiceFrequency::from($recurringInvoice->frequency);
+        $endConditionType = RecurringInvoiceEndType::from($recurringInvoice->end_condition_type);
+        $dueAfterDays = $recurringInvoice->due_after_days ?? 30;
+
+        // Determine starting point - use next_run_date if available, otherwise calculate from start_date
+        $startDate = $recurringInvoice->next_run_date
+            ? Carbon::parse($recurringInvoice->next_run_date)
+            : Carbon::parse($recurringInvoice->start_date);
+
+        // If start date is in the past, calculate next occurrence from now
+        if ($startDate->isPast()) {
+            $startDate = Carbon::parse($recurringInvoice->start_date);
+            while ($startDate->isPast()) {
+                $startDate = $this->addFrequency($startDate, $frequency);
+            }
+        }
+
+        // Get existing invoice dates to avoid duplicates
+        $existingInvoiceDates = $recurringInvoice->invoices->map(function ($invoice) {
+            return Carbon::parse($invoice->date)->format('Y-m-d');
+        })->toArray();
+
+        // Determine end date
+        $endDate = null;
+        if ($endConditionType === RecurringInvoiceEndType::DATE && $recurringInvoice->end_date) {
+            $endDate = Carbon::parse($recurringInvoice->end_date);
+        } elseif ($endConditionType === RecurringInvoiceEndType::COUNT && $recurringInvoice->end_count) {
+            // Calculate how many invoices have been generated
+            $generatedCount = $recurringInvoice->invoices->count();
+            $remainingCount = $recurringInvoice->end_count - $generatedCount;
+
+            if ($remainingCount <= 0) {
+                return $scheduledInvoices;
+            }
+        }
+
+        // Generate scheduled invoices (up to 1 year in advance or until end condition)
+        $currentDate = $startDate->copy();
+        $maxFutureDate = now()->addYear(); // Show up to 1 year in advance
+        $iteration = 0;
+        $maxIterations = 100; // Safety limit
+        $generatedCount = $recurringInvoice->invoices->count();
+
+        while ($currentDate->lte($maxFutureDate) && $iteration < $maxIterations) {
+            // Check if we've reached the end condition
+            if ($endDate && $currentDate->gt($endDate)) {
+                break;
+            }
+
+            // Check count limit
+            if ($endConditionType === RecurringInvoiceEndType::COUNT && $recurringInvoice->end_count) {
+                if ($generatedCount + $iteration >= $recurringInvoice->end_count) {
+                    break;
+                }
+            }
+
+            // Skip if invoice already exists for this date
+            $dateKey = $currentDate->format('Y-m-d');
+            if (! in_array($dateKey, $existingInvoiceDates)) {
+                $scheduledInvoices->push((object) [
+                    'date' => $currentDate->copy(),
+                    'due_date' => $currentDate->copy()->addDays($dueAfterDays),
+                    'amount' => $recurringInvoice->total_price,
+                ]);
+            }
+
+            // Move to next date based on frequency
+            $currentDate = $this->addFrequency($currentDate, $frequency);
+            $iteration++;
+        }
+
+        return $scheduledInvoices;
+    }
+
+    /**
+     * Add frequency interval to a date.
+     */
+    private function addFrequency(Carbon $date, RecurringInvoiceFrequency $frequency): Carbon
+    {
+        return match ($frequency) {
+            RecurringInvoiceFrequency::WEEKLY => $date->copy()->addWeek(),
+            RecurringInvoiceFrequency::BIWEEKLY => $date->copy()->addWeeks(2),
+            RecurringInvoiceFrequency::MONTHLY => $date->copy()->addMonth(),
+            RecurringInvoiceFrequency::QUARTERLY => $date->copy()->addMonths(3),
+            RecurringInvoiceFrequency::YEARLY => $date->copy()->addYear(),
+        };
     }
 }

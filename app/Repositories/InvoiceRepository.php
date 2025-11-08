@@ -13,273 +13,280 @@ use App\Services\MediaService;
 use App\Services\Traits\HandlesMedia;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 class InvoiceRepository extends BaseRepository
 {
-	use HandlesMedia;
+    use HandlesMedia;
 
-	public function __construct(
-		private Invoice $invoice,
-		private MediaService $mediaService,
-	) {
-		parent::__construct($invoice);
-	}
+    public function __construct(
+        private Invoice $invoice,
+        private MediaService $mediaService,
+    ) {
+        parent::__construct($invoice);
+    }
 
-	/**
-	 * Get all invoices.
-	 */
-	public function getAll(): Collection
-	{
-		return $this->invoice::all();
-	}
+    /**
+     * Get all invoices.
+     */
+    public function getAll(): Collection
+    {
+        return $this->invoice::all();
+    }
 
-	/**
-	 * Get all active customers.
-	 */
-	public function getAllActive(Vendor $vendor = null, Customer $customer = null): Collection
-	{
-		$query = $this->invoice->where('status', InvoiceStatus::ACTIVE);
+    /**
+     * Get all active customers.
+     */
+    public function getAllActive(?Vendor $vendor = null, ?Customer $customer = null): Collection
+    {
+        $query = $this->invoice->where('status', InvoiceStatus::ACTIVE);
 
-		if ($vendor) {
-			$query->where('vendor_id', $vendor->id);
-		}
+        if ($vendor) {
+            $query->where('vendor_id', $vendor->id);
+        }
 
-		if ($customer) {
-			$query->where('customer_id', $customer->id);
-		}
+        if ($customer) {
+            $query->where('customer_id', $customer->id);
+        }
 
-		return $query->get();
-	}
+        return $query->get();
+    }
 
-	/**
-	 * Get the specified invoice.
-	 */
-	public function getById(int $invoiceId): ?Invoice
-	{
-		return $this->invoice::find($invoiceId);
-	}
+    /**
+     * Get the specified invoice.
+     */
+    public function getById(int $invoiceId): ?Invoice
+    {
+        return $this->invoice::find($invoiceId);
+    }
 
-	/**
-	 * Get the invoice by column name and value.
-	 */
-	public function getFirstWhere(string $columnName, mixed $value): ?Invoice
-	{
-		return $this->invoice::where($columnName, $value)->first();
-	}
+    /**
+     * Get the invoice by column name and value.
+     */
+    public function getFirstWhere(string $columnName, mixed $value): ?Invoice
+    {
+        return $this->invoice::where($columnName, $value)->first();
+    }
 
-	/**
-	 * Get invoice that belongs to a customer.
-	 */
-	public function getCustomerInvoice(int $invoiceId, int $customerId): ?Invoice
-	{
-		return $this->invoice->where('id', $invoiceId)
-			->where('customer_id', $customerId)
-			->where('status', '!=', InvoiceStatus::DRAFT)
-			->first();
-	}
+    /**
+     * Get invoice that belongs to a customer.
+     */
+    public function getCustomerInvoice(int $invoiceId, int $customerId): ?Invoice
+    {
+        return $this->invoice->where('id', $invoiceId)
+            ->where('customer_id', $customerId)
+            ->where('status', '!=', InvoiceStatus::DRAFT)
+            ->first();
+    }
 
-	/**
-	 * Get invoices that belongs to a customer.
-	 */
-	public function getCustomerInvoices(int $customerId): ?Collection
-	{
-		return $this->invoice->where('customer_id', $customerId)
-			->where('status', '!=', InvoiceStatus::DRAFT)
-			->get();
-	}
+    /**
+     * Get invoices that belongs to a customer.
+     */
+    public function getCustomerInvoices(int $customerId): ?Collection
+    {
+        return $this->invoice->where('customer_id', $customerId)
+            ->where('status', '!=', InvoiceStatus::DRAFT)
+            ->get();
+    }
 
-	/**
-	 * Get the last invoice for the vendor.
-	 */
-	public function getLastVendorInvoice(int $vendorId): ?Invoice
-	{
-		return $this->invoice->where('vendor_id', $vendorId)
-			->orderBy('vendor_invoice_number', 'desc')
-			->first();
-	}
+    /**
+     * Get invoices that belong to a recurring invoice.
+     */
+    public function getByRecurringInvoiceId(int $recurringInvoiceId): Collection
+    {
+        return $this->invoice->where('recurring_invoice_id', $recurringInvoiceId)->get();
+    }
 
-	/**
-	 * Delete a specific invoice.
-	 */
-	public function delete(int $invoiceId): bool|QueryException
-	{
-		$invoice = $this->getById($invoiceId);
+    /**
+     * Get the last invoice for the vendor.
+     */
+    public function getLastVendorInvoice(int $vendorId): ?Invoice
+    {
+        return $this->invoice->where('vendor_id', $vendorId)
+            ->orderBy('vendor_invoice_number', 'desc')
+            ->first();
+    }
 
-		$this->checkModelHasParentRelations($invoice);
+    /**
+     * Delete a specific invoice.
+     */
+    public function delete(int $invoiceId): bool|QueryException
+    {
+        $invoice = $this->getById($invoiceId);
 
-		try {
-			return $invoice->delete($invoiceId);
-		} catch (QueryException $e) {
-			throw new \Exception($e->getMessage());
+        $this->checkModelHasParentRelations($invoice);
 
-			return false;
-		}
-	}
+        try {
+            return $invoice->delete($invoiceId);
+        } catch (QueryException $e) {
+            throw new \Exception($e->getMessage());
 
-	/**
-	 * Create a new invoice.
-	 */
-	public function create(array $attributes): Invoice
-	{
-		$invoiceItems = Arr::pull($attributes, 'invoice_items');
+            return false;
+        }
+    }
 
-		$invoice = $this->invoice::create($attributes);
-		$invoice->vendor()->associate($attributes['vendor_id']);
+    /**
+     * Create a new invoice.
+     */
+    public function create(array $attributes): Invoice
+    {
+        $invoiceItems = Arr::pull($attributes, 'invoice_items');
 
-		$lastInvoice = $this->getLastVendorInvoice($attributes['vendor_id']);
-		$invoice->vendor_invoice_number = $lastInvoice ? ++$lastInvoice->vendor_invoice_number : 1;
-		$invoice->number = $invoice->id;
-		$invoice->discount_type = $attributes['discount_type'];
-		$invoice->discount_value = $attributes['discount_value'];
+        $invoice = $this->invoice::create($attributes);
+        $invoice->vendor()->associate($attributes['vendor_id']);
 
-		$totalPrice = 0;
+        $lastInvoice = $this->getLastVendorInvoice($attributes['vendor_id']);
+        $invoice->vendor_invoice_number = $lastInvoice ? ++$lastInvoice->vendor_invoice_number : 1;
+        $invoice->number = $invoice->id;
+        $invoice->discount_type = $attributes['discount_type'];
+        $invoice->discount_value = $attributes['discount_value'];
 
-		if ($invoiceItems) {
-			$invoice->invoiceItems()->delete();
+        $totalPrice = 0;
 
-			$totalPrice = $this->syncInvoiceItems($invoice, $invoiceItems);
-			$invoice->total_price = $totalPrice;
-		}
+        if ($invoiceItems) {
+            $invoice->invoiceItems()->delete();
 
-		$invoice->total_price = $totalPrice;
+            $totalPrice = $this->syncInvoiceItems($invoice, $invoiceItems);
+            $invoice->total_price = $totalPrice;
+        }
 
-		$invoice->save();
+        $invoice->total_price = $totalPrice;
 
-		return $invoice;
-	}
+        $invoice->save();
 
-	/**
-	 * Update an existing invoice.
-	 */
-	public function update(int $invoiceId, array $newAttributes): bool
-	{
-		$invoiceItems = Arr::pull($newAttributes, 'invoice_items');
+        return $invoice;
+    }
 
-		$invoice = $this->invoice::findOrFail($invoiceId);
+    /**
+     * Update an existing invoice.
+     */
+    public function update(int $invoiceId, array $newAttributes): bool
+    {
+        $invoiceItems = Arr::pull($newAttributes, 'invoice_items');
 
-		$updated = $invoice->update($newAttributes);
+        $invoice = $this->invoice::findOrFail($invoiceId);
 
-		$totalPrice = 0;
+        $updated = $invoice->update($newAttributes);
 
-		if ($invoiceItems) {
-			$totalPrice = $this->syncInvoiceItems($invoice, $invoiceItems);
-			$invoice->total_price = $totalPrice;
+        $totalPrice = 0;
 
-			$invoice->save();
-		} else {
-			$invoice->invoiceItems()->delete();
-		}
+        if ($invoiceItems) {
+            $totalPrice = $this->syncInvoiceItems($invoice, $invoiceItems);
+            $invoice->total_price = $totalPrice;
 
-		return $updated;
-	}
+            $invoice->save();
+        } else {
+            $invoice->invoiceItems()->delete();
+        }
 
-	/**
-	 * Update invoice items and calculate total price.
-	 */
-	private function syncInvoiceItems($invoice, array|object $invoiceItems): float
-	{
-		$invoice->invoiceItems()->delete();
+        return $updated;
+    }
 
-		$totalPrice = 0;
+    /**
+     * Update invoice items and calculate total price.
+     */
+    private function syncInvoiceItems($invoice, array|object $invoiceItems): float
+    {
+        $invoice->invoiceItems()->delete();
 
-		foreach ($invoiceItems as $invoiceItem) {
-			$item = new InvoiceItem;
-			$item->invoice_id = $invoice->id;
+        $totalPrice = 0;
 
-			$this->setInvoiceItemType($item, $invoiceItem);
+        foreach ($invoiceItems as $invoiceItem) {
+            $item = new InvoiceItem;
+            $item->invoice_id = $invoice->id;
 
-			$item->description = is_array($invoiceItem) ? $invoiceItem['description'] : $invoiceItem->description;
-			$item->quantity = is_array($invoiceItem) ? $invoiceItem['quantity'] : $invoiceItem->quantity;
-			$item->unit_price = is_array($invoiceItem) ? $invoiceItem['unit_price'] : $invoiceItem->unit_price;
-			$item->amount = is_array($invoiceItem) ? $invoiceItem['amount'] : $invoiceItem->amount;
+            $this->setInvoiceItemType($item, $invoiceItem);
 
-			$item->save();
+            $item->description = is_array($invoiceItem) ? $invoiceItem['description'] : $invoiceItem->description;
+            $item->quantity = is_array($invoiceItem) ? $invoiceItem['quantity'] : $invoiceItem->quantity;
+            $item->unit_price = is_array($invoiceItem) ? $invoiceItem['unit_price'] : $invoiceItem->unit_price;
+            $item->amount = is_array($invoiceItem) ? $invoiceItem['amount'] : $invoiceItem->amount;
 
-			$totalPrice += $item->amount;
-		}
+            $item->save();
 
-		return $this->applyDiscount($totalPrice, $invoice->discount_value ?? 0, $invoice->discount_type ?? 0);
-	}
+            $totalPrice += $item->amount;
+        }
 
-	/**
-	 * Set the item type for an invoice item.
-	 */
-	private function setInvoiceItemType(InvoiceItem $item, array|object $invoiceItem)
-	{
-		$typeId = is_array($invoiceItem) ? $invoiceItem['type_id'] : $invoiceItem->type_id;
-		$itemTitle = is_array($invoiceItem) ? $invoiceItem['title'] : $invoiceItem->title;
-		$itemType = InvoiceItemType::from($typeId);
+        return $this->applyDiscount($totalPrice, $invoice->discount_value ?? 0, $invoice->discount_type ?? 0);
+    }
 
-		match ($itemType) {
-			InvoiceItemType::CUSTOM => $item->custom = $itemTitle,
-		};
-	}
+    /**
+     * Set the item type for an invoice item.
+     */
+    private function setInvoiceItemType(InvoiceItem $item, array|object $invoiceItem)
+    {
+        $typeId = is_array($invoiceItem) ? $invoiceItem['type_id'] : $invoiceItem->type_id;
+        $itemTitle = is_array($invoiceItem) ? $invoiceItem['title'] : $invoiceItem->title;
+        $itemType = InvoiceItemType::from($typeId);
 
-	/**
-	 * Apply discount to the total price.
-	 */
-	private function applyDiscount(float $total, float $discount, string $discountType): float
-	{
-		if ($discountType === 'percentage') {
-			return $total - ($total * $discount / 100);
-		}
+        match ($itemType) {
+            InvoiceItemType::CUSTOM => $item->custom = $itemTitle,
+        };
+    }
 
-		return $total - $discount;
-	}
+    /**
+     * Apply discount to the total price.
+     */
+    private function applyDiscount(float $total, float $discount, string $discountType): float
+    {
+        if ($discountType === 'percentage') {
+            return $total - ($total * $discount / 100);
+        }
 
-	/**
-	 * Prepare payment data for cash payment method.
-	 */
-	private function prepareCashPaymentData(array $attributes, Invoice $invoice, ?string $paymentReference): array
-	{
-		$paymentData = $invoice->payment_data;
+        return $total - $discount;
+    }
 
-		if ($paymentReference) {
-			$paymentData['reference'] = $paymentReference;
-		}
+    /**
+     * Prepare payment data for cash payment method.
+     */
+    private function prepareCashPaymentData(array $attributes, Invoice $invoice, ?string $paymentReference): array
+    {
+        $paymentData = $invoice->payment_data;
 
-		if ($attributes['payment_date']) {
-			$paymentData['transaction_id'] = $invoice->number;
-			$paymentData['amount'] = $invoice->total_price;
-		}
+        if ($paymentReference) {
+            $paymentData['reference'] = $paymentReference;
+        }
 
-		$attributes['payment_data'] = $paymentData;
+        if ($attributes['payment_date']) {
+            $paymentData['transaction_id'] = $invoice->number;
+            $paymentData['amount'] = $invoice->total_price;
+        }
 
-		if ($attributes['payment_date']) {
-			$attributes['payment_date'] = $invoice->payment_date;
-			$attributes['payment_status'] = InvoicePaymentStatus::PAID;
-			$attributes['status'] = InvoiceStatus::COMPLETED;
-		}
+        $attributes['payment_data'] = $paymentData;
 
-		return $attributes;
-	}
+        if ($attributes['payment_date']) {
+            $attributes['payment_date'] = $invoice->payment_date;
+            $attributes['payment_status'] = InvoicePaymentStatus::PAID;
+            $attributes['status'] = InvoiceStatus::COMPLETED;
+        }
 
-	/**
-	 * Prepare payment data for bank transfer payment method.
-	 */
-	private function prepareBankTransferPaymentData(array $attributes, Invoice $invoice, ?string $paymentReference): array
-	{
-		$paymentData = $invoice->payment_data;
+        return $attributes;
+    }
 
-		if ($paymentReference) {
-			$paymentData['reference'] = $paymentReference;
-		}
+    /**
+     * Prepare payment data for bank transfer payment method.
+     */
+    private function prepareBankTransferPaymentData(array $attributes, Invoice $invoice, ?string $paymentReference): array
+    {
+        $paymentData = $invoice->payment_data;
 
-		if ($attributes['payment_date']) {
-			$paymentData['transaction_id'] = $invoice->number;
-			$paymentData['amount'] = $invoice->total_price;
-		}
+        if ($paymentReference) {
+            $paymentData['reference'] = $paymentReference;
+        }
 
-		$attributes['payment_data'] = $paymentData;
+        if ($attributes['payment_date']) {
+            $paymentData['transaction_id'] = $invoice->number;
+            $paymentData['amount'] = $invoice->total_price;
+        }
 
-		if ($attributes['payment_date']) {
-			$attributes['payment_date'] = $invoice->payment_date;
-			$attributes['payment_status'] = InvoicePaymentStatus::PAID;
-			$attributes['status'] = InvoiceStatus::COMPLETED;
-		}
+        $attributes['payment_data'] = $paymentData;
 
-		return $attributes;
-	}
+        if ($attributes['payment_date']) {
+            $attributes['payment_date'] = $invoice->payment_date;
+            $attributes['payment_status'] = InvoicePaymentStatus::PAID;
+            $attributes['status'] = InvoiceStatus::COMPLETED;
+        }
+
+        return $attributes;
+    }
 }

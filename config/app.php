@@ -239,6 +239,8 @@ return [
         'VendorStatus' => App\Enums\VendorStatus::class,
         'RecurringInvoiceStatus' => App\Enums\RecurringInvoiceStatus::class,
         'RecurringInvoiceItemType' => App\Enums\RecurringInvoiceItemType::class,
+        'RecurringInvoiceFrequency' => App\Enums\RecurringInvoiceFrequency::class,
+        'RecurringInvoiceEndType' => App\Enums\RecurringInvoiceEndType::class,
 
         /** Helpers */
         'MoneyHelper' => App\Helpers\MoneyHelper::class,

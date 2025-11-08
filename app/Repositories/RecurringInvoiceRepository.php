@@ -89,16 +89,6 @@ class RecurringInvoiceRepository extends BaseRepository
     }
 
     /**
-     * Get the last invoice for the vendor.
-     */
-    public function getLastVendorRecurringInvoice(int $vendorId): ?RecurringInvoice
-    {
-        return $this->recurringInvoice->where('vendor_id', $vendorId)
-            ->orderBy('vendor_recurring_invoice_number', 'desc')
-            ->first();
-    }
-
-    /**
      * Delete a specific invoice.
      */
     public function delete(int $recurringInvoiceId): bool|QueryException
@@ -121,28 +111,41 @@ class RecurringInvoiceRepository extends BaseRepository
      */
     public function create(array $attributes): RecurringInvoice
     {
-        $recurringInvoiceItems = Arr::pull($attributes, 'recurring_invoice_items');
+        $invoiceItems = Arr::pull($attributes, 'invoice_items');
 
-        $recurringInvoice = $this->recurringInvoice::create($attributes);
-        $recurringInvoice->vendor()->associate($attributes['vendor_id']);
-
-        $lastRecurringInvoice = $this->getLastVendorRecurringInvoice($attributes['vendor_id']);
-        $recurringInvoice->vendor_recurring_invoice_number = $lastRecurringInvoice ? ++$lastRecurringInvoice->vendor_recurring_invoice_number : 1;
-        $recurringInvoice->number = $recurringInvoice->id;
-        $recurringInvoice->discount_type = $attributes['discount_type'];
-        $recurringInvoice->discount_value = $attributes['discount_value'];
-
-        $totalPrice = 0;
-
-        if ($recurringInvoiceItems) {
-            $recurringInvoice->recurringInvoiceItems()->delete();
-
-            $totalPrice = $this->syncRecurringInvoiceItems($recurringInvoice, $recurringInvoiceItems);
-            $recurringInvoice->total_price = $totalPrice;
+        // Set defaults for required fields that might be missing
+        if (empty($attributes['start_date'])) {
+            $attributes['start_date'] = now()->toDateString();
         }
 
-        $recurringInvoice->total_price = $totalPrice;
+        // Create new instance and fill with attributes
+        $recurringInvoice = $this->recurringInvoice->newInstance();
+        $recurringInvoice->fill($attributes);
 
+        // Set vendor association
+        if (! empty($attributes['vendor_id'])) {
+            $recurringInvoice->vendor()->associate($attributes['vendor_id']);
+        }
+
+        // Set defaults for nullable fields if not provided
+        $recurringInvoice->discount_type = $attributes['discount_type'] ?? null;
+        $recurringInvoice->discount_value = $attributes['discount_value'] ?? null;
+
+        // Save to get the ID
+        $recurringInvoice->save();
+
+        // Set number after we have the ID
+        $recurringInvoice->number = (string) $recurringInvoice->id;
+
+        // Sync invoice items and calculate total price
+        $totalPrice = $attributes['total_price'] ?? 0;
+        if ($invoiceItems) {
+            $recurringInvoice->invoiceItems()->delete();
+            $totalPrice = $this->syncInvoiceItems($recurringInvoice, $invoiceItems);
+        }
+
+        // Update total price and save again
+        $recurringInvoice->total_price = $totalPrice;
         $recurringInvoice->save();
 
         return $recurringInvoice;
@@ -153,7 +156,7 @@ class RecurringInvoiceRepository extends BaseRepository
      */
     public function update(int $recurringInvoiceId, array $newAttributes): bool
     {
-        $recurringInvoiceItems = Arr::pull($newAttributes, 'recurring_invoice_items');
+        $invoiceItems = Arr::pull($newAttributes, 'invoice_items');
 
         $recurringInvoice = $this->recurringInvoice::findOrFail($recurringInvoiceId);
 
@@ -161,8 +164,8 @@ class RecurringInvoiceRepository extends BaseRepository
 
         $totalPrice = 0;
 
-        if ($recurringInvoiceItems) {
-            $totalPrice = $this->syncRecurringInvoiceItems($recurringInvoice, $recurringInvoiceItems);
+        if ($invoiceItems) {
+            $totalPrice = $this->syncInvoiceItems($recurringInvoice, $invoiceItems);
             $recurringInvoice->total_price = $totalPrice;
 
             $recurringInvoice->save();
@@ -174,24 +177,24 @@ class RecurringInvoiceRepository extends BaseRepository
     }
 
     /**
-     * Update recurring invoice items and calculate total price.
+     * Update invoice items and calculate total price.
      */
-    private function syncRecurringInvoiceItems($recurringInvoice, array|object $recurringInvoiceItems): float
+    private function syncInvoiceItems($recurringInvoice, array|object $invoiceItems): float
     {
-        $recurringInvoice->recurringInvoiceItems()->delete();
+        $recurringInvoice->invoiceItems()->delete();
 
         $totalPrice = 0;
 
-        foreach ($recurringInvoiceItems as $recurringInvoiceItem) {
+        foreach ($invoiceItems as $invoiceItem) {
             $item = new RecurringInvoiceItem;
             $item->recurring_invoice_id = $recurringInvoice->id;
 
-            $this->setRecurringInvoiceItemType($item, $recurringInvoiceItem);
+            $this->setInvoiceItemType($item, $invoiceItem);
 
-            $item->description = is_array($recurringInvoiceItem) ? $recurringInvoiceItem['description'] : $recurringInvoiceItem->description;
-            $item->quantity = is_array($recurringInvoiceItem) ? $recurringInvoiceItem['quantity'] : $recurringInvoiceItem->quantity;
-            $item->unit_price = is_array($recurringInvoiceItem) ? $recurringInvoiceItem['unit_price'] : $recurringInvoiceItem->unit_price;
-            $item->amount = is_array($recurringInvoiceItem) ? $recurringInvoiceItem['amount'] : $recurringInvoiceItem->amount;
+            $item->description = is_array($invoiceItem) ? $invoiceItem['description'] : $invoiceItem->description;
+            $item->quantity = is_array($invoiceItem) ? $invoiceItem['quantity'] : $invoiceItem->quantity;
+            $item->unit_price = is_array($invoiceItem) ? $invoiceItem['unit_price'] : $invoiceItem->unit_price;
+            $item->amount = is_array($invoiceItem) ? $invoiceItem['amount'] : $invoiceItem->amount;
 
             $item->save();
 
@@ -204,10 +207,10 @@ class RecurringInvoiceRepository extends BaseRepository
     /**
      * Set the item type for an recurring invoice item.
      */
-    private function setRecurringInvoiceItemType(RecurringInvoiceItem $item, array|object $recurringInvoiceItem)
+    private function setInvoiceItemType(RecurringInvoiceItem $item, array|object $invoiceItem)
     {
-        $typeId = is_array($recurringInvoiceItem) ? $recurringInvoiceItem['type_id'] : $recurringInvoiceItem->type_id;
-        $itemTitle = is_array($recurringInvoiceItem) ? $recurringInvoiceItem['title'] : $recurringInvoiceItem->title;
+        $typeId = is_array($invoiceItem) ? $invoiceItem['type_id'] : $invoiceItem->type_id;
+        $itemTitle = is_array($invoiceItem) ? $invoiceItem['title'] : $invoiceItem->title;
         $itemType = RecurringInvoiceItemType::from($typeId);
 
         match ($itemType) {
