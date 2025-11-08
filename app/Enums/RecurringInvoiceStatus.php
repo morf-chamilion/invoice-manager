@@ -8,6 +8,7 @@ enum RecurringInvoiceStatus: int
 {
     case DRAFT = 0;
     case ACTIVE = 1;
+    case ENDED = 2;
 
     /**
      * Get the human readable name.
@@ -17,6 +18,7 @@ enum RecurringInvoiceStatus: int
         return match ($this) {
             self::DRAFT => 'Draft',
             self::ACTIVE => 'Active',
+            self::ENDED => 'Ended',
             default => 'Not known',
         };
     }
@@ -40,6 +42,7 @@ enum RecurringInvoiceStatus: int
         $classes = [
             self::DRAFT->value => 'badge badge-light',
             self::ACTIVE->value => 'badge badge-success',
+            self::ENDED->value => 'badge badge-secondary',
         ];
 
         return Blade::render('<span class="{{ $class }}">{{ $status->getName() }}</span>', [

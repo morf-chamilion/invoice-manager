@@ -7,17 +7,21 @@ use App\Enums\InvoicePaymentStatus;
 use App\Enums\InvoiceStatus;
 use App\Models\Customer;
 use App\Models\Invoice;
+use App\Models\RecurringInvoice;
 use App\Models\Vendor;
 use App\Notifications\Invoice\InvoiceCreateCustomerNotification;
 use App\Notifications\Invoice\InvoiceOverdueCustomerNotification;
 use App\Notifications\Invoice\InvoiceUpdateCustomerNotification;
+use App\Notifications\RecurringInvoice\RecurringInvoiceDraftReadyNotification;
 use App\Repositories\InvoiceRepository;
 use App\RoutePaths\Pdf\PdfRoutePath;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Barryvdh\DomPDF\PDF as DomPDF;
 use Exception;
+use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class InvoiceService extends BaseService
@@ -250,6 +254,54 @@ class InvoiceService extends BaseService
         }
 
         return false;
+    }
+
+    /**
+     * Send invoice to customer via email with PDF attachment.
+     */
+    public function sendInvoiceToCustomer(Invoice $invoice): bool|Exception
+    {
+        try {
+            $invoice->load(['customer', 'vendor', 'invoiceItems']);
+
+            $pdf = $this->invoicePDF($invoice);
+            $fileName = $this->invoiceFileName($invoice).'.pdf';
+
+            $attachment = Attachment::fromData(fn () => $pdf->output(), $fileName)
+                ->withMime('application/pdf');
+
+            $notification = new InvoiceCreateCustomerNotification($invoice, $attachment);
+            $invoice->notify($notification);
+
+            return true;
+        } catch (Exception $e) {
+            return $e;
+        }
+    }
+
+    /**
+     * Notify admin that a draft invoice is ready for review (from recurring invoice).
+     */
+    public function notifyAdminDraftReady(Invoice $invoice, RecurringInvoice $recurringInvoice): bool|Exception
+    {
+        try {
+            $notificationMails = Collection::make(
+                $this->settingService->module(\App\Enums\SettingModule::MAIL)->get('notifications')
+            )->pluck('email')->toArray();
+
+            if (empty($notificationMails)) {
+                return false;
+            }
+
+            $notification = new RecurringInvoiceDraftReadyNotification($invoice, $recurringInvoice);
+
+            $mail = $notification->toMail(null);
+            Mail::to($notificationMails)->send($mail);
+
+            return true;
+        } catch (Exception $e) {
+            return $e;
+        }
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Enums\RecurringInvoiceFrequency;
 use App\Enums\RecurringInvoiceItemType;
 use App\Enums\RecurringInvoiceStatus;
 use App\Models\Customer;
@@ -12,6 +13,7 @@ use App\Services\MediaService;
 use App\Services\Traits\HandlesMedia;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 class RecurringInvoiceRepository extends BaseRepository
@@ -68,27 +70,6 @@ class RecurringInvoiceRepository extends BaseRepository
     }
 
     /**
-     * Get recurring invoice that belongs to a customer.
-     */
-    public function getCustomerRecurringInvoice(int $recurringInvoiceId, int $customerId): ?RecurringInvoice
-    {
-        return $this->recurringInvoice->where('id', $recurringInvoiceId)
-            ->where('customer_id', $customerId)
-            ->where('status', '!=', RecurringInvoiceStatus::DRAFT)
-            ->first();
-    }
-
-    /**
-     * Get invoices that belongs to a customer.
-     */
-    public function getCustomerInvoices(int $customerId): ?Collection
-    {
-        return $this->recurringInvoice->where('customer_id', $customerId)
-            ->where('status', '!=', RecurringInvoiceStatus::DRAFT)
-            ->get();
-    }
-
-    /**
      * Delete a specific invoice.
      */
     public function delete(int $recurringInvoiceId): bool|QueryException
@@ -118,6 +99,14 @@ class RecurringInvoiceRepository extends BaseRepository
             $attributes['start_date'] = now()->toDateString();
         }
 
+        // Calculate next_run_date if not provided
+        if (empty($attributes['next_run_date']) && ! empty($attributes['frequency'])) {
+            $attributes['next_run_date'] = $this->calculateInitialNextRunDate(
+                $attributes['start_date'],
+                $attributes['frequency']
+            );
+        }
+
         // Create new instance and fill with attributes
         $recurringInvoice = $this->recurringInvoice->newInstance();
         $recurringInvoice->fill($attributes);
@@ -133,9 +122,6 @@ class RecurringInvoiceRepository extends BaseRepository
 
         // Save to get the ID
         $recurringInvoice->save();
-
-        // Set number after we have the ID
-        $recurringInvoice->number = (string) $recurringInvoice->id;
 
         // Sync invoice items and calculate total price
         $totalPrice = $attributes['total_price'] ?? 0;
@@ -160,6 +146,21 @@ class RecurringInvoiceRepository extends BaseRepository
 
         $recurringInvoice = $this->recurringInvoice::findOrFail($recurringInvoiceId);
 
+        // Recalculate next_run_date if start_date or frequency is being updated
+        // Only recalculate if next_run_date is not explicitly provided in the update
+        if (! isset($newAttributes['next_run_date']) &&
+            (! empty($newAttributes['start_date']) || ! empty($newAttributes['frequency']))) {
+            $startDate = $newAttributes['start_date'] ?? $recurringInvoice->start_date;
+            $frequency = $newAttributes['frequency'] ?? $recurringInvoice->frequency;
+
+            if ($startDate && $frequency) {
+                $newAttributes['next_run_date'] = $this->calculateInitialNextRunDate(
+                    $startDate,
+                    $frequency
+                );
+            }
+        }
+
         $updated = $recurringInvoice->update($newAttributes);
 
         $totalPrice = 0;
@@ -170,7 +171,7 @@ class RecurringInvoiceRepository extends BaseRepository
 
             $recurringInvoice->save();
         } else {
-            $recurringInvoice->recurringInvoiceItems()->delete();
+            $recurringInvoice->invoiceItems()->delete();
         }
 
         return $updated;
@@ -228,5 +229,40 @@ class RecurringInvoiceRepository extends BaseRepository
         }
 
         return $total - $discount;
+    }
+
+    /**
+     * Calculate the initial next_run_date based on start_date and frequency.
+     */
+    private function calculateInitialNextRunDate(string $startDate, string $frequency): string
+    {
+        $startDateCarbon = Carbon::parse($startDate);
+        $frequencyEnum = RecurringInvoiceFrequency::from($frequency);
+
+        // If start_date is today or in the future, use it as next_run_date
+        if ($startDateCarbon->isToday() || $startDateCarbon->isFuture()) {
+            return $startDateCarbon->toDateString();
+        }
+
+        // If start_date is in the past, calculate the next occurrence
+        $nextDate = $startDateCarbon->copy();
+        while ($nextDate->isPast()) {
+            $nextDate = $this->addFrequency($nextDate, $frequencyEnum);
+        }
+
+        return $nextDate->toDateString();
+    }
+
+    /**
+     * Add frequency interval to a date.
+     */
+    private function addFrequency(Carbon $date, RecurringInvoiceFrequency $frequency): Carbon
+    {
+        return match ($frequency) {
+            RecurringInvoiceFrequency::WEEKLY => $date->copy()->addWeek(),
+            RecurringInvoiceFrequency::MONTHLY => $date->copy()->addMonth(),
+            RecurringInvoiceFrequency::QUARTERLY => $date->copy()->addMonths(3),
+            RecurringInvoiceFrequency::YEARLY => $date->copy()->addYear(),
+        };
     }
 }

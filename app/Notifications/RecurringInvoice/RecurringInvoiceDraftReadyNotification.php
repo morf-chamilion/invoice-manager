@@ -1,25 +1,25 @@
 <?php
 
-namespace App\Notifications\Invoice;
+namespace App\Notifications\RecurringInvoice;
 
 use App\Enums\SettingModule;
 use App\Mail\CommonMail;
 use App\Models\Invoice;
+use App\Models\RecurringInvoice;
 use App\Notifications\BaseNotification;
-use App\RoutePaths\Front\Customer\CustomerRoutePath;
+use App\RoutePaths\Admin\Invoice\InvoiceRoutePath;
 use App\Services\SettingService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Blade;
 
-class InvoiceCreateCustomerNotification extends BaseNotification
+class RecurringInvoiceDraftReadyNotification extends BaseNotification
 {
     use Queueable;
 
     public function __construct(
         protected Invoice $invoice,
-        protected ?Attachment $attachment = null,
+        protected RecurringInvoice $recurringInvoice,
     ) {}
 
     /**
@@ -46,12 +46,10 @@ class InvoiceCreateCustomerNotification extends BaseNotification
      */
     public function toMail(mixed $notifiable): CommonMail
     {
-        $attachments = $this->attachment ? [$this->attachment] : [];
-
-        return (new CommonMail(
+        return new CommonMail(
             mailSubject: $this->formatMailContent($this->mailSubject(), $this->mailContent()),
             mailBody: $this->formatMailContent($this->mailBody(), $this->mailContent()),
-        ))->to($this->invoice->customer->email);
+        );
     }
 
     /**
@@ -61,11 +59,14 @@ class InvoiceCreateCustomerNotification extends BaseNotification
     {
         return [
             '[invoice_number]' => $this->invoice->number,
+            '[recurring_invoice_number]' => $this->recurringInvoice->number,
             '[customer_name]' => $this->invoice->customer->name,
+            '[invoice_date]' => $this->invoice->readableDate,
             '[invoice_due_date]' => $this->invoice->readableDueDate,
-            '[invoice_link]' => Blade::render('<a href="{{ $link }}" class="button button-primary">{{ $title }}</a>', [
-                'link' => route(CustomerRoutePath::INVOICE_SHOW, $this->invoice->id),
-                'title' => __('View Invoice'),
+            '[invoice_amount]' => $this->invoice->readableTotalPrice,
+            '[edit_invoice_link]' => Blade::render('<a href="{{ $link }}" class="button button-primary">{{ $title }}</a>', [
+                'title' => __('Edit Invoice'),
+                'link' => route(InvoiceRoutePath::EDIT, $this->invoice->id),
             ]),
         ];
     }
@@ -75,7 +76,7 @@ class InvoiceCreateCustomerNotification extends BaseNotification
      */
     protected function mailSubject(): ?string
     {
-        return "Invoice: {$this->invoice->number}";
+        return "Draft Invoice Generated: {$this->invoice->number} - Ready for Review";
     }
 
     /**
@@ -84,10 +85,14 @@ class InvoiceCreateCustomerNotification extends BaseNotification
     protected function mailBody(): ?string
     {
         $lines = [
+            'A draft invoice has been generated from recurring invoice.',
             'Invoice Number: [invoice_number]',
             'Customer: [customer_name]',
+            'Date: [invoice_date]',
             'Due Date: [invoice_due_date]',
-            'View Invoice: [invoice_link]',
+            'Amount: [invoice_amount]',
+            'Please review and send the invoice:',
+            '[edit_invoice_link]',
         ];
 
         return implode("\n", $lines);

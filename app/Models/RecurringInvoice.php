@@ -9,7 +9,6 @@ use App\Helpers\MoneyHelper;
 use App\Models\Interfaces\HasRelationsInterface;
 use App\Models\Traits\HasCreatedBy;
 use App\Models\Traits\HasUpdatedBy;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -32,8 +31,6 @@ class RecurringInvoice extends Model implements HasMedia, HasRelationsInterface
      */
     protected $fillable = [
         'status',
-        'number',
-        'vendor_invoice_number',
         'start_date',
         'due_after_days',
         'frequency',
@@ -79,24 +76,6 @@ class RecurringInvoice extends Model implements HasMedia, HasRelationsInterface
         }
 
         return null;
-    }
-
-    /**
-     * Interact with the invoice number.
-     */
-    protected function number(): Attribute
-    {
-        return Attribute::make(
-            set: function (string $value): string {
-                $id = str_pad($this->vendor_invoice_number, 3, '0', STR_PAD_LEFT);
-                $currentYear = now()->format('y');
-                $currentMonth = now()->format('m');
-                $vendorPrefix = $this->vendor->reference_number_prefix ?? 'TMP';
-                $formattedNumber = "$vendorPrefix/INV/{$currentYear}/{$currentMonth}/{$id}";
-
-                return $this->attributes['number'] = $formattedNumber;
-            },
-        );
     }
 
     /**

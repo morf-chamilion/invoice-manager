@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Admin\RecurringInvoice;
 
+use App\Enums\RecurringInvoiceEndType;
+use App\Enums\RecurringInvoiceFrequency;
 use App\Enums\RecurringInvoiceItemType;
 use App\Enums\RecurringInvoiceStatus;
 use App\Http\Requests\BaseRequest;
@@ -23,17 +25,55 @@ class RecurringInvoiceUpdateRequest extends BaseRequest
                 'integer',
                 new Enum(RecurringInvoiceStatus::class),
             ],
-            'date' => [
-                'nullable',
-                'date',
-            ],
-            'due_date' => [
-                'nullable',
-                'date',
-            ],
             'customer_id' => [
                 'required',
                 Rule::exists(Customer::class, 'id'),
+            ],
+            'start_date' => [
+                'required',
+                'date',
+            ],
+            'frequency' => [
+                'required',
+                'string',
+                new Enum(RecurringInvoiceFrequency::class),
+            ],
+            'end_condition_type' => [
+                'required',
+                'string',
+                new Enum(RecurringInvoiceEndType::class),
+            ],
+            'due_after_days' => [
+                'nullable',
+                'integer',
+                'min:1',
+            ],
+            'end_date' => [
+                'nullable',
+                'date',
+                function ($attribute, $value, $fail) {
+                    if ($this->input('end_condition_type') === RecurringInvoiceEndType::DATE->value && empty($value)) {
+                        $fail('The end date field is required when end condition type is date.');
+                    }
+                },
+            ],
+            'end_count' => [
+                'nullable',
+                'integer',
+                'min:1',
+                function ($attribute, $value, $fail) {
+                    if ($this->input('end_condition_type') === RecurringInvoiceEndType::COUNT->value && empty($value)) {
+                        $fail('The end count field is required when end condition type is count.');
+                    }
+                },
+            ],
+            'next_run_date' => [
+                'nullable',
+                'date',
+            ],
+            'last_run_date' => [
+                'nullable',
+                'date',
             ],
             'discount_type' => [
                 'nullable',
@@ -99,7 +139,7 @@ class RecurringInvoiceUpdateRequest extends BaseRequest
                 'string',
                 'max:510',
             ],
-            'notification' => [
+            'send_automatically' => [
                 'sometimes',
                 'bool',
             ],

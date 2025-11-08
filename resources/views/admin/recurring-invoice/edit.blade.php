@@ -28,8 +28,7 @@
                                 <x-input-label for="due_after_days" :value="__('Due After (Days)')" required />
                                 <x-input-text type="number" id="due_after_days" name="due_after_days" min="0"
                                     step="1"
-                                    value="{{ old('due_after_days', $recurringInvoice->due_after_days ?? 30) }}"
-                                    required />
+                                    value="{{ old('due_after_days', $recurringInvoice->due_after_days) }}" required />
                                 <x-input-error :messages="$errors->get('due_after_days')" />
                             </div>
 
@@ -51,7 +50,6 @@
                                 <x-input-label for="frequency" :value="__('Frequency')" required />
                                 <x-input-select id="frequency" name="frequency" data-hide-search="true"
                                     data-placeholder="{{ __('Select Frequency') }}" required>
-                                    <option></option>
                                     @foreach (RecurringInvoiceFrequency::toSelectOptions() as $option)
                                         <option value="{{ $option->value }}" @selected(old('frequency', $recurringInvoice->frequency ?? '') === $option->value)>
                                             {{ __($option->name) }}

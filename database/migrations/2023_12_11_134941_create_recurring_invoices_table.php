@@ -18,9 +18,6 @@ return new class extends Migration
             $table->id();
             $table->tinyInteger('status')->default(RecurringInvoiceStatus::DRAFT);
 
-            $table->string('number')->unique()->nullable();
-            $table->unsignedInteger('vendor_invoice_number')->nullable();
-
             $table->date('start_date');
             $table->unsignedInteger('due_after_days')->default(30);
             $table->string('frequency');

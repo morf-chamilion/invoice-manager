@@ -3,10 +3,12 @@
 namespace App\Services;
 
 use App\Enums\CustomerStatus;
+use App\Enums\InvoiceStatus;
 use App\Enums\RecurringInvoiceEndType;
 use App\Enums\RecurringInvoiceFrequency;
 use App\Enums\RecurringInvoiceStatus;
 use App\Models\Customer;
+use App\Models\Invoice;
 use App\Models\RecurringInvoice;
 use App\Models\Vendor;
 use App\Repositories\RecurringInvoiceRepository;
@@ -18,6 +20,7 @@ class RecurringInvoiceService extends BaseService
 {
     public function __construct(
         private RecurringInvoiceRepository $recurringInvoiceRepository,
+        private InvoiceService $invoiceService,
         private SettingService $settingService,
         private CustomerService $customerService,
     ) {
@@ -78,14 +81,6 @@ class RecurringInvoiceService extends BaseService
     }
 
     /**
-     * Get the invoice that belongs to the customer.
-     */
-    public function getCustomerRecurringInvoice(int $recurringInvoiceId, int $customerId): ?RecurringInvoice
-    {
-        return $this->recurringInvoiceRepository->getCustomerRecurringInvoice($recurringInvoiceId, $customerId);
-    }
-
-    /**
      * Delete a specific recurring invoice.
      */
     public function deleteRecurringInvoice(int $recurringInvoiceId): int
@@ -107,27 +102,6 @@ class RecurringInvoiceService extends BaseService
         $updated = $this->recurringInvoiceRepository->update($recurringInvoiceId, $newAttributes);
 
         return $updated;
-    }
-
-    /**
-     * Calculate total amount.
-     */
-    public static function calculateRecurringInvoiceTotal(array|Collection $items, $discountValue, $discountType = 'fixed'): float
-    {
-        $itemsTotal = is_array($items)
-            ? array_sum(array_column($items, 'amount'))
-            : $items->sum('amount');
-
-        $discountAmount = $discountType === 'percentage'
-            ? ($itemsTotal * $discountValue) / 100
-            : $discountValue;
-
-        return max($itemsTotal - $discountAmount, 0);
-    }
-
-    public function getAllActiveRecurringInvoices(?Vendor $vendor = null, ?Customer $customer = null): Collection
-    {
-        return $this->recurringInvoiceRepository->getAllActive($vendor, $customer);
     }
 
     /**
@@ -193,12 +167,10 @@ class RecurringInvoiceService extends BaseService
             return Carbon::parse($invoice->date)->format('Y-m-d');
         })->toArray();
 
-        // Determine end date
         $endDate = null;
         if ($endConditionType === RecurringInvoiceEndType::DATE && $recurringInvoice->end_date) {
             $endDate = Carbon::parse($recurringInvoice->end_date);
         } elseif ($endConditionType === RecurringInvoiceEndType::COUNT && $recurringInvoice->end_count) {
-            // Calculate how many invoices have been generated
             $generatedCount = $recurringInvoice->invoices->count();
             $remainingCount = $recurringInvoice->end_count - $generatedCount;
 
@@ -207,15 +179,13 @@ class RecurringInvoiceService extends BaseService
             }
         }
 
-        // Generate scheduled invoices (up to 1 year in advance or until end condition)
         $currentDate = $startDate->copy();
-        $maxFutureDate = now()->addYear(); // Show up to 1 year in advance
+        $maxFutureDate = now()->addYear();
         $iteration = 0;
-        $maxIterations = 100; // Safety limit
+        $maxIterations = 100;
         $generatedCount = $recurringInvoice->invoices->count();
 
         while ($currentDate->lte($maxFutureDate) && $iteration < $maxIterations) {
-            // Check if we've reached the end condition
             if ($endDate && $currentDate->gt($endDate)) {
                 break;
             }
@@ -237,12 +207,157 @@ class RecurringInvoiceService extends BaseService
                 ]);
             }
 
-            // Move to next date based on frequency
             $currentDate = $this->addFrequency($currentDate, $frequency);
             $iteration++;
         }
 
         return $scheduledInvoices;
+    }
+
+    /**
+     * Check if an invoice should be generated for the recurring invoice.
+     */
+    public function shouldGenerateInvoice(RecurringInvoice $recurringInvoice): bool
+    {
+        if ($recurringInvoice->status !== RecurringInvoiceStatus::ACTIVE) {
+            return false;
+        }
+
+        if (! $recurringInvoice->next_run_date) {
+            return false;
+        }
+
+        $nextRunDate = Carbon::parse($recurringInvoice->next_run_date);
+        if (! $nextRunDate->isToday()) {
+            return false;
+        }
+
+        $endConditionType = RecurringInvoiceEndType::from($recurringInvoice->end_condition_type);
+
+        if ($endConditionType === RecurringInvoiceEndType::DATE && $recurringInvoice->end_date) {
+            $endDate = Carbon::parse($recurringInvoice->end_date);
+            if ($endDate->lt(today())) {
+                return false;
+            }
+        }
+
+        if ($endConditionType === RecurringInvoiceEndType::COUNT && $recurringInvoice->end_count) {
+            $generatedCount = $recurringInvoice->invoices->count();
+            if ($generatedCount >= $recurringInvoice->end_count) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Calculate the next run date for a recurring invoice.
+     */
+    public function calculateNextRunDate(RecurringInvoice $recurringInvoice, Carbon $currentDate): ?Carbon
+    {
+        $frequency = RecurringInvoiceFrequency::from($recurringInvoice->frequency);
+        $endConditionType = RecurringInvoiceEndType::from($recurringInvoice->end_condition_type);
+
+        $nextDate = $this->addFrequency($currentDate, $frequency);
+
+        // Check if next date would exceed end_date
+        if ($endConditionType === RecurringInvoiceEndType::DATE && $recurringInvoice->end_date) {
+            $endDate = Carbon::parse($recurringInvoice->end_date);
+            if ($nextDate->gt($endDate)) {
+                return null;
+            }
+        }
+
+        // Check if next generation would exceed end_count
+        if ($endConditionType === RecurringInvoiceEndType::COUNT && $recurringInvoice->end_count) {
+            $generatedCount = $recurringInvoice->invoices->count();
+            // We're about to generate one more, so check if that would exceed the count
+            if ($generatedCount + 1 >= $recurringInvoice->end_count) {
+                return null;
+            }
+        }
+
+        return $nextDate;
+    }
+
+    /**
+     * Check and update end condition for a recurring invoice.
+     */
+    public function checkAndUpdateEndCondition(RecurringInvoice $recurringInvoice): bool
+    {
+        $endConditionType = RecurringInvoiceEndType::from($recurringInvoice->end_condition_type);
+        $endReached = false;
+
+        // Check if end date reached
+        if ($endConditionType === RecurringInvoiceEndType::DATE && $recurringInvoice->end_date) {
+            $endDate = Carbon::parse($recurringInvoice->end_date);
+            if ($endDate->lte(today())) {
+                $endReached = true;
+            }
+        }
+
+        // Check if end count reached
+        if ($endConditionType === RecurringInvoiceEndType::COUNT && $recurringInvoice->end_count) {
+            $generatedCount = $recurringInvoice->invoices->count();
+            if ($generatedCount >= $recurringInvoice->end_count) {
+                $endReached = true;
+            }
+        }
+
+        if ($endReached) {
+            $this->recurringInvoiceRepository->update($recurringInvoice->id, [
+                'status' => RecurringInvoiceStatus::ENDED,
+            ]);
+        }
+
+        return $endReached;
+    }
+
+    /**
+     * Generate an invoice from a recurring invoice.
+     */
+    public function generateInvoiceFromRecurring(
+        RecurringInvoice $recurringInvoice,
+        Carbon $invoiceDate,
+        bool $sendAutomatically
+    ): Invoice {
+        $formattedItems = $recurringInvoice->getFormattedInvoiceItemsAttribute();
+
+        $invoiceItems = $formattedItems->map(function ($item) {
+            return [
+                'type_id' => $item->type_id,
+                'type' => $item->type,
+                'title' => $item->title,
+                'description' => $item->description,
+                'quantity' => $item->quantity,
+                'unit_price' => $item->unit_price,
+                'amount' => $item->amount,
+            ];
+        })->toArray();
+
+        $dueAfterDays = $recurringInvoice->due_after_days ?? 30;
+        $dueDate = $invoiceDate->copy()->addDays($dueAfterDays);
+
+        $attributes = [
+            'status' => $sendAutomatically ? InvoiceStatus::ACTIVE : InvoiceStatus::DRAFT,
+            'date' => $invoiceDate->toDateString(),
+            'due_date' => $dueDate->toDateString(),
+            'customer_id' => $recurringInvoice->customer_id,
+            'vendor_id' => $recurringInvoice->vendor_id,
+            'recurring_invoice_id' => $recurringInvoice->id,
+            'discount_type' => $recurringInvoice->discount_type,
+            'discount_value' => $recurringInvoice->discount_value,
+            'total_price' => $recurringInvoice->total_price,
+            'notes' => $recurringInvoice->notes,
+            'invoice_items' => $invoiceItems,
+            'created_by' => $recurringInvoice->created_by,
+            'notification' => false,
+        ];
+
+        $invoice = $this->invoiceService->createInvoice($attributes);
+
+        return $invoice;
     }
 
     /**
@@ -252,7 +367,6 @@ class RecurringInvoiceService extends BaseService
     {
         return match ($frequency) {
             RecurringInvoiceFrequency::WEEKLY => $date->copy()->addWeek(),
-            RecurringInvoiceFrequency::BIWEEKLY => $date->copy()->addWeeks(2),
             RecurringInvoiceFrequency::MONTHLY => $date->copy()->addMonth(),
             RecurringInvoiceFrequency::QUARTERLY => $date->copy()->addMonths(3),
             RecurringInvoiceFrequency::YEARLY => $date->copy()->addYear(),

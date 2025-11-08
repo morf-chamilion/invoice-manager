@@ -25,14 +25,6 @@ class RecurringInvoiceStoreRequest extends BaseRequest
                 'integer',
                 new Enum(RecurringInvoiceStatus::class),
             ],
-            'date' => [
-                'nullable',
-                'date',
-            ],
-            'due_date' => [
-                'nullable',
-                'date',
-            ],
             'customer_id' => [
                 'required',
                 Rule::exists(Customer::class, 'id'),
@@ -74,10 +66,6 @@ class RecurringInvoiceStoreRequest extends BaseRequest
                         $fail('The end count field is required when end condition type is count.');
                     }
                 },
-            ],
-            'send_automatically' => [
-                'nullable',
-                'boolean',
             ],
             'next_run_date' => [
                 'nullable',
@@ -151,7 +139,7 @@ class RecurringInvoiceStoreRequest extends BaseRequest
                 'string',
                 'max:510',
             ],
-            'notification' => [
+            'send_automatically' => [
                 'sometimes',
                 'bool',
             ],
@@ -166,20 +154,6 @@ class RecurringInvoiceStoreRequest extends BaseRequest
     public function messages(): array
     {
         return [
-            'start_date.required' => 'The start date field is required.',
-            'start_date.date' => 'The start date must be a valid date.',
-            'frequency.required' => 'The frequency field is required.',
-            'frequency.enum' => 'The selected frequency is invalid.',
-            'end_condition_type.required' => 'The end condition type field is required.',
-            'end_condition_type.enum' => 'The selected end condition type is invalid.',
-            'due_after_days.integer' => 'The due after days must be an integer.',
-            'due_after_days.min' => 'The due after days must be at least 1.',
-            'end_date.date' => 'The end date must be a valid date.',
-            'end_count.integer' => 'The end count must be an integer.',
-            'end_count.min' => 'The end count must be at least 1.',
-            'send_automatically.boolean' => 'The send automatically field must be true or false.',
-            'next_run_date.date' => 'The next run date must be a valid date.',
-            'last_run_date.date' => 'The last run date must be a valid date.',
             'invoice_items.*.type.required' => 'The type field for invoice item is required.',
             'invoice_items.*.content.required' => 'This content is required for this item.',
             'invoice_items.*.quantity.required' => 'The quantity is required for this item.',
