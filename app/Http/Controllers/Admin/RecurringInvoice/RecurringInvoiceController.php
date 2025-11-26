@@ -46,7 +46,7 @@ class RecurringInvoiceController extends AdminBaseController
             $request->merge([
                 'recordsAll' => $this->recurringInvoiceService->getAllInvoices(),
                 'recordsFiltered' => $this->recurringInvoiceService->getAllWithFilter(
-                    filterColumns: ['id', 'number'],
+                    filterColumns: ['id'],
                     filterQuery: $attributes,
                 ),
             ]);
