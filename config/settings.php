@@ -1,6 +1,18 @@
 <?php
 
 return [
+    /*
+    |--------------------------------------------------------------------------
+    | Settings Cache TTL
+    |--------------------------------------------------------------------------
+    |
+    | Seconds the Setting model's hydrated collection is cached for in
+    | production. Read by App\Providers\AppServiceProvider::bootSettings().
+    |
+    */
+
+    'cache_ttl' => env('SETTINGS_CACHE_TTL', 600),
+
     'theme' => [
         // Supported: "duotone", "solid, "outline"
         'icons' => 'duotone',

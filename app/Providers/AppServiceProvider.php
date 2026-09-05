@@ -5,7 +5,6 @@ namespace App\Providers;
 use App\Models\Setting;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Env;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
@@ -44,7 +43,7 @@ class AppServiceProvider extends ServiceProvider
             if (App::isProduction()) {
                 $settings = Cache::remember(
                     key: 'settings',
-                    ttl: Env::get('SETTINGS_CACHE_TTL', 600),
+                    ttl: config('settings.cache_ttl'),
                     callback: fn () => Setting::all()->keyBy('module'),
                 );
             } else {

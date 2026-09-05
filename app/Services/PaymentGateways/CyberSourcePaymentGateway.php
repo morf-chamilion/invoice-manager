@@ -6,7 +6,6 @@ use App\Handlers\MoneyHandler;
 use App\Models\Invoice;
 use App\RoutePaths\Front\Checkout\CheckoutRoutePath;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Env;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
 
@@ -20,8 +19,8 @@ class CyberSourcePaymentGateway extends MoneyHandler
 	public function getCheckoutData(Invoice $invoice): array
 	{;
 		$params = [
-			'access_key' => env('CHECKOUT_ACCESS_KEY'),
-			'profile_id' => env('CHECKOUT_MERCHANT_ID'),
+			'access_key' => config('checkout.gateway.access_key'),
+			'profile_id' => config('checkout.gateway.merchant_id'),
 			'currency' => $this->currencyCode(),
 			'transaction_uuid' => Str::uuid(),
 			'signed_field_names' => 'access_key,profile_id,transaction_uuid,signed_field_names,unsigned_field_names,signed_date_time,locale,transaction_type,reference_number,amount,currency,override_custom_cancel_page,override_custom_receipt_page',
@@ -37,7 +36,7 @@ class CyberSourcePaymentGateway extends MoneyHandler
 			"bill_to_surname" => $invoice->customer->name,
 			"bill_to_email" =>  $invoice->customer->email,
 			'bill_to_address_line1' => $invoice->customer->address,
-			'bill_to_address_city' => env('CHECKOUT_BILL_TO_ADDRESS_CITY', 'colombo'),
+			'bill_to_address_city' => config('checkout.billing.address_city'),
 			'bill_to_address_country' => 'LK',
 		];
 
@@ -76,7 +75,7 @@ class CyberSourcePaymentGateway extends MoneyHandler
 	 */
 	public function checkoutGatewayUrl(): string
 	{
-		return Env::get('CHECKOUT_GATEWAY_URL');
+		return config('checkout.gateway.url');
 	}
 
 	/**
@@ -84,7 +83,7 @@ class CyberSourcePaymentGateway extends MoneyHandler
 	 */
 	protected function sign(array $params): string
 	{
-		return $this->signData($this->buildDataToSign($params), Env::get('CHECKOUT_SECRET_KEY'));
+		return $this->signData($this->buildDataToSign($params), config('checkout.gateway.secret_key'));
 	}
 
 	/**
