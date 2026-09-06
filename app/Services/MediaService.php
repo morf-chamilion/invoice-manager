@@ -51,10 +51,13 @@ class MediaService
 
 	/**
 	 * Delete a specific media file from storage.
+	 *
+	 * Media is keyed by its uuid rather than its id, matching the
+	 * storage paths produced by the configured path generator.
 	 */
-	public function delete(int $mediaId): ?bool
+	public function delete(string $mediaUuid): ?bool
 	{
-		return Media::find($mediaId)->delete();
+		return Media::where('uuid', $mediaUuid)->first()?->delete();
 	}
 
 	/**
