@@ -59,7 +59,7 @@ Route::middleware(['verified.admin'])->group(function () {
 				->name(QuotationRoutePath::CUSTOMER_NOTIFICATION);
 
 			Route::post('/{quotation}/edit/invoice-generate', 'invoiceGenerate')
-				->middleware(Authorize::using(QuotationRoutePath::CUSTOMER_NOTIFICATION))
-				->name(QuotationRoutePath::CUSTOMER_NOTIFICATION);
+				->middleware(Authorize::using(QuotationRoutePath::INVOICE_GENERATE))
+				->name(QuotationRoutePath::INVOICE_GENERATE);
 		});
 });
