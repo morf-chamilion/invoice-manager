@@ -4,10 +4,10 @@ namespace App\Providers;
 
 use App\Models\Setting;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -39,7 +39,7 @@ class AppServiceProvider extends ServiceProvider
      */
     private static function bootSettings(): mixed
     {
-        if (Schema::hasTable((new Setting)->getTable())) {
+        try {
             if (App::isProduction()) {
                 $settings = Cache::remember(
                     key: 'settings',
@@ -49,10 +49,12 @@ class AppServiceProvider extends ServiceProvider
             } else {
                 $settings = Setting::all()->keyBy('module');
             }
+        } catch (QueryException $e) {
+            report($e);
 
-            return View::share('settings', $settings);
+            $settings = new Collection([]);
         }
 
-        return View::share('settings', new Collection([]));
+        return View::share('settings', $settings);
     }
 }

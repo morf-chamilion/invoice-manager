@@ -4,11 +4,18 @@ namespace App\Services;
 
 use App\Models\Page;
 use App\Repositories\PageRepository;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 
 class PageService extends BaseService
 {
+	/**
+	 * Cache key holding the id/slug pairs the front page routes are built from.
+	 */
+	public const PAGE_ROUTE_CACHE_KEY = 'front_page_routes';
+
 	protected array $pageTemplates;
 
 	public function __construct(
@@ -56,10 +63,14 @@ class PageService extends BaseService
 	 */
 	public function createPage(array $attributes): Page
 	{
-		return $this->pageRepository->create([
+		$page = $this->pageRepository->create([
 			...$attributes,
 			'created_by' => $this->getAdminAuthUser()->id,
 		]);
+
+		$this->flushPageRouteCache();
+
+		return $page;
 	}
 
 	/**
@@ -83,7 +94,11 @@ class PageService extends BaseService
 	 */
 	public function deletePage(int $pageId): int
 	{
-		return $this->pageRepository->delete($pageId);
+		$deleted = $this->pageRepository->delete($pageId);
+
+		$this->flushPageRouteCache();
+
+		return $deleted;
 	}
 
 	/**
@@ -91,10 +106,14 @@ class PageService extends BaseService
 	 */
 	public function updatePage(int $pageId, array $newAttributes): bool
 	{
-		return $this->pageRepository->update($pageId, [
+		$updated = $this->pageRepository->update($pageId, [
 			...$newAttributes,
 			'updated_by' => $this->getAdminAuthUser()->id,
 		]);
+
+		$this->flushPageRouteCache();
+
+		return $updated;
 	}
 
 	/**
@@ -102,7 +121,15 @@ class PageService extends BaseService
 	 */
 	public static function pageRouteName(Page $page): string
 	{
-		return 'page-' . $page->id;
+		return self::pageRouteNameFromId($page->id);
+	}
+
+	/**
+	 * Get the page route name from an id, for callers that hold no model.
+	 */
+	public static function pageRouteNameFromId(int $pageId): string
+	{
+		return 'page-' . $pageId;
 	}
 
 	/**
@@ -119,6 +146,42 @@ class PageService extends BaseService
 	public function getPageBySlug(string $slug): ?Page
 	{
 		return $this->pageRepository->getFirstWhere('slug', $slug);
+	}
+
+	/**
+	 * Get the id and slug of every page, for registering front page routes.
+	 *
+	 * RouteServiceProvider needs this on every single request, including the
+	 * ones that never reach a page, so it is cached rather than queried each
+	 * time. Returns an empty list when the database is unavailable so the
+	 * application still boots without one.
+	 */
+	public function getPageRouteDefinitions(): array
+	{
+		try {
+			return Cache::remember(
+				key: self::PAGE_ROUTE_CACHE_KEY,
+				ttl: config('settings.page_routes_cache_ttl'),
+				callback: fn () => $this->getAllPages()
+					->map(fn (Page $page) => ['id' => $page->id, 'slug' => $page->slug])
+					->all(),
+			);
+		} catch (QueryException $e) {
+			report($e);
+
+			return [];
+		}
+	}
+
+	/**
+	 * Forget the cached page route definitions.
+	 *
+	 * Front page routes are registered from this list at boot, so a page whose
+	 * slug changed stays unreachable until the cache is dropped.
+	 */
+	public function flushPageRouteCache(): void
+	{
+		Cache::forget(self::PAGE_ROUTE_CACHE_KEY);
 	}
 
 	/**

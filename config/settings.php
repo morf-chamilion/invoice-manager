@@ -13,6 +13,20 @@ return [
 
     'cache_ttl' => env('SETTINGS_CACHE_TTL', 600),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Page Route Cache TTL
+    |--------------------------------------------------------------------------
+    |
+    | Seconds the id/slug list behind the dynamic front page routes is cached
+    | for. Read by App\Services\PageService::getPageRouteDefinitions(), which
+    | RouteServiceProvider calls on every request. Page create, update and
+    | delete flush this key, so the TTL is only a backstop.
+    |
+    */
+
+    'page_routes_cache_ttl' => env('PAGE_ROUTES_CACHE_TTL', 3600),
+
     'theme' => [
         // Supported: "duotone", "solid, "outline"
         'icons' => 'duotone',
