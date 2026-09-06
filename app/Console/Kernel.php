@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('backup:clean')->daily()->at('02:30');
         $schedule->command('backup:run')->daily()->at('03:30');
+        $schedule->command('invoices:generate-recurring')->hourly();
     }
 
     /**
@@ -21,7 +22,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands(): void
     {
-        $this->load(__DIR__ . '/Commands');
+        $this->load(__DIR__.'/Commands');
 
         require base_path('routes/console.php');
     }

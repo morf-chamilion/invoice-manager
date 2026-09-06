@@ -2,8 +2,6 @@
 
 namespace App\Handlers;
 
-use Illuminate\Support\Env;
-
 abstract class MoneyHandler
 {
 	/**
@@ -11,7 +9,7 @@ abstract class MoneyHandler
 	 */
 	public static function currencyCode(): string
 	{
-		return Env::get('CHECKOUT_CURRENCY_CODE', 'USD');
+		return config('checkout.currency_code');
 	}
 
 	/**

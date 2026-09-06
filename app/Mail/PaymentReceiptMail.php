@@ -11,7 +11,6 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Env;
 use Illuminate\Support\Facades\App;
 
 class PaymentReceiptMail extends Mailable
@@ -37,9 +36,9 @@ class PaymentReceiptMail extends Mailable
 	{
 		return new Envelope(
 			from: new Address(
-				Env::get('MAIL_FROM_ADDRESS'),
+				config('mail.from.address'),
 				$this->settingService->module(SettingModule::MAIL)
-					->get('site_name') ?? Env::get('APP_NAME')
+					->get('site_name') ?? config('app.name')
 			),
 			subject: $this->mailSubject,
 		);

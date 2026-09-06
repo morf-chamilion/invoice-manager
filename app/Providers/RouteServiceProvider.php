@@ -5,13 +5,11 @@ namespace App\Providers;
 use App\Services\PageService;
 use Illuminate\Cache\RateLimiting\Limit;
 use App\Http\Controllers\Front\Page\PageController;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Schema;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -48,6 +46,7 @@ class RouteServiceProvider extends ServiceProvider
         'quotations',
         'customers',
         'vendors',
+        'recurring-invoices',
     ];
 
     /**
@@ -135,18 +134,10 @@ class RouteServiceProvider extends ServiceProvider
         /** @var PageService $pageService  */
         $pageService = App::make(PageService::class);
 
-        if (!Schema::hasTable('pages')) {
-            return;
-        }
-
-        try {
-            $pageService->getAllpages()->each(function ($page) {
-                Route::get('/' . $page->slug, PageController::class)
-                    ->middleware('web')
-                    ->name(PageService::pageRouteName($page));
-            });
-        } catch (BindingResolutionException  $e) {
-            throw new BindingResolutionException($e->getMessage());
+        foreach ($pageService->getPageRouteDefinitions() as $page) {
+            Route::get('/' . $page['slug'], PageController::class)
+                ->middleware('web')
+                ->name(PageService::pageRouteNameFromId($page['id']));
         }
     }
 }

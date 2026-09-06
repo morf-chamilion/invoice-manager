@@ -83,6 +83,33 @@
                     </div>
                 @endcanany
 
+                @canany([RecurringInvoiceRoutePath::INDEX, RecurringInvoiceRoutePath::CREATE])
+                    @php $recurringInvoiceService = app()->make(App\Services\RecurringInvoiceService::class); @endphp
+
+                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+                        @include('admin.layout.sidebar.menu-item-group', [
+                            'content' => 'Recurring Invoices',
+                            'icon' => 'calendar-tick',
+                        ])
+
+                        <div class="menu-sub menu-sub-accordion">
+                            @can(RecurringInvoiceRoutePath::INDEX)
+                                @include('admin.layout.sidebar.menu-item', [
+                                    'content' => 'View Recurring Invoices',
+                                    'route' => route(RecurringInvoiceRoutePath::INDEX),
+                                ])
+                            @endcan
+
+                            @can(RecurringInvoiceRoutePath::CREATE)
+                                @include('admin.layout.sidebar.menu-item', [
+                                    'content' => 'Create Recurring Invoice',
+                                    'route' => route(RecurringInvoiceRoutePath::CREATE),
+                                ])
+                            @endcan
+                        </div>
+                    </div>
+                @endcanany
+
                 @canany([PaymentRoutePath::INDEX, PaymentRoutePath::CREATE])
                     <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
                         @include('admin.layout.sidebar.menu-item-group', [

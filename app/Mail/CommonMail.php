@@ -7,11 +7,10 @@ use App\RoutePaths\Mail\MailRoutePath;
 use App\Services\SettingService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Address;
+use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Env;
 use Illuminate\Support\Facades\App;
 
 class CommonMail extends Mailable
@@ -37,9 +36,9 @@ class CommonMail extends Mailable
     {
         return new Envelope(
             from: new Address(
-                Env::get('MAIL_FROM_ADDRESS'),
+                config('mail.from.address'),
                 $this->settingService->module(SettingModule::MAIL)
-                    ->get('site_name') ?? Env::get('APP_NAME'),
+                    ->get('site_name') ?? config('app.name'),
             ),
             subject: $this->mailSubject,
         );
@@ -56,15 +55,5 @@ class CommonMail extends Mailable
                 'body' => $this->mailBody,
             ]
         );
-    }
-
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
-     */
-    public function attachments(): array
-    {
-        return [];
     }
 }
