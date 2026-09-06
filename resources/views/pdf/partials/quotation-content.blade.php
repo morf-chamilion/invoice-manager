@@ -6,7 +6,7 @@
                     style="vertical-align: top; @empty($pdf) display: flex; justify-content: space-between; @endempty">
                     <td colspan="4" style="text-align: left;">
                         @if ($logo = $quotation->vendor->getFirstMedia('logo'))
-                            <img src="{{ isset($pdf) && $pdf ? $logo?->getPath() : $logo?->getFullUrl() }}"
+                            <img src="{{ isset($pdf) && $pdf ? \App\Core\MediaLibrary\MediaEmbed::dataUri($logo) : $logo?->getFullUrl() }}"
                                 alt="Company Logo" style="height: 100px;" />
                         @endif
                     </td>

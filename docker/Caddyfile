@@ -1,0 +1,26 @@
+{
+	auto_https off
+	skip_install_trust
+	admin off
+}
+
+:{$PORT:8080} {
+	root * /app/public
+
+	encode zstd br gzip
+
+	@assets path *.css *.js *.woff *.woff2 *.ttf *.eot *.svg *.png *.jpg *.jpeg *.gif *.ico *.webp *.map
+	header @assets Cache-Control "public, max-age=2592000"
+
+	@uploads path /storage/* /media/*
+	header @uploads Cache-Control "public, max-age=604800"
+
+	header -Server
+	@dotfiles {
+		path /.* /*/.*
+		not path /.well-known/*
+	}
+	respond @dotfiles 404
+
+	php_server
+}
