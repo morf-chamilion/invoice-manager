@@ -1,1 +1,9 @@
 // @import "page.scss";
+
+.btn.btn-icon {
+    i,
+    .svg-icon,
+    svg {
+        pointer-events: none;
+    }
+}
