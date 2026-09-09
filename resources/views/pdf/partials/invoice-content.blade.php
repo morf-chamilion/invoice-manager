@@ -210,29 +210,6 @@
         </table>
     </div>
 
-    @empty($pdf)
-        <table style="width: 100%; font-family: sans-serif">
-            <tbody>
-                <tr>
-                    @if ($invoice->status !== InvoiceStatus::COMPLETED)
-                        @isset($checkoutGatewayUrl)
-                            <td colspan="6" style="padding-top: 15px; text-align: right;">
-                                <form action="{{ $checkoutGatewayUrl }}" method="POST">
-                                    @foreach ($checkoutFields as $checkoutField)
-                                        {!! $checkoutField !!}
-                                    @endforeach
-                                    <button class="btn btn-primary btn-sm theme-btn">
-                                        {{ __('Pay Now') }}
-                                    </button>
-                                </form>
-                            </td>
-                        @endisset
-                    @endif
-                </tr>
-            </tbody>
-        </table>
-    @endempty
-
     @if ($invoice->notes)
         <table style="font-family: sans-serif; margin-bottom: 30px;">
             <tbody>

@@ -191,7 +191,6 @@ return [
         'FrontPageRoutePath' => App\RoutePaths\Front\Page\PageRoutePath::class,
         'FrontAuthRoutePath' => App\RoutePaths\Front\Auth\AuthRoutePath::class,
         'FrontCustomerRoutePath' => App\RoutePaths\Front\Customer\CustomerRoutePath::class,
-        'FrontCheckoutRoutePath' => App\RoutePaths\Front\Checkout\CheckoutRoutePath::class,
         'FrontInvoiceRoutePath' => App\RoutePaths\Front\Invoice\InvoiceRoutePath::class,
         'FrontQuotationRoutePath' => App\RoutePaths\Front\Quotation\QuotationRoutePath::class,
 

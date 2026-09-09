@@ -60,10 +60,6 @@ class InvoiceUpdateCustomerNotification extends BaseNotification
 			'[invoice_number]' => $this->invoice->number,
 			'[customer_name]' => $this->invoice->customer->name,
 			'[invoice_due_date]' => $this->invoice->readableDueDate,
-			'[payment_link]' => Blade::render('<a href="{{ $link }}" class="button button-primary">{{ $title }}</a>', [
-				'link' => $this->invoice->checkout_link,
-				'title' => __('Pay Now'),
-			]),
 			'[invoice_link]' => Blade::render('<a href="{{ $link }}" class="button button-primary">{{ $title }}</a>', [
 				'link' => route(CustomerRoutePath::INVOICE_SHOW, $this->invoice->id),
 				'title' => __('View Invoice'),
