@@ -25,7 +25,6 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected const FRONT_ROUTES = [
         'auth',
-        'checkout',
         'customer',
         'invoices',
         'quotations',

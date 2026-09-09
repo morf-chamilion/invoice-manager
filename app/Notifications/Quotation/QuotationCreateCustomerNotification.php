@@ -58,10 +58,6 @@ class QuotationCreateCustomerNotification extends BaseNotification
 			'[quotation_number]' => $this->quotation->number,
 			'[customer_name]' => $this->quotation->customer->name,
 			'[quotation_due_date]' => $this->quotation->readableDueDate,
-			'[payment_link]' => Blade::render('<a href="{{ $link }}" class="button button-primary">{{ $title }}</a>', [
-				'link' => $this->quotation->checkout_link,
-				'title' => __('Pay Now'),
-			]),
 		];
 	}
 
