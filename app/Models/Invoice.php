@@ -10,7 +10,6 @@ use App\Helpers\MoneyHelper;
 use App\Models\Interfaces\HasRelationsInterface;
 use App\Models\Traits\HasCreatedBy;
 use App\Models\Traits\HasUpdatedBy;
-use App\RoutePaths\Front\Checkout\CheckoutRoutePath;
 use App\RoutePaths\Front\Invoice\InvoiceRoutePath;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -130,15 +129,6 @@ class Invoice extends Model implements HasMedia, HasRelationsInterface
         return route(InvoiceRoutePath::SHOW, ['id' => $sessionId]);
     }
 
-    /**
-     * Get the checkout link for the invoice.
-     */
-    protected function getCheckoutLinkAttribute(): string
-    {
-        $sessionId = Crypt::encryptString($this->id);
-
-        return route(CheckoutRoutePath::SHOW, ['id' => $sessionId]);
-    }
 
     /**
      * Get the formatted date attribute.

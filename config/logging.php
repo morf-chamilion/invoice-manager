@@ -73,11 +73,6 @@ return [
             'replace_placeholders' => true,
         ],
 
-        'checkout' => [
-            'driver' => 'daily',
-            'path' => storage_path('logs/checkout.log'),
-            'days' => 14,
-        ],
 
         'slack' => [
             'driver' => 'slack',
